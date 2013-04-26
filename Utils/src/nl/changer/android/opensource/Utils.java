@@ -108,7 +108,8 @@ public class Utils {
 	
 	
 	/***
-	 * 
+	 * Converts the passed in drawable to Bitmap
+	 * representation
 	 * ***/
 	public Bitmap drawableToBitmap( Drawable drawable ) {
 		
