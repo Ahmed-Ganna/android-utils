@@ -243,5 +243,44 @@ public class Utils {
 		float densityMultiplier = mContext.getResources().getDisplayMetrics().density;
 		return densityMultiplier;
 	}
+	
+	/***
+	 * Creates a confirmation dialog that show a pop-up
+	 * with Yes-No Button. By default the buttons just dismiss
+	 * the dialog.
+	 * 
+	 * @param message Message to be shown in the dialog.
+	 * ***/
+	public void showConfirmDialog(String message, DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener) {
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+		
+		if( yesListener == null ) {
+			yesListener = new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			};
+		}
+		
+		if( noListener == null ) {
+			noListener = new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			};
+		}
+			
+			
+			builder.setMessage(message)
+			.setPositiveButton("Yes", yesListener)
+		    .setNegativeButton("No", noListener)
+		    .show();
+	}
+	
 
 }

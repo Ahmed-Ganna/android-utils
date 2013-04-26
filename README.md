@@ -28,7 +28,9 @@ And there you are good to go with the project.
 Library methods
 =============
 
-	**Utils.java**
+**Utils.java**
+
+	
 	public void showToast(String msg);
 	public boolean isNetworkAvailable();
 	public boolean isSDCARDMounted();
