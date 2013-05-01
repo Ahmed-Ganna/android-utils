@@ -10,6 +10,7 @@ import java.net.ProtocolException;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.protocol.HTTP;
 
 public class NetworkManager {
@@ -142,7 +143,7 @@ public class NetworkManager {
 	}
 	
 	/***
-	 * Send a GET request. This method must be called from
+	 * Send a POST request. This method must be called from
 	 * a non-UI thread.
 	 * ***/
 	protected void executeHttpPost(HttpURLConnection conn) {
@@ -157,6 +158,58 @@ public class NetworkManager {
 		}
 		
 		conn.setRequestProperty(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded"); 
+		conn.setRequestProperty("charset", "utf-8");
+  		conn.setUseCaches(false);
+	}
+	
+	/***
+	 * Send a POST request. This method must be called from
+	 * a non-UI thread.
+	 * ***/
+	protected void executeHttpPut(HttpURLConnection conn) {
+		conn.setDoInput(true);
+		conn.setDoOutput(true);
+		conn.setInstanceFollowRedirects(true);
+		
+		try {
+			conn.setRequestMethod(HttpPut.METHOD_NAME);
+		} catch (ProtocolException e) {
+			e.printStackTrace();
+		}
+		
+		conn.setRequestProperty(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded"); 
+		conn.setRequestProperty("charset", "utf-8");
+  		conn.setUseCaches(false);
+	}
+	
+	protected void executeHttpPut(HttpURLConnection conn, String mimeType) {
+		conn.setDoInput(true);
+		conn.setDoOutput(true);
+		conn.setInstanceFollowRedirects(true);
+		
+		try {
+			conn.setRequestMethod(HttpPut.METHOD_NAME);
+		} catch (ProtocolException e) {
+			e.printStackTrace();
+		}
+		
+		conn.setRequestProperty(HTTP.CONTENT_TYPE, mimeType); 
+		conn.setRequestProperty("charset", "utf-8");
+  		conn.setUseCaches(false);
+	}
+	
+	protected void executeHttpPost(HttpURLConnection conn, String mimeType) {
+		conn.setDoInput(true);
+		conn.setDoOutput(true);
+		conn.setInstanceFollowRedirects(true);
+		
+		try {
+			conn.setRequestMethod(HttpPost.METHOD_NAME);
+		} catch (ProtocolException e) {
+			e.printStackTrace();
+		}
+		
+		conn.setRequestProperty(HTTP.CONTENT_TYPE, mimeType); 
 		conn.setRequestProperty("charset", "utf-8");
   		conn.setUseCaches(false);
 	}
