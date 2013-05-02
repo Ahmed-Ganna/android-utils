@@ -20,9 +20,13 @@ public class StorageManager {
 		mEditor = mSettings.edit();
 	}
 	
-	
 	public void setValue(String key, String value) {
 		mEditor.putString(key, value);
+		mEditor.commit();
+	}
+	
+	public void setValue(String key, int value) {
+		mEditor.putInt(key, value);
 		mEditor.commit();
 	}
 	
@@ -34,6 +38,14 @@ public class StorageManager {
 		String value = defaultValue;
 		
 		value = mSettings.getString(key, defaultValue);
+		
+		return value;
+	}
+	
+	public int getIntValue(String key, int defaultValue) {
+		int value = defaultValue;
+		
+		value = mSettings.getInt(key, defaultValue);
 		
 		return value;
 	}
