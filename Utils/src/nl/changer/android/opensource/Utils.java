@@ -34,7 +34,7 @@ public class Utils {
 	
 	public Utils(Context ctx) {
 		mContext = ctx;
-	}
+	} 
 	
 	/***
 	 * Shows the message passed in the parameter in the Toast.
