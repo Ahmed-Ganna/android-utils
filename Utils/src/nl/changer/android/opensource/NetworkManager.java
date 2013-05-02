@@ -13,6 +13,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.protocol.HTTP;
 
+import android.webkit.MimeTypeMap;
+
 public class NetworkManager {
 	
 	private static final String TAG = NetworkManager.class.getSimpleName();
@@ -135,9 +137,9 @@ public class NetworkManager {
 			e.printStackTrace();
 		} 
 		
-		conn.setRequestProperty( HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded");
-		conn.setRequestProperty(HTTP.USER_AGENT,"Mozilla/5.0 ( compatible ) ");
+		conn.setRequestProperty( HTTP.CONTENT_TYPE, MimeType.APPLICATION_FORM_URLENCODED);
 		conn.setRequestProperty("Accept-Charset", "UTF-8");
+		conn.setRequestProperty(HTTP.USER_AGENT,"Mozilla/5.0 ( compatible ) ");
 		conn.setRequestProperty("charset", "utf-8");
   		conn.setUseCaches(false);
 	}
@@ -157,7 +159,7 @@ public class NetworkManager {
 			e.printStackTrace();
 		}
 		
-		conn.setRequestProperty(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded"); 
+		conn.setRequestProperty(HTTP.CONTENT_TYPE, MimeType.APPLICATION_FORM_URLENCODED); 
 		conn.setRequestProperty("charset", "utf-8");
   		conn.setUseCaches(false);
 	}
@@ -177,7 +179,7 @@ public class NetworkManager {
 			e.printStackTrace();
 		}
 		
-		conn.setRequestProperty(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded"); 
+		conn.setRequestProperty(HTTP.CONTENT_TYPE, MimeType.APPLICATION_FORM_URLENCODED); 
 		conn.setRequestProperty("charset", "utf-8");
   		conn.setUseCaches(false);
 	}
