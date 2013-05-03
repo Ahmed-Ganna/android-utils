@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -19,9 +20,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.widget.Toast;
 
 public class Utils {
@@ -281,6 +284,58 @@ public class Utils {
 		    .setNegativeButton("No", noListener)
 		    .show();
 	}
+
+	/***
+	 * Gets the version name of the application.
+	 * For e.g. 1.9.3
+	 * ***/
+	public String getApplicationVersionNumber() {
+		
+		String versionName = null;
+		
+		try {
+			 versionName = mContext.getPackageManager().getPackageInfo( mContext.getPackageName(), 0 ).versionName;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		Log.v( TAG, "#getApplicationVersionNumber versionName: " + versionName );
+		
+		return versionName;
+	}
 	
+	/***
+	 * Gets the version code of the application.
+	 * For e.g. Maverick Meerkat or 2013050301
+	 * ***/
+	public int getApplicationVersionCode() {
+		
+		int versionCode = 0;
+		
+		try {
+			versionCode = mContext.getPackageManager().getPackageInfo( mContext.getPackageName(), 0 ).versionCode;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		Log.v( TAG, "#getApplicationVersionCode versionCode: " + versionCode );
+		
+		return versionCode;
+	}
+	
+	/***
+	 * Get the version number of the Android OS
+	 * For e.g. 2.3.4 or 4.1.2
+	 ***/
+	public String getOSVersion() {
+		
+		String osVersion = null;
+		
+		osVersion = Build.VERSION.RELEASE;
+		
+		Log.v( TAG, "#getOSVersion osVersion: " + osVersion );
+		
+		return osVersion;
+	}	
 
 }
