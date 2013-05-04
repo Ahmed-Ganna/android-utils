@@ -9,8 +9,10 @@ import java.io.InputStreamReader;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -344,6 +346,61 @@ public class Utils {
 		Log.v( TAG, "#getOSVersion osVersion: " + osVersion );
 		
 		return osVersion;
+	}
+	
+    /**
+     * Checks if the service with the given name is currently running on the device.
+     * **/
+    public boolean isServiceRunning(String serviceName) {
+        ActivityManager manager = (ActivityManager) mContext.getSystemService(mContext.ACTIVITY_SERVICE);
+        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (service.service.getClassName().equals(serviceName)) {
+            	// Log.i(TAG, "#isServiceAlreadyRunning " + serviceName + " is already running.");
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /***
+     * Check the type of data connection that is currently available on
+     * the device. 
+     * @return <code>ConnectivityManager.TYPE_*</code> as a type of
+     * internet connection on the device. Returns -1 in case of error or none of 
+     * <code>ConnectivityManager.TYPE_*</code> is found.
+     * ***/
+	public int getDataConnectionType() {
+		
+		ConnectivityManager connMgr =  (ConnectivityManager) mContext.getSystemService( Context.CONNECTIVITY_SERVICE );
+		
+		if( connMgr != null && connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null ) {
+			if ( connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected() )
+	        	return ConnectivityManager.TYPE_MOBILE;
+	        
+	        if ( connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() )
+	        	return ConnectivityManager.TYPE_WIFI;
+	        else
+	        	return -1;
+		}else
+			return -1;
+	}
+	
+	/***
+	 * Capitalize a each word in the string.
+	 * ***/
+	public static String capitalizeString(String string) {
+	  char[] chars = string.toLowerCase().toCharArray();
+	  boolean found = false;
+	  for (int i = 0; i < chars.length; i++) {
+	    if (!found && Character.isLetter(chars[i])) {
+	      chars[i] = Character.toUpperCase(chars[i]);
+	      found = true;
+	    } else if (Character.isWhitespace(chars[i]) || chars[i]=='.' || chars[i]=='\'') { // You can add other chars here
+	      found = false;
+	    }
+	  }
+	  return String.valueOf(chars);
 	}
 	
     /***
