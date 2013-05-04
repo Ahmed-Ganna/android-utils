@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -15,6 +17,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Shader;
 import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -25,7 +28,9 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
+
 
 public class Utils {
 	
@@ -34,7 +39,10 @@ public class Utils {
 	private Context mContext;
 	
 	ProgressDialog mProgressDialog;
-	
+
+	/***
+	 * @param ctx Activity Context. Any other context will break the app.
+	 * ***/
 	public Utils(Context ctx) {
 		mContext = ctx;
 	} 
@@ -336,6 +344,63 @@ public class Utils {
 		Log.v( TAG, "#getOSVersion osVersion: " + osVersion );
 		
 		return osVersion;
-	}	
+	}
+	
+    /***
+     * 
+     * ***/
+	public void tileBackground(int layoutIdOfRootView, int resIdOfTile) {
+    	
+    	try {
+    		//Tiling the background.
+        	Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), resIdOfTile);
+            BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+            bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+            View scrollView = ((Activity) mContext).findViewById( layoutIdOfRootView );
+            
+            if( scrollView != null )
+            	setBackground(scrollView, bitmapDrawable);
+            		
+		} catch (Exception e) {
+			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
+		}
+	}
+	
+	/***
+	 * Sets the passed-in drawable parameter as a background to the 
+	 * passed in target parameter in an SDK independent way. This
+	 * is the recommended way of setting background rather
+	 * than using native background setters provided by {@link View}
+	 * class 
+	 * 
+	 * @param target View to set background to.
+	 * @param drawable background image
+	 * ***/
+	@SuppressLint("NewApi")
+	public void setBackground(View target, Drawable drawable) {
+		if( Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+    		target.setBackgroundDrawable(drawable);
+    	} else {
+    		target.setBackground(drawable);
+    	}
+	}
+    
+    public void tileBackground(int layoutId, View viewToTileBg, int resIdOfTile) {
+    	
+    	try {
+            //Tiling the background.
+        	Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), resIdOfTile);
+            BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+        	// BitmapDrawable bitmapDrawable = new BitmapDrawable( mContext.getResources(), canvasBitmap);
+            bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+            View scrollView = viewToTileBg.findViewById(layoutId);
+            
+            if( scrollView != null )
+            	setBackground(scrollView, bitmapDrawable);
+            
+		} catch (Exception e) {
+			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
+		}
+	}
 
 }

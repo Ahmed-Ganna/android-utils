@@ -1,7 +1,7 @@
 Android Utilities
 =============
 
-Library Project for utility classes that can make me(and others) more productive when I am working on next android project.
+Library Project for utility classes that can make me(and others) more productive.
 
 ----
 
@@ -25,32 +25,11 @@ And there you are good to go with the project.
 
 ----
 
-Library methods
-=============
-
-**Utils.java**
-
-	
-	public void showToast(String msg);
-	public boolean isNetworkAvailable();
-	public boolean isSDCARDMounted();
-	public void showAlertDialog(String title, String body);
-	public String toBase64(Bitmap bitmap);
-	public Bitmap drawableToBitmap( Drawable drawable );
-	public InputStream bitmapToInputStream(Bitmap bitmap);
-	public void showProgressDialog(String title, String body, boolean isCancellable);
-	public void dismissProgressDialog();
-	public String readStream( InputStream in );
-	public Bitmap scaleDownBitmap( Bitmap photo, int newHeight );
-	public float getDensityMultiplier();
-
-----
-
 
 The MIT License
 =============
 
-Copyright (c) 2013 Jaydeep from Changer Technologies Pvt. Ltd.
+**Copyright (c) 2013 Jaydeep from Changer Technologies Pvt. Ltd.**
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
