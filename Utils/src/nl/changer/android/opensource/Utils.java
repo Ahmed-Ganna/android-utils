@@ -15,6 +15,7 @@ import android.app.ProgressDialog;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -362,6 +363,22 @@ public class Utils {
         
         return false;
     }
+    
+    /***
+     * Share an application over the social network like Facebook, Twitter etc.
+     * @param sharingMsg Message to be pre-populated when the 3rd party app dialog opens up.
+     * @param emailSubject Message that shows up as a subject while sharing through email.
+     * @param title Title of the sharing options prompt. For e.g. "Share via" or "Share using"
+     * ***/
+	public void share(String sharingMsg, String emailSubject, String title) {
+		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+		
+		sharingIntent.setType("text/plain");
+		sharingIntent.putExtra(Intent.EXTRA_TEXT, sharingMsg);
+		sharingIntent.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
+		
+		mContext.startActivity( Intent.createChooser( sharingIntent, title ) );
+	}
     
     /***
      * Check the type of data connection that is currently available on
