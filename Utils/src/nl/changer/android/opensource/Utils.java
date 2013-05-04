@@ -354,12 +354,14 @@ public class Utils {
     	try {
     		//Tiling the background.
         	Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), resIdOfTile);
-            BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+        	// deprecated constructor call
+            // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+        	BitmapDrawable bitmapDrawable = new BitmapDrawable( mContext.getResources(), bmp);
             bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-            View scrollView = ((Activity) mContext).findViewById( layoutIdOfRootView );
+            View view = ((Activity) mContext).findViewById( layoutIdOfRootView );
             
-            if( scrollView != null )
-            	setBackground(scrollView, bitmapDrawable);
+            if( view != null )
+            	setBackground( view, bitmapDrawable);
             		
 		} catch (Exception e) {
 			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
@@ -390,13 +392,14 @@ public class Utils {
     	try {
             //Tiling the background.
         	Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), resIdOfTile);
-            BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
-        	// BitmapDrawable bitmapDrawable = new BitmapDrawable( mContext.getResources(), canvasBitmap);
+        	// deprecated constructor
+            // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+        	BitmapDrawable bitmapDrawable = new BitmapDrawable( mContext.getResources(), bmp);
             bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-            View scrollView = viewToTileBg.findViewById(layoutId);
+            View view = viewToTileBg.findViewById(layoutId);
             
-            if( scrollView != null )
-            	setBackground(scrollView, bitmapDrawable);
+            if( view != null )
+            	setBackground(view, bitmapDrawable);
             
 		} catch (Exception e) {
 			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
