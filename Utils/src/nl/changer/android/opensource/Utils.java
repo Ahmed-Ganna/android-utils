@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -415,6 +417,22 @@ public class Utils {
 	        	return -1;
 		}else
 			return -1;
+	}
+	
+	/***
+	 * Checks if the input parameter is a valid email.
+	 * ***/
+	public boolean isValidEmail(String email) {
+		final String emailPattern = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+		Matcher matcher;
+		Pattern pattern = Pattern.compile(emailPattern);
+		
+		matcher = pattern.matcher(email);
+		
+		if( matcher != null )
+			return matcher.matches();
+		else
+			return false;
 	}
 	
 	/***
