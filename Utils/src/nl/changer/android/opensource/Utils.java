@@ -17,6 +17,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -28,6 +30,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -364,6 +367,17 @@ public class Utils {
         return false;
     }
     
+	/***
+	 * Get the device unique id called IMEI.
+	 * Sometimes, this returns 00000000000000000 for the rooted devices.
+	 * ***/
+	public String getDeviceImei() {
+		
+		TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+		return tm.getDeviceId();
+
+	}
+    
     /***
      * Share an application over the social network like Facebook, Twitter etc.
      * @param sharingMsg Message to be pre-populated when the 3rd party app dialog opens up.
@@ -479,5 +493,29 @@ public class Utils {
 			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
 		}
 	}
+    
+	public boolean isDatabasePresent(String packageName, String dbName) {
+        SQLiteDatabase checkDB = null;
+        try {
+            checkDB = SQLiteDatabase.openDatabase( "/data/data/" + packageName + "/databases/" + dbName, null, SQLiteDatabase.OPEN_READONLY );
+            checkDB.close();
+        } catch (SQLiteException e) {
+            // database doesn't exist yet.
+        	e.printStackTrace();
+        	Log.e(TAG, "The database does not exist.");
+        } catch ( Exception e) {
+        	e.printStackTrace();
+        	Log.e(TAG, "Exception ");
+        }
+        
+        boolean isDbPresent = checkDB != null ? true : false;
+        
+/*        if(isDbPresent)
+        	Log.i(TAG, dbName + " database exists");
+        else
+        	Log.i(TAG, "Database DOES NOT exists");*/
+        
+        return isDbPresent;
+    }
 
 }
