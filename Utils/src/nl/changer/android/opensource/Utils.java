@@ -13,9 +13,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
@@ -336,6 +335,24 @@ public class Utils {
 		Log.v( TAG, "#getOSVersion osVersion: " + osVersion );
 		
 		return osVersion;
-	}	
+	}
+	
+/*	private void getGPSLocation() {
+		   
+		Location location = null;
+		
+		LocationManager mlocManager = (LocationManager) mContext.getSystemService( Context.LOCATION_SERVICE );  
+		LocationListener mlocListener = new CityCardLocationListener();
+         
+		
+		Location loc = mlocManager.getLastKnownLocation( LocationManager.NETWORK_PROVIDER );
+		
+		Log.v( TAG, "#printGPSCoordinates lat: " + loc.getLatitude() + " lang: " + loc.getLongitude() );
+		
+        if ( mlocManager.isProviderEnabled( LocationManager.GPS_PROVIDER) ) {
+        	mlocManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+        } else
+        	Log.w( TAG, "GPS is TURNED OFF " );
+	}*/
 
 }

@@ -30,6 +30,10 @@ public class StorageManager {
 		mEditor.commit();
 	}
 	
+	public void setValue(String key, double value) {
+		setValue( key, Double.toString(value) );
+	}
+	
 	/****
 	 * Gets the value from the settings stored natively on the device.
 	 * @param defaultValue Default value for the key, if one is not found.
