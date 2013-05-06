@@ -6,13 +6,25 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Shader;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
@@ -21,10 +33,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
+
 
 public class Utils {
 	
@@ -33,7 +48,10 @@ public class Utils {
 	private Context mContext;
 	
 	ProgressDialog mProgressDialog;
-	
+
+	/***
+	 * @param ctx Activity Context. Any other context will break the app.
+	 * ***/
 	public Utils(Context ctx) {
 		mContext = ctx;
 	} 
@@ -270,7 +288,6 @@ public class Utils {
 		if( noListener == null ) {
 			noListener = new DialogInterface.OnClickListener() {
 				
-				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
 				}
@@ -337,22 +354,182 @@ public class Utils {
 		return osVersion;
 	}
 	
-/*	private void getGPSLocation() {
-		   
-		Location location = null;
+	
+    /**
+     * Checks if the service with the given name is currently running on the device.
+     * **/
+    public boolean isServiceRunning(String serviceName) {
+        ActivityManager manager = (ActivityManager) mContext.getSystemService(mContext.ACTIVITY_SERVICE);
+        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (service.service.getClassName().equals(serviceName)) {
+            	// Log.i(TAG, "#isServiceAlreadyRunning " + serviceName + " is already running.");
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+	/***
+	 * Get the device unique id called IMEI.
+	 * Sometimes, this returns 00000000000000000 for the rooted devices.
+	 * ***/
+	public String getDeviceImei() {
 		
-		LocationManager mlocManager = (LocationManager) mContext.getSystemService( Context.LOCATION_SERVICE );  
-		LocationListener mlocListener = new CityCardLocationListener();
-         
+		TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+		return tm.getDeviceId();
+
+	}
+    
+    /***
+     * Share an application over the social network like Facebook, Twitter etc.
+     * @param sharingMsg Message to be pre-populated when the 3rd party app dialog opens up.
+     * @param emailSubject Message that shows up as a subject while sharing through email.
+     * @param title Title of the sharing options prompt. For e.g. "Share via" or "Share using"
+     * ***/
+	public void share(String sharingMsg, String emailSubject, String title) {
+		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
 		
-		Location loc = mlocManager.getLastKnownLocation( LocationManager.NETWORK_PROVIDER );
+		sharingIntent.setType("text/plain");
+		sharingIntent.putExtra(Intent.EXTRA_TEXT, sharingMsg);
+		sharingIntent.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
 		
-		Log.v( TAG, "#printGPSCoordinates lat: " + loc.getLatitude() + " lang: " + loc.getLongitude() );
+		mContext.startActivity( Intent.createChooser( sharingIntent, title ) );
+	}
+    
+    /***
+     * Check the type of data connection that is currently available on
+     * the device. 
+     * @return <code>ConnectivityManager.TYPE_*</code> as a type of
+     * internet connection on the device. Returns -1 in case of error or none of 
+     * <code>ConnectivityManager.TYPE_*</code> is found.
+     * ***/
+	public int getDataConnectionType() {
 		
-        if ( mlocManager.isProviderEnabled( LocationManager.GPS_PROVIDER) ) {
-        	mlocManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
-        } else
-        	Log.w( TAG, "GPS is TURNED OFF " );
-	}*/
+		ConnectivityManager connMgr =  (ConnectivityManager) mContext.getSystemService( Context.CONNECTIVITY_SERVICE );
+		
+		if( connMgr != null && connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null ) {
+			if ( connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected() )
+	        	return ConnectivityManager.TYPE_MOBILE;
+	        
+	        if ( connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() )
+	        	return ConnectivityManager.TYPE_WIFI;
+	        else
+	        	return -1;
+		}else
+			return -1;
+	}
+	
+	/***
+	 * Checks if the input parameter is a valid email.
+	 * ***/
+	public boolean isValidEmail(String email) {
+		final String emailPattern = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+		Matcher matcher;
+		Pattern pattern = Pattern.compile(emailPattern);
+		
+		matcher = pattern.matcher(email);
+		
+		if( matcher != null )
+			return matcher.matches();
+		else
+			return false;
+	}
+	
+	/***
+	 * Capitalize a each word in the string.
+	 * ***/
+	public static String capitalizeString(String string) {
+	  char[] chars = string.toLowerCase().toCharArray();
+	  boolean found = false;
+	  for (int i = 0; i < chars.length; i++) {
+	    if (!found && Character.isLetter(chars[i])) {
+	      chars[i] = Character.toUpperCase(chars[i]);
+	      found = true;
+	    } else if (Character.isWhitespace(chars[i]) || chars[i]=='.' || chars[i]=='\'') { // You can add other chars here
+	      found = false;
+	    }
+	  }
+	  return String.valueOf(chars);
+	}
+	
+    /***
+     * 
+     * ***/
+	public void tileBackground(int layoutIdOfRootView, int resIdOfTile) {
+    	
+    	try {
+    		//Tiling the background.
+        	Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), resIdOfTile);
+        	// deprecated constructor call
+            // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+        	BitmapDrawable bitmapDrawable = new BitmapDrawable( mContext.getResources(), bmp);
+            bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+            View view = ((Activity) mContext).findViewById( layoutIdOfRootView );
+            
+            if( view != null )
+            	setBackground( view, bitmapDrawable);
+            		
+		} catch (Exception e) {
+			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
+		}
+	}
+	
+	/***
+	 * Sets the passed-in drawable parameter as a background to the 
+	 * passed in target parameter in an SDK independent way. This
+	 * is the recommended way of setting background rather
+	 * than using native background setters provided by {@link View}
+	 * class 
+	 * 
+	 * @param target View to set background to.
+	 * @param drawable background image
+	 * ***/
+	@SuppressLint("NewApi")
+	public void setBackground(View target, Drawable drawable) {
+		if( Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+    		target.setBackgroundDrawable(drawable);
+    	} else {
+    		target.setBackground(drawable);
+    	}
+	}
+    
+    public void tileBackground(int layoutId, View viewToTileBg, int resIdOfTile) {
+    	
+    	try {
+            //Tiling the background.
+        	Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), resIdOfTile);
+        	// deprecated constructor
+            // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+        	BitmapDrawable bitmapDrawable = new BitmapDrawable( mContext.getResources(), bmp);
+            bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+            View view = viewToTileBg.findViewById(layoutId);
+            
+            if( view != null )
+            	setBackground(view, bitmapDrawable);
+            
+		} catch (Exception e) {
+			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
+		}
+	}
+    
+	public boolean isDatabasePresent(String packageName, String dbName) {
+        SQLiteDatabase checkDB = null;
+        try {
+            checkDB = SQLiteDatabase.openDatabase( "/data/data/" + packageName + "/databases/" + dbName, null, SQLiteDatabase.OPEN_READONLY );
+            checkDB.close();
+        } catch (SQLiteException e) {
+            // database doesn't exist yet.
+        	e.printStackTrace();
+        	Log.e(TAG, "The database does not exist.");
+        } catch ( Exception e) {
+        	e.printStackTrace();
+        	Log.e(TAG, "Exception ");
+        }
+        
+        boolean isDbPresent = checkDB != null ? true : false;
+        
+        return isDbPresent;
+    }
 
 }
