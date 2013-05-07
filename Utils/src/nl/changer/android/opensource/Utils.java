@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
@@ -31,8 +32,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -334,8 +337,6 @@ public class Utils {
 			e.printStackTrace();
 		}
 		
-		Log.v( TAG, "#getApplicationVersionCode versionCode: " + versionCode );
-		
 		return versionCode;
 	}
 	
@@ -345,13 +346,7 @@ public class Utils {
 	 ***/
 	public String getOSVersion() {
 		
-		String osVersion = null;
-		
-		osVersion = Build.VERSION.RELEASE;
-		
-		Log.v( TAG, "#getOSVersion osVersion: " + osVersion );
-		
-		return osVersion;
+		return Build.VERSION.RELEASE;
 	}
 	
 	
@@ -531,5 +526,36 @@ public class Utils {
         
         return isDbPresent;
     }
+	
+	/***
+	 * Get the file path from the MediaStore.Images.Media Content URI
+	 * 
+	 * @param mediaContentUri Content URI pointing to a row of {@link MediaStore.Images.Media}
+	 * ***/
+	public String getRealPathFromURI(Uri mediaContentUri) {
 
+		Cursor cur = null;
+		String path = null;
+		
+		try {
+			String[] proj = { MediaStore.Images.Media.DATA };
+	        cur = mContext.getContentResolver().query( mediaContentUri, proj, null, null, null );
+	        
+	        if( cur != null && cur.getCount() != 0 ) {
+	        	cur.moveToFirst();	
+	        }
+	        
+	        path = cur.getString( cur.getColumnIndexOrThrow(MediaStore.Images.Media.DATA) );
+	        
+	        // Log.v( TAG, "#getRealPathFromURI Path: " + path );
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if( cur != null && cur.isClosed() )
+				cur.close();
+		}
+        
+        return path;
+    }
+	
 }
