@@ -17,6 +17,9 @@ public class GlobalConstants {
 	public static final int ERROR_NETWORK_TIMEOUT = 2;
 	
 	public static final String KEY_ACCESS_TOKEN = "access_token";
+	
+	public static final String KEY_AUTH_TOKEN = "auth_token";
+	
 	/****
 	 * Heroku dis-allowed custom headers without X in them.
 	 * So we started sending both of them to the server.

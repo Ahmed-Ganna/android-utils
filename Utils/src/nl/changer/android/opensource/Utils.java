@@ -6,8 +6,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -557,5 +562,26 @@ public class Utils {
         
         return path;
     }
+	
+	public static ArrayList<String> toStringArray( JSONArray jsonArr ) {
+		
+		if( jsonArr == null || jsonArr.length() == 0 )
+			return null;
+		
+		ArrayList<String> stringArray = new ArrayList<String>();
+		JSONArray jsonArray = new JSONArray();
+		for(int i = 0, count = jsonArray.length(); i< count; i++) {
+		    try {
+		        JSONObject jsonObject = jsonArray.getJSONObject(i);
+		        stringArray.add(jsonObject.toString());
+		    } catch (JSONException e) {
+		        e.printStackTrace();
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+		
+		return stringArray;
+	}
 	
 }
