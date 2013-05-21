@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -569,11 +570,11 @@ public class Utils {
 			return null;
 		
 		ArrayList<String> stringArray = new ArrayList<String>();
-		JSONArray jsonArray = new JSONArray();
-		for(int i = 0, count = jsonArray.length(); i< count; i++) {
+		
+		for(int i = 0, count = jsonArr.length(); i< count; i++) {
 		    try {
-		        JSONObject jsonObject = jsonArray.getJSONObject(i);
-		        stringArray.add(jsonObject.toString());
+		        String str = jsonArr.getString(i);
+		        stringArray.add(str);
 		    } catch (JSONException e) {
 		        e.printStackTrace();
 		    } catch (Exception e) {
@@ -581,7 +582,19 @@ public class Utils {
 		    }
 		}
 		
+		// Log.v( TAG, "#toStringArray stringArr: " + stringArray );
+		
 		return stringArray;
 	}
 	
+	public static JSONArray toJSONArray(ArrayList<String> stringArr) {
+		JSONArray jsonArr = new JSONArray();
+		
+		for (int i = 0; i < stringArr.size(); i++) {
+			String value = stringArr.get(i);
+			jsonArr.put(value);	
+		}
+		
+		return jsonArr;
+	}
 }
