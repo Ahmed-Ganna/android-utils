@@ -7,20 +7,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,11 +27,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Shader;
-import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
@@ -54,7 +51,7 @@ public class Utils {
 	
 	private static final String TAG = Utils.class.getSimpleName();
 	
-	private Context mContext;
+	protected Context mContext;
 	
 	ProgressDialog mProgressDialog;
 
@@ -182,6 +179,7 @@ public class Utils {
 	
 	/***
 	 * Show a progress dialog with a spinning animation in it.
+	 * This method must preferably called from a UI thread.
 	 * 
 	 * @param title Title of the progress dialog
 	 * @param body Body/Message to be shown in the progress dialog
@@ -468,7 +466,9 @@ public class Utils {
             bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
             View view = ((Activity) mContext).findViewById( layoutIdOfRootView );
             
-            if( view != null )
+            if( view == null )
+            	throw new NullPointerException("View to which the tile has to be applied should not be null");
+            else
             	setBackground( view, bitmapDrawable);
             		
 		} catch (Exception e) {
