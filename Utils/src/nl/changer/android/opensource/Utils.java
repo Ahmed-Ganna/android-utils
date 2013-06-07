@@ -3,9 +3,13 @@ package nl.changer.android.opensource;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -596,5 +600,35 @@ public class Utils {
 		}
 		
 		return jsonArr;
+	}
+	
+	/***
+	 * Writes the given image to the external storage of the device.
+	 * @return Path of the image file that has been written.
+	 * ***/
+	public static String writeImage(byte[] imageData) {
+		
+		OutputStream imageFileOS;
+		
+		File dir = new File ( Environment.getExternalStorageDirectory() + "/temp/data" );
+		dir.mkdirs();
+		File f = new File( dir, "photograph.jpeg" );
+
+		try {
+		   imageFileOS = new FileOutputStream(f);
+		   imageFileOS.write(imageData);
+		   imageFileOS.flush();
+		   imageFileOS.close();
+		} catch ( FileNotFoundException e ) {
+			e.printStackTrace();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+		
+		String filePath = f.getAbsolutePath();
+		
+		return filePath;
 	}
 }

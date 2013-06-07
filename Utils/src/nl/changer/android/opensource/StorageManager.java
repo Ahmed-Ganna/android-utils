@@ -34,6 +34,10 @@ public class StorageManager {
 		setValue( key, Double.toString(value) );
 	}
 	
+/*	public void setValue(String key, Boolean value) {
+		setValue( key, value.toString() );
+	}*/
+	
 	/****
 	 * Gets the value from the settings stored natively on the device.
 	 * @param defaultValue Default value for the key, if one is not found.
