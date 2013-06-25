@@ -1,5 +1,6 @@
 /***
- * Collection of key names that can be used anywhere like JSON parsing of JSON has those keys, native storage in key-values etc.
+ * Collection of key names that can be used anywhere like 
+ * JSON parsing of JSON has those keys, native storage in key-values etc.
  * ***/
 
 package nl.changer;
@@ -26,9 +27,14 @@ public class GlobalConstants {
 	 * */
 	public static final String KEY_X_ACCESS_TOKEN = "X-Access-Token";
 	
+	public static final String KEY_X_AUTH_TOKEN = "X-Auth-Token";
+	
 	public static final String KEY_TOKEN = "token";
 	public static final String KEY_USERNAME = "username";
 	public static final String KEY_NAME = "name";
 	
 	public static final String NEW_LINE = "\n";
+	
+	public static final int SUCCESS = 1;
+	public static final int FAIL = 0;
 }

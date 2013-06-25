@@ -50,7 +50,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-
 public class Utils {
 	
 	private static final String TAG = Utils.class.getSimpleName();
@@ -326,7 +325,7 @@ public class Utils {
 			e.printStackTrace();
 		}
 		
-		Log.v( TAG, "#getApplicationVersionNumber versionName: " + versionName );
+		// Log.v( TAG, "#getApplicationVersionNumber versionName: " + versionName );
 		
 		return versionName;
 	}
@@ -610,7 +609,7 @@ public class Utils {
 		
 		OutputStream imageFileOS;
 		
-		File dir = new File ( Environment.getExternalStorageDirectory() + "/temp/data" );
+		File dir = new File ( Environment.getExternalStorageDirectory() + "/atemp" );
 		dir.mkdirs();
 		File f = new File( dir, "photograph.jpeg" );
 
