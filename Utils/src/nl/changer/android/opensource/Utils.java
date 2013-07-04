@@ -1,6 +1,7 @@
 package nl.changer.android.opensource;
 
 import java.io.BufferedReader;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,6 +27,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -54,7 +57,7 @@ public class Utils {
 	
 	private static final String TAG = Utils.class.getSimpleName();
 	
-	protected Context mContext;
+	protected static Context mContext;
 	
 	ProgressDialog mProgressDialog;
 
@@ -315,7 +318,7 @@ public class Utils {
 	 * Gets the version name of the application.
 	 * For e.g. 1.9.3
 	 * ***/
-	public String getApplicationVersionNumber() {
+	public static String getApplicationVersionNumber() {
 		
 		String versionName = null;
 		
@@ -351,8 +354,7 @@ public class Utils {
 	 * Get the version number of the Android OS
 	 * For e.g. 2.3.4 or 4.1.2
 	 ***/
-	public String getOSVersion() {
-		
+	public static String getOSVersion() {	
 		return Build.VERSION.RELEASE;
 	}
 	
@@ -629,5 +631,23 @@ public class Utils {
 		String filePath = f.getAbsolutePath();
 		
 		return filePath;
+	}
+	
+	/***
+	 * Get the name of the application that has been defined in AndroidManifest.xml
+	 * ***/
+	public static String getApplicationName() {
+		final PackageManager packageMgr = mContext.getPackageManager();
+		ApplicationInfo appInfo;
+		
+		try {
+		    appInfo = packageMgr.getApplicationInfo( mContext.getPackageName(), PackageManager.SIGNATURE_MATCH );
+		} catch (final NameNotFoundException e) {
+		    appInfo = null;
+		}
+		
+		final String applicationName = (String) (appInfo != null ? packageMgr.getApplicationLabel(appInfo) : "(unknown)");
+		
+		return applicationName;
 	}
 }
