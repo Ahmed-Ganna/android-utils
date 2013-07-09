@@ -42,6 +42,7 @@ public class GlobalConstants {
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_DESCRIPTION = "description";
 	public static final String KEY_URL = "url";
+	public static final String KEY_DATA = "data";
 	
 	public static final String NEW_LINE = "\n";
 	

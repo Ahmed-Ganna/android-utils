@@ -138,6 +138,7 @@ public class NetworkManager {
 		} 
 		
 		conn.setRequestProperty( HTTP.CONTENT_TYPE, MimeType.APPLICATION_FORM_URLENCODED);
+		conn.setRequestProperty("Accept", MimeType.APPLICATION_JSON);
 		conn.setRequestProperty("Accept-Charset", "UTF-8");
 		conn.setRequestProperty(HTTP.USER_AGENT,"Mozilla/5.0 ( compatible ) ");
 		conn.setRequestProperty("charset", "utf-8");
