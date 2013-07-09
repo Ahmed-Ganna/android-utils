@@ -33,6 +33,15 @@ public class GlobalConstants {
 	public static final String KEY_USERNAME = "username";
 	public static final String KEY_PASSWORD = "password";
 	public static final String KEY_NAME = "name";
+	public static final String KEY_ID = "id";
+	public static final String KEY_SMALL = "small";
+	public static final String KEY_FIRST_NAME = "first_name";
+	public static final String KEY_LAST_NAME = "last_name";
+	public static final String KEY_EMAIL = "email";
+	public static final String KEY_PICTURE = "picture";
+	public static final String KEY_TITLE = "title";
+	public static final String KEY_DESCRIPTION = "description";
+	public static final String KEY_URL = "url";
 	
 	public static final String NEW_LINE = "\n";
 	
