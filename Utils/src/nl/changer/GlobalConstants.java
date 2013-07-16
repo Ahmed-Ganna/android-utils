@@ -29,6 +29,7 @@ public class GlobalConstants {
 	
 	public static final String KEY_X_AUTH_TOKEN = "X-Auth-Token";
 	
+	public static final String KEY_AUTHOR = "author";
 	public static final String KEY_TOKEN = "token";
 	public static final String KEY_USERNAME = "username";
 	public static final String KEY_PASSWORD = "password";
@@ -43,6 +44,11 @@ public class GlobalConstants {
 	public static final String KEY_DESCRIPTION = "description";
 	public static final String KEY_URL = "url";
 	public static final String KEY_DATA = "data";
+	public static final String KEY_COUNT = "count";
+	public static final String KEY_RESULTS = "results";
+	public static final String KEY_POST = "post";
+	public static final String KEY_BODY = "body";
+	public static final String KEY_PHOTO_URL = "photo_url";
 	
 	public static final String NEW_LINE = "\n";
 	

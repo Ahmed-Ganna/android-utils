@@ -24,7 +24,7 @@ public class NetworkManager {
 	 * 
 	 * @throws NullPointerException If input parameter inputstream is null
 	 * **/
-	protected byte[] readStreamToBytes(InputStream inputStream) {
+	public byte[] readStreamToBytes(InputStream inputStream) {
 		
 		if( inputStream == null )
 			throw new NullPointerException("InputStream is null");
@@ -75,7 +75,7 @@ public class NetworkManager {
 	 * 
 	 * @throws NullPointerException If input parameter inputstream is null
 	 * **/
-	protected String readStream(InputStream inputStream) {
+	public String readStream(InputStream inputStream) {
 		
 		if( inputStream == null )
 			throw new NullPointerException("InputStream is null");
@@ -120,7 +120,7 @@ public class NetworkManager {
 	 * Send a GET request. This method must be called from
 	 * a non-UI thread.
 	 * ***/
-	protected void executeHttpGet(HttpURLConnection conn) {
+	public void executeHttpGet(HttpURLConnection conn) {
 		
 		// caution, doing setDoOutput = true will convert
 		// this GET request into a POST request and you will
@@ -138,10 +138,40 @@ public class NetworkManager {
 		} 
 		
 		conn.setRequestProperty( HTTP.CONTENT_TYPE, MimeType.APPLICATION_FORM_URLENCODED);
-		conn.setRequestProperty("Accept", MimeType.APPLICATION_JSON);
 		conn.setRequestProperty("Accept-Charset", "UTF-8");
 		conn.setRequestProperty(HTTP.USER_AGENT,"Mozilla/5.0 ( compatible ) ");
 		conn.setRequestProperty("charset", "utf-8");
+  		conn.setUseCaches(false);
+	}
+	
+	/***
+	 * Send a GET request. This method must be called from
+	 * a non-UI thread.
+	 * 
+	 * @param conn Connection object instance
+	 * @param acceptHeader value for standard 'Accept' header in the request
+	 * ***/
+	public void executeHttpGet( HttpURLConnection conn, String acceptHeader ) {
+		
+		// caution, doing setDoOutput = true will convert
+		// this GET request into a POST request and you will
+		// end up debuggin for long time.
+		conn.setDoInput(true);
+		conn.setInstanceFollowRedirects(true);
+		
+		try {
+			conn.setRequestMethod(HttpGet.METHOD_NAME);
+		} catch ( ProtocolException e ) {
+			e.printStackTrace();
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		} 
+		
+		conn.setRequestProperty( HTTP.CONTENT_TYPE, MimeType.APPLICATION_FORM_URLENCODED);
+		conn.setRequestProperty( "Accept", acceptHeader);
+		conn.setRequestProperty( "Accept-Charset", "UTF-8");
+		conn.setRequestProperty( HTTP.USER_AGENT,"Mozilla/5.0 ( compatible ) ");
+		conn.setRequestProperty( "charset", "utf-8");
   		conn.setUseCaches(false);
 	}
 	
