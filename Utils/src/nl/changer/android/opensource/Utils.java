@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -192,9 +195,13 @@ public class Utils {
 	 * @param isCancellable True if the dialog can be cancelled on back button press, false otherwise
 	 ***/
 	public void showProgressDialog(String title, String body, boolean isCancellable) {
-		mProgressDialog = ProgressDialog.show( mContext, title, body, true );
-		mProgressDialog.setIcon(null);
-		mProgressDialog.setCancelable( isCancellable );
+		
+		if( !((Activity) mContext).isFinishing() ) {
+			Log.v(TAG, "#onClick isFinishing: " + ((Activity) mContext).isFinishing() );
+			mProgressDialog = ProgressDialog.show( mContext, title, body, true );
+			mProgressDialog.setIcon(null);
+			mProgressDialog.setCancelable( isCancellable );	
+		}
 	}
 
 	/***
@@ -649,5 +656,23 @@ public class Utils {
 		final String applicationName = (String) (appInfo != null ? packageMgr.getApplicationLabel(appInfo) : "(unknown)");
 		
 		return applicationName;
+	}
+	
+	/****
+	 * Returns the URL without the query string
+	 ****/
+	public static URL getPathFromUrl( URL url ) {
+		
+		if( url != null ) {
+			String urlStr = url.toString();
+			String urlWithoutQueryString = urlStr.split("\\?")[0];
+			try {
+				return new URL(urlWithoutQueryString);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
 	}
 }

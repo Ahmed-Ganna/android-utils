@@ -49,9 +49,25 @@ public class GlobalConstants {
 	public static final String KEY_POST = "post";
 	public static final String KEY_BODY = "body";
 	public static final String KEY_PHOTO_URL = "photo_url";
+	public static final String KEY_THUMBNAILS = "thumbnails";
+	public static final String KEY_START_DATE = "start_date";
+	public static final String KEY_END_DATE = "end_date";
+	public static final String KEY_LOCATION = "location";
+	public static final String KEY_ANSWER = "answer";
 	
 	public static final String NEW_LINE = "\n";
 	
 	public static final int SUCCESS = 1;
 	public static final int FAIL = 0;
+	
+	/***
+	 * Constant indicating that the resource like comments, photos etc
+	 * was FOUND on the server.
+	 * ***/
+	public static final int SUCCESS_RESOURCE_FOUND = 1;
+	/***
+	 * Constant indicating that the resource like comments, photos etc
+	 * was FOUND on the server.
+	 * ***/
+	public static final int SUCCESS_RESOURCE_NOT_FOUND = 2;
 }
