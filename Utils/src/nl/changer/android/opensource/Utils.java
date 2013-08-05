@@ -11,10 +11,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +50,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.ParseException;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -69,7 +75,7 @@ public class Utils {
 	 * ***/
 	public Utils(Context ctx) {
 		mContext = ctx;
-	} 
+	}
 	
 	/***
 	 * Shows the message passed in the parameter in the Toast.
@@ -614,13 +620,26 @@ public class Utils {
 	 * Writes the given image to the external storage of the device.
 	 * @return Path of the image file that has been written.
 	 * ***/
-	public static String writeImage(byte[] imageData) {
+	public static String writeImage( byte[] imageData ) {
+		final String FILE_NAME = "photograph.jpeg";
+		final String DIR_NAME = "atemp";
 		
+		String filePath = null;
+		File dir = null;
 		OutputStream imageFileOS;
 		
-		File dir = new File ( Environment.getExternalStorageDirectory() + "/atemp" );
+		String state = Environment.getExternalStorageState();
+		
+		 if( Environment.MEDIA_MOUNTED.equals(state) ) {
+			dir = new File ( Environment.getExternalStorageDirectory() + "/" + DIR_NAME );
+	    } else {
+	    	// media is removed, unmounted etc
+	    	// Store image in /data/data/<package-name>/cache/atemp/photograph.jpeg
+	    	dir = new File ( mContext.getCacheDir() + "/" + DIR_NAME );
+	    }
+		
 		dir.mkdirs();
-		File f = new File( dir, "photograph.jpeg" );
+		File f = new File( dir, FILE_NAME );
 
 		try {
 		   imageFileOS = new FileOutputStream(f);
@@ -635,7 +654,7 @@ public class Utils {
 			e.printStackTrace();
 		}
 		
-		String filePath = f.getAbsolutePath();
+		filePath = f.getAbsolutePath();
 		
 		return filePath;
 	}
@@ -675,4 +694,38 @@ public class Utils {
 		
 		return null;
 	}
+	
+	/** Transform Calendar to ISO 8601 string. */
+    public static String fromCalendar(final Calendar calendar) {
+        Date date = calendar.getTime();
+        String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+            .format(date);
+        return formatted.substring(0, 22) + ":" + formatted.substring(22);
+    }
+
+    /** Get current date and time formatted as ISO 8601 string. */
+    public static String now() {
+        return fromCalendar(GregorianCalendar.getInstance());
+    }
+
+    /** Transform ISO 8601 string to Calendar. */
+    public static Calendar toCalendar(final String iso8601string)
+            throws ParseException {
+        Calendar calendar = GregorianCalendar.getInstance();
+        String s = iso8601string.replace("Z", "+00:00");
+        try {
+            s = s.substring(0, 22) + s.substring(23);
+        } catch (IndexOutOfBoundsException e) {
+            throw new org.apache.http.ParseException();
+        }
+        
+        Date date = null;
+		try {
+			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(s);
+		} catch (java.text.ParseException e) {
+			e.printStackTrace();
+		}
+        calendar.setTime(date);
+        return calendar;
+    }
 }

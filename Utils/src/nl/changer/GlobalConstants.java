@@ -21,7 +21,7 @@ public class GlobalConstants {
 	
 	public static final String KEY_AUTH_TOKEN = "auth_token";
 	
-	/****
+	/****ANSWER
 	 * Heroku dis-allowed custom headers without X in them.
 	 * So we started sending both of them to the server.
 	 * */
@@ -54,6 +54,10 @@ public class GlobalConstants {
 	public static final String KEY_END_DATE = "end_date";
 	public static final String KEY_LOCATION = "location";
 	public static final String KEY_ANSWER = "answer";
+	public static final String KEY_NEXT = "next";
+	public static final String KEY_PARENT = "parent";
+	public static final String KEY_SUBSCRIPTIONS = "subscriptions";
+	public static final String KEY_USER = "user";
 	
 	public static final String NEW_LINE = "\n";
 	
