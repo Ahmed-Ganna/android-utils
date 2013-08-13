@@ -737,7 +737,15 @@ public class Utils {
     	
     	StringBuffer sbDate = new StringBuffer();
     	sbDate.append(eventTime);
-    	String newDate = sbDate.substring(0, 19).toString();
+    	String newDate = null;
+    	
+    	try {
+    		newDate = sbDate.substring(0, 19).toString();	
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    	
     	String rDate = newDate.replace( "T", " " );
     	String nDate = rDate.replaceAll( "-", "/" );
     	
