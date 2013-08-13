@@ -58,6 +58,7 @@ public class GlobalConstants {
 	public static final String KEY_PARENT = "parent";
 	public static final String KEY_SUBSCRIPTIONS = "subscriptions";
 	public static final String KEY_USER = "user";
+	public static final String KEY_LEVEL = "level";
 	
 	public static final String NEW_LINE = "\n";
 	
