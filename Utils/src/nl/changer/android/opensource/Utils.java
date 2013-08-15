@@ -78,6 +78,10 @@ public class Utils {
 	}
 	
 	/***
+	 * @deprecated
+	 * This medhod has been deprecated. User its static counterpart
+	 * instead.
+	 * 
 	 * Shows the message passed in the parameter in the Toast.
 	 * 
 	 * @param msg Message to be show in the toast. 
@@ -85,6 +89,18 @@ public class Utils {
 	public void showToast(String msg) {
 	    Toast toast = Toast.makeText( mContext, msg, Toast.LENGTH_SHORT );
 	    toast.show();
+	}
+
+	/***
+	 * Shows the message passed in the parameter in the Toast.
+	 * 
+	 * @param msg Message to be show in the toast.
+	 * @return Toast object just shown 
+	 * ***/
+	public static Toast showToast( CharSequence msg ) {
+	    Toast toast = Toast.makeText( mContext, msg, Toast.LENGTH_SHORT );
+	    toast.show();
+	    return toast;
 	}
 	
 	/***
