@@ -48,6 +48,9 @@ import android.graphics.Canvas;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.ParseException;
@@ -786,5 +789,53 @@ public class Utils {
     	}
     	
     	return elapsed;
+	}
+    
+    
+    /***
+     * Set Mock Location for test device.
+     * DDMS cannot be used to mock location on a device.
+     * So this method should be used which forces the GPS Provider
+     * to mock the location on an actual device.
+     * ***/
+    public static void setMockLocation( Context ctx ) {
+	    LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE); 
+	    // locationManager.removeTestProvider( LocationManager.GPS_PROVIDER );
+	    
+	    locationManager.addTestProvider (
+	      LocationManager.GPS_PROVIDER,
+	      "requiresNetwork" == "",
+	      "requiresSatellite" == "",
+	      "requiresCell" == "",
+	      "hasMonetaryCost" == "",
+	      "supportsAltitude" == "",
+	      "supportsSpeed" == "",
+	      "supportsBearing" == "",
+
+	      android.location.Criteria.POWER_LOW,
+	      android.location.Criteria.ACCURACY_FINE );
+
+	    Location newLocation = new Location(LocationManager.GPS_PROVIDER);
+
+	    newLocation.setLatitude ( 91.1 );
+	    newLocation.setLongitude( 92.2 );
+
+	    newLocation.setAccuracy( 500 );
+
+	    locationManager.setTestProviderEnabled( LocationManager.GPS_PROVIDER, true );
+
+	    locationManager.setTestProviderStatus
+	    (
+	       LocationManager.GPS_PROVIDER,
+	       LocationProvider.AVAILABLE,
+	       null,
+	       System.currentTimeMillis()
+	    );      
+
+	    locationManager.setTestProviderLocation
+	    (
+	      LocationManager.GPS_PROVIDER, 
+	      newLocation
+	    );      
 	}
 }

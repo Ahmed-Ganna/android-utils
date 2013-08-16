@@ -34,6 +34,11 @@ public class StorageManager {
 		setValue( key, Double.toString(value) );
 	}
 	
+	public void setValue( String key, long value ) {
+		mEditor.putLong( key, value );
+		mEditor.commit();
+	}
+	
 /*	public void setValue(String key, Boolean value) {
 		setValue( key, value.toString() );
 	}*/
@@ -50,10 +55,18 @@ public class StorageManager {
 		return value;
 	}
 	
-	public int getIntValue(String key, int defaultValue) {
+	public int getIntValue( String key, int defaultValue ) {
 		int value = defaultValue;
 		
-		value = mSettings.getInt(key, defaultValue);
+		value = mSettings.getInt( key, defaultValue );
+		
+		return value;
+	}
+	
+	public long getLongValue( String key, long defaultValue ) {
+		long value = defaultValue;
+		
+		value = mSettings.getLong( key, defaultValue );
 		
 		return value;
 	}
