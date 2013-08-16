@@ -853,11 +853,11 @@ public class Utils {
     
     /***
      * Set Mock Location for test device.
-     * DDMS cannot be used to mock location on a device.
+     * DDMS cannot be used to mock location on an actual device.
      * So this method should be used which forces the GPS Provider
      * to mock the location on an actual device.
      * ***/
-    public static void setMockLocation( Context ctx ) {
+    public static void setMockLocation( Context ctx, double longitude, double latitude ) {
 	    LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE); 
 	    // locationManager.removeTestProvider( LocationManager.GPS_PROVIDER );
 	    
@@ -874,10 +874,10 @@ public class Utils {
 	      android.location.Criteria.POWER_LOW,
 	      android.location.Criteria.ACCURACY_FINE );
 
-	    Location newLocation = new Location(LocationManager.GPS_PROVIDER);
+	    Location newLocation = new Location( LocationManager.GPS_PROVIDER );
 
-	    newLocation.setLatitude ( 91.1 );
-	    newLocation.setLongitude( 92.2 );
+	    newLocation.setLongitude( longitude );
+	    newLocation.setLatitude ( latitude );
 
 	    newLocation.setAccuracy( 500 );
 
