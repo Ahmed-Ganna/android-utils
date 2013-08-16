@@ -878,6 +878,7 @@ public class Utils {
 
 	    newLocation.setLongitude( longitude );
 	    newLocation.setLatitude ( latitude );
+	    newLocation.setTime( new Date().getTime() );
 
 	    newLocation.setAccuracy( 500 );
 
