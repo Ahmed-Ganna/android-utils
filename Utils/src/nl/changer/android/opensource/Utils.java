@@ -71,7 +71,7 @@ public class Utils {
 	
 	protected static Context mContext;
 	
-	ProgressDialog mProgressDialog;
+	static ProgressDialog mProgressDialog;
 
 	/***
 	 * @param ctx Activity Context. Any other context will break the app.
@@ -83,16 +83,35 @@ public class Utils {
 	/***
 	 * Shows the message passed in the parameter in the Toast.
 	 * 
-	 * @param msg Message to be show in the toast. 
+	 * @param msg Message to be show in the toast.
+	 * 
+	 * @deprecated
+	 * This method has been deprecated. Use its static counterpart
+	 * instead.
 	 * ***/
 	public void showToast(String msg) {
 	    Toast toast = Toast.makeText( mContext, msg, Toast.LENGTH_SHORT );
 	    toast.show();
 	}
+
+	/***
+	 * Shows the message passed in the parameter in the Toast.
+	 * 
+	 * @param msg Message to be show in the toast.
+	 * @return Toast object just shown 
+	 * ***/
+	public static Toast showToast( Context ctx, CharSequence msg ) {
+	    Toast toast = Toast.makeText( ctx, msg, Toast.LENGTH_SHORT );
+	    toast.show();
+	    return toast;
+	}
 	
 	/***
 	 * Checks if the Internet connection is available.
 	 * @return Returns true if the Internet connection is available. False otherwise.
+	 * 
+	 * @deprecated
+	 * This method has been deprecated. Use {@link Utils#isInternetAvailable()} instead.
 	 * **/
 	public boolean isNetworkAvailable() {
 	    ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService( Context.CONNECTIVITY_SERVICE );
@@ -109,21 +128,54 @@ public class Utils {
 	}
 	
 	/***
-	 * Checks if the SD Card is mounted on the device.
-	 * ***/
-	public boolean isSDCARDMounted() {
-	    String status = Environment.getExternalStorageState();
-	    if( status.equals(Environment.MEDIA_MOUNTED) )
+	 * Checks if the Internet connection is available.
+	 * @return Returns true if the Internet connection is available. False otherwise.
+	 * **/
+	public static boolean isInternetAvailable( Context ctx ) {
+	    ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService( Context.CONNECTIVITY_SERVICE );
+	    
+	    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+	    
+	    // if network is NOT available networkInfo will be null
+	    // otherwise check if we are connected
+	    if( networkInfo != null && networkInfo.isConnected() ) {
 	        return true;
+	    }
+	    
 	    return false;
 	}
 	
 	/***
-	 * Show an alert dialog with the OK button.
+	 * Checks if the SD Card is mounted on the device.
+	 * 
+	 * @deprecated
+	 * This method has been deprecated. Use {@link Utils#isInternetAvailable()} instead.
+	 * ***/
+	/*public boolean isSDCARDMounted() {
+	    String status = Environment.getExternalStorageState();
+	    if( status.equals(Environment.MEDIA_MOUNTED) )
+	        return true;
+	    return false;
+	}*/
+	 
+	 /***
+	 * Checks if the SD Card is mounted on the device.
+	 * ***/
+	public static boolean isSDCARDMounted() {
+	    String status = Environment.getExternalStorageState();
+	    
+	    if( status.equals(Environment.MEDIA_MOUNTED) )
+	        return true;
+	    
+	    return false;
+	}
+	
+	/***
+	 * Shows an alert dialog with the OK button.
 	 * When the user presses OK button, the dialog dismisses.
 	 * ***/
-	public void showAlertDialog(String title, String body) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+	public static void showAlertDialog(Context ctx, String title, String body) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx)
 	    .setMessage(body)
 	    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int which) { 
@@ -139,8 +191,10 @@ public class Utils {
 	
 	/***
 	 * Serializes the Bitmap to Base64
+	 * 
+	 * @return Base64 string value of a {@linkplain Bitmap} passed in as a parameter
 	 * ***/
-	public String toBase64(Bitmap bitmap) {
+	public static String toBase64(Bitmap bitmap) {
 		String base64Bitmap = null;
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -155,7 +209,7 @@ public class Utils {
 	 * Converts the passed in drawable to Bitmap
 	 * representation
 	 * ***/
-	public Bitmap drawableToBitmap( Drawable drawable ) {
+	public static Bitmap drawableToBitmap( Drawable drawable ) {
 		
 		if( drawable == null ) {
 			throw new NullPointerException("Drawable to convert should NOT be null");
@@ -183,10 +237,10 @@ public class Utils {
 	 * Converts the given bitmap to {@linkplain InputStream}.
 	 * @throws NullPointerException If the parameter bitmap is null.
 	 * ***/
-	public InputStream bitmapToInputStream(Bitmap bitmap) throws NullPointerException {
+	public static InputStream bitmapToInputStream(Bitmap bitmap) throws NullPointerException {
 		
 		if( bitmap == null )
-			throw new NullPointerException("The value of the passed in bitmap cannot be null");
+			throw new NullPointerException( "Parameter bitmap cannot be null" );
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		bitmap.compress( Bitmap.CompressFormat.PNG, 100, baos );
@@ -203,10 +257,10 @@ public class Utils {
 	 * @param body Body/Message to be shown in the progress dialog
 	 * @param isCancellable True if the dialog can be cancelled on back button press, false otherwise
 	 ***/
-	public void showProgressDialog(String title, String body, boolean isCancellable) {
+	public static void showProgressDialog( Context ctx, String title, String body, boolean isCancellable ) {
 		
-		if( !((Activity) mContext).isFinishing() ) {
-			Log.v(TAG, "#onClick isFinishing: " + ((Activity) mContext).isFinishing() );
+		if( !((Activity) ctx).isFinishing() ) {
+			Log.v(TAG, "#onClick isFinishing: " + ((Activity) ctx).isFinishing() );
 			mProgressDialog = ProgressDialog.show( mContext, title, body, true );
 			mProgressDialog.setIcon(null);
 			mProgressDialog.setCancelable( isCancellable );	
@@ -216,7 +270,7 @@ public class Utils {
 	/***
 	 * Dismiss the progress dialog if it is visible.
 	 * **/
-	public void dismissProgressDialog() {
+	public static void dismissProgressDialog() {
 		
 		if( mProgressDialog != null )
 			mProgressDialog.dismiss();
@@ -225,8 +279,10 @@ public class Utils {
 	/***
 	 * Read the {@link InputStream} and convert the data received
 	 * into the {@link String}
+	 * 
+	 * TODO: This method should goto {@linkplain NetworkManager}
 	 * ***/
-	public String readStream( InputStream in ) {
+	public static String readStream( InputStream in ) {
 		StringBuffer data = null;
 		  BufferedReader reader = null;
 		  try {
@@ -270,9 +326,9 @@ public class Utils {
 	 * When dealing with the bitmaps of bigger size, this method must be called
 	 * from a non-UI thread.
 	 * ***/
-	public Bitmap scaleDownBitmap( Bitmap photo, int newHeight ) {
+	public static Bitmap scaleDownBitmap( Context ctx, Bitmap photo, int newHeight ) {
 
-		 final float densityMultiplier = getDensityMultiplier();        
+		 final float densityMultiplier = getDensityMultiplier(ctx);
 	
 		 int h = (int) ( newHeight * densityMultiplier );
 		 int w = (int) ( h * photo.getWidth() / ((double) photo.getHeight()) );
@@ -286,10 +342,10 @@ public class Utils {
 	
 	/***
 	 * Gives the device independent constant which can be used for scaling images,
-	 * manipulating view sizes and changing dimension etc.
+	 * manipulating view sizes and changing dimension and display pixels etc.
 	 * ***/
-	public float getDensityMultiplier() {
-		float densityMultiplier = mContext.getResources().getDisplayMetrics().density;
+	public static float getDensityMultiplier(Context ctx) {
+		float densityMultiplier = ctx.getResources().getDisplayMetrics().density;
 		return densityMultiplier;
 	}
 	
@@ -300,9 +356,9 @@ public class Utils {
 	 * 
 	 * @param message Message to be shown in the dialog.
 	 * ***/
-	public void showConfirmDialog(String message, DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener) {
+	public static void showConfirmDialog( Context ctx, String message, DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener ) {
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		
 		if( yesListener == null ) {
 			yesListener = new DialogInterface.OnClickListener() {
@@ -322,24 +378,23 @@ public class Utils {
 				}
 			};
 		}
-			
-			
-			builder.setMessage(message)
-			.setPositiveButton("Yes", yesListener)
-		    .setNegativeButton("No", noListener)
-		    .show();
+		
+		builder.setMessage(message)
+		.setPositiveButton("Yes", yesListener)
+	    .setNegativeButton("No", noListener)
+	    .show();
 	}
 
 	/***
 	 * Gets the version name of the application.
 	 * For e.g. 1.9.3
 	 * ***/
-	public static String getApplicationVersionNumber() {
+	public static String getApplicationVersionNumber( Context ctx ) {
 		
 		String versionName = null;
 		
 		try {
-			 versionName = mContext.getPackageManager().getPackageInfo( mContext.getPackageName(), 0 ).versionName;
+			 versionName = ctx.getPackageManager().getPackageInfo( ctx.getPackageName(), 0 ).versionName;
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -353,12 +408,12 @@ public class Utils {
 	 * Gets the version code of the application.
 	 * For e.g. Maverick Meerkat or 2013050301
 	 * ***/
-	public int getApplicationVersionCode() {
+	public static int getApplicationVersionCode( Context ctx ) {
 		
 		int versionCode = 0;
 		
 		try {
-			versionCode = mContext.getPackageManager().getPackageInfo( mContext.getPackageName(), 0 ).versionCode;
+			versionCode = ctx.getPackageManager().getPackageInfo( ctx.getPackageName(), 0 ).versionCode;
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -378,8 +433,8 @@ public class Utils {
     /**
      * Checks if the service with the given name is currently running on the device.
      * **/
-    public boolean isServiceRunning(String serviceName) {
-        ActivityManager manager = (ActivityManager) mContext.getSystemService(mContext.ACTIVITY_SERVICE);
+    public static boolean isServiceRunning( Context ctx, String serviceName ) {
+        ActivityManager manager = (ActivityManager) ctx.getSystemService( Context.ACTIVITY_SERVICE );
         for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (service.service.getClassName().equals(serviceName)) {
             	// Log.i(TAG, "#isServiceAlreadyRunning " + serviceName + " is already running.");
@@ -394,9 +449,9 @@ public class Utils {
 	 * Get the device unique id called IMEI.
 	 * Sometimes, this returns 00000000000000000 for the rooted devices.
 	 * ***/
-	public String getDeviceImei() {
+	public static String getDeviceImei( Context ctx ) {
 		
-		TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+		TelephonyManager tm = (TelephonyManager) ctx.getSystemService( Context.TELEPHONY_SERVICE );
 		return tm.getDeviceId();
 
 	}
@@ -407,14 +462,14 @@ public class Utils {
      * @param emailSubject Message that shows up as a subject while sharing through email.
      * @param title Title of the sharing options prompt. For e.g. "Share via" or "Share using"
      * ***/
-	public void share(String sharingMsg, String emailSubject, String title) {
+	public static void share( Context ctx, String sharingMsg, String emailSubject, String title ) {
 		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
 		
 		sharingIntent.setType("text/plain");
 		sharingIntent.putExtra(Intent.EXTRA_TEXT, sharingMsg);
 		sharingIntent.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
 		
-		mContext.startActivity( Intent.createChooser( sharingIntent, title ) );
+		ctx.startActivity( Intent.createChooser( sharingIntent, title ) );
 	}
     
     /***
@@ -424,9 +479,9 @@ public class Utils {
      * internet connection on the device. Returns -1 in case of error or none of 
      * <code>ConnectivityManager.TYPE_*</code> is found.
      * ***/
-	public int getDataConnectionType() {
+	public static int getDataConnectionType( Context ctx ) {
 		
-		ConnectivityManager connMgr =  (ConnectivityManager) mContext.getSystemService( Context.CONNECTIVITY_SERVICE );
+		ConnectivityManager connMgr =  (ConnectivityManager) ctx.getSystemService( Context.CONNECTIVITY_SERVICE );
 		
 		if( connMgr != null && connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null ) {
 			if ( connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected() )
@@ -436,14 +491,14 @@ public class Utils {
 	        	return ConnectivityManager.TYPE_WIFI;
 	        else
 	        	return -1;
-		}else
+		} else
 			return -1;
 	}
 	
 	/***
 	 * Checks if the input parameter is a valid email.
 	 * ***/
-	public boolean isValidEmail(String email) {
+	public static boolean isValidEmail( String email ) {
 		final String emailPattern = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 		Matcher matcher;
 		Pattern pattern = Pattern.compile(emailPattern);
@@ -459,33 +514,33 @@ public class Utils {
 	/***
 	 * Capitalize a each word in the string.
 	 * ***/
-	public static String capitalizeString(String string) {
+	public static String capitalizeString( String string ) {
 	  char[] chars = string.toLowerCase().toCharArray();
 	  boolean found = false;
-	  for (int i = 0; i < chars.length; i++) {
+	  for ( int i = 0; i < chars.length; i++ ) {
 	    if (!found && Character.isLetter(chars[i])) {
 	      chars[i] = Character.toUpperCase(chars[i]);
 	      found = true;
 	    } else if (Character.isWhitespace(chars[i]) || chars[i]=='.' || chars[i]=='\'') { // You can add other chars here
 	      found = false;
 	    }
-	  }
+	  }	// end for
 	  return String.valueOf(chars);
 	}
 	
     /***
      * 
      * ***/
-	public void tileBackground(int layoutIdOfRootView, int resIdOfTile) {
+	public static void tileBackground( Context ctx, int layoutIdOfRootView, int resIdOfTile ) {
     	
     	try {
     		//Tiling the background.
-        	Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), resIdOfTile);
+        	Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), resIdOfTile);
         	// deprecated constructor call
             // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
-        	BitmapDrawable bitmapDrawable = new BitmapDrawable( mContext.getResources(), bmp);
+        	BitmapDrawable bitmapDrawable = new BitmapDrawable( ctx.getResources(), bmp);
             bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-            View view = ((Activity) mContext).findViewById( layoutIdOfRootView );
+            View view = ((Activity) ctx).findViewById( layoutIdOfRootView );
             
             if( view == null )
             	throw new NullPointerException("View to which the tile has to be applied should not be null");
@@ -493,7 +548,7 @@ public class Utils {
             	setBackground( view, bitmapDrawable);
             		
 		} catch (Exception e) {
-			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
+			Log.w(TAG, "#tileBackground Exception while tiling the background of the view");
 		}
 	}
 	
@@ -508,7 +563,7 @@ public class Utils {
 	 * @param drawable background image
 	 * ***/
 	@SuppressLint("NewApi")
-	public void setBackground(View target, Drawable drawable) {
+	public static void setBackground(View target, Drawable drawable) {
 		if( Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
     		target.setBackgroundDrawable(drawable);
     	} else {
@@ -516,14 +571,15 @@ public class Utils {
     	}
 	}
     
-    public void tileBackground(int layoutId, View viewToTileBg, int resIdOfTile) {
+	
+    public static void tileBackground( Context ctx, int layoutId, View viewToTileBg, int resIdOfTile ) {
     	
     	try {
             //Tiling the background.
-        	Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), resIdOfTile);
+        	Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), resIdOfTile);
         	// deprecated constructor
             // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
-        	BitmapDrawable bitmapDrawable = new BitmapDrawable( mContext.getResources(), bmp);
+        	BitmapDrawable bitmapDrawable = new BitmapDrawable( ctx.getResources(), bmp);
             bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
             View view = viewToTileBg.findViewById(layoutId);
             
@@ -535,18 +591,21 @@ public class Utils {
 		}
 	}
     
-	public boolean isDatabasePresent(String packageName, String dbName) {
+    /***
+     * Checks to see if the DB with the given name is present on the device.
+     * ***/
+	public static boolean isDatabasePresent( String packageName, String dbName ) {
         SQLiteDatabase checkDB = null;
         try {
             checkDB = SQLiteDatabase.openDatabase( "/data/data/" + packageName + "/databases/" + dbName, null, SQLiteDatabase.OPEN_READONLY );
             checkDB.close();
-        } catch (SQLiteException e) {
+        } catch( SQLiteException e ) {
             // database doesn't exist yet.
         	e.printStackTrace();
-        	Log.e(TAG, "The database does not exist.");
-        } catch ( Exception e) {
+        	Log.e( TAG, "The database does not exist." + e.getMessage() );
+        } catch( Exception e ) {
         	e.printStackTrace();
-        	Log.e(TAG, "Exception ");
+        	Log.e( TAG, "Exception " + e.getMessage() );
         }
         
         boolean isDbPresent = checkDB != null ? true : false;
@@ -559,14 +618,14 @@ public class Utils {
 	 * 
 	 * @param mediaContentUri Content URI pointing to a row of {@link MediaStore.Images.Media}
 	 * ***/
-	public String getRealPathFromURI(Uri mediaContentUri) {
+	public static String getRealPathFromURI( Context ctx, Uri mediaContentUri ) {
 
 		Cursor cur = null;
 		String path = null;
 		
 		try {
 			String[] proj = { MediaStore.Images.Media.DATA };
-	        cur = mContext.getContentResolver().query( mediaContentUri, proj, null, null, null );
+	        cur = ctx.getContentResolver().query( mediaContentUri, proj, null, null, null );
 	        
 	        if( cur != null && cur.getCount() != 0 ) {
 	        	cur.moveToFirst();	
