@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +46,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -958,4 +960,14 @@ public class Utils {
 		
 		return dayStr;
 	}
+    
+    public static int getRandomColor() {
+    	Random randomGenerator = new Random();
+		int red = randomGenerator.nextInt(255);
+		int green = randomGenerator.nextInt(255);
+		int blue = randomGenerator.nextInt(255);
+
+		return Color.argb( 255, red, green, blue );
+	}
+    
 }
