@@ -89,7 +89,7 @@ public class Utils {
 	 * This method has been deprecated. Use its static counterpart
 	 * instead.
 	 * ***/
-	public void showToast(String msg) {
+	public void showToast( String msg ) {
 	    Toast toast = Toast.makeText( mContext, msg, Toast.LENGTH_SHORT );
 	    toast.show();
 	}
@@ -102,6 +102,20 @@ public class Utils {
 	 * ***/
 	public static Toast showToast( Context ctx, CharSequence msg ) {
 	    Toast toast = Toast.makeText( ctx, msg, Toast.LENGTH_SHORT );
+	    toast.show();
+	    return toast;
+	}
+	
+	/***
+	 * Shows the message passed in the parameter in the Toast.
+	 * 
+	 * @param msg Message to be show in the toast.
+	 * @param duration Duration in milliseconds for which the toast should be shown
+	 * @return Toast object just shown
+	 * ***/
+	public static Toast showToast( Context ctx, CharSequence msg, int duration) {
+	    Toast toast = Toast.makeText( ctx, msg, Toast.LENGTH_SHORT );
+	    toast.setDuration(duration);
 	    toast.show();
 	    return toast;
 	}
@@ -260,7 +274,7 @@ public class Utils {
 	public static void showProgressDialog( Context ctx, String title, String body, boolean isCancellable ) {
 		
 		if( !((Activity) ctx).isFinishing() ) {
-			Log.v(TAG, "#onClick isFinishing: " + ((Activity) ctx).isFinishing() );
+			Log.v( TAG, "#showProgressDialog isFinishing: " + ((Activity) ctx).isFinishing() );
 			mProgressDialog = ProgressDialog.show( mContext, title, body, true );
 			mProgressDialog.setIcon(null);
 			mProgressDialog.setCancelable( isCancellable );	
@@ -274,6 +288,8 @@ public class Utils {
 		
 		if( mProgressDialog != null )
 			mProgressDialog.dismiss();
+		
+		mProgressDialog = null;
 	}
 	
 	/***
@@ -897,5 +913,49 @@ public class Utils {
 	      LocationManager.GPS_PROVIDER, 
 	      newLocation
 	    );      
+	}
+    
+    
+    /***
+     * Get the day of the week.
+     * @param day Index of the day of the week. Sunday is at 0 index
+     * @return Returns the name of the day of the week
+     * ***/
+    public static String getDayOfWeek( int day ) {
+    	
+    	String dayStr = null;
+		
+		switch (day) {
+		
+			case Calendar.SUNDAY:
+				dayStr = "Sunday";
+				break;
+		
+			case Calendar.MONDAY:
+			    dayStr = "Monday";
+			    break;
+			    
+			case Calendar.TUESDAY:
+			    dayStr = "Tuesday";
+			    break;
+			    
+			case Calendar.WEDNESDAY:
+			    dayStr = "Wednesday";
+			    break;
+			    
+			case Calendar.THURSDAY:
+			    dayStr = "Thursday";
+			    break;
+			    
+			case Calendar.FRIDAY:
+			    dayStr = "Friday";
+			    break;
+			    
+			case Calendar.SATURDAY:
+			    dayStr = "Saturday";
+			    break;
+		}
+		
+		return dayStr;
 	}
 }

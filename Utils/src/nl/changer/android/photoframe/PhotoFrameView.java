@@ -6,12 +6,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashMap;
 
 import nl.changer.GlobalConstants;
-import nl.changer.android.opensource.MimeType;
 import nl.changer.android.opensource.NetworkManager;
+import nl.changer.android.opensource.R;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.protocol.HTTP;
@@ -25,7 +24,9 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 public class PhotoFrameView extends ImageView {
 
@@ -36,7 +37,7 @@ public class PhotoFrameView extends ImageView {
 	protected String mUrl;
 	protected byte[] mImageData;
 	
-	public PhotoFrameView(Context context) {
+	public PhotoFrameView( Context context ) {
 		super(context);
 		mContext = context;
 	}
@@ -46,7 +47,7 @@ public class PhotoFrameView extends ImageView {
 		mContext = context;
 	}
 
-	public PhotoFrameView(Context context, AttributeSet attrs) {
+	public PhotoFrameView( Context context, AttributeSet attrs ) {
 		super(context, attrs);
 		mContext = context;
 	}
@@ -63,6 +64,23 @@ public class PhotoFrameView extends ImageView {
 		retrieveImage();
 	}
 	
+	private void showProgressDialog() {
+		
+		ProgressBar progressBar = (ProgressBar) findViewById( R.id.photo_frame_progressbar );
+		
+		if( progressBar != null ) {
+			progressBar.setVisibility( View.VISIBLE );
+		}
+	}
+	
+	private void hideProgressDialog() {
+		ProgressBar progressBar = (ProgressBar) findViewById( R.id.photo_frame_progressbar );
+		
+		if( progressBar != null ) {
+			progressBar.setVisibility( View.GONE );
+		}
+	}
+
 	/***
 	 * Sets the image data & starts retrieving the image data from the server
 	 * ***/
@@ -80,6 +98,8 @@ public class PhotoFrameView extends ImageView {
 		if( mUrl == null )
 			throw new NullPointerException("Image URL has not been set. Use setUrl()");
 		
+		showProgressDialog();
+		
 		Thread t = new Thread( new Runnable() {
 			
 			@Override
@@ -94,7 +114,7 @@ public class PhotoFrameView extends ImageView {
 			}	// end run
 		});
 		
-		Log.v( TAG, "#retrieveImage starting thread" );
+		// Log.v( TAG, "#retrieveImage starting thread" );
 		t.start();
 
 	}
@@ -109,9 +129,10 @@ public class PhotoFrameView extends ImageView {
 		byte[]  responseData = null;
 		NetworkManager nwMgr = new NetworkManager();
 		
+		// Log.v( TAG, "#getFromUrl url: " + url );
+		
 		try {
 			url = new URL( urlStr );
-			Log.v( TAG, "#getFromUrl url: " + url );
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
 		} catch ( Exception e ) {
@@ -136,7 +157,7 @@ public class PhotoFrameView extends ImageView {
 		} finally {
 			
 			try {
-				Log.d( TAG, "#getFromUrl responseCode: " + conn.getResponseCode() );
+				// Log.d( TAG, "#getFromUrl responseCode: " + conn.getResponseCode() );
 				outputData.put( GlobalConstants.API_OUTPUT_STATUS, conn.getResponseCode() );
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -174,15 +195,18 @@ public class PhotoFrameView extends ImageView {
 	private Handler mHandler = new Handler( new Handler.Callback() {
 		
 		@Override
-		public boolean handleMessage(Message msg) {
+		public boolean handleMessage( Message msg ) {
 			
-			switch (msg.what) {
+			hideProgressDialog();
+			
+			switch( msg.what ) {
 				case GlobalConstants.SUCCESS:
 					showImage();
 					break;
 
 				case GlobalConstants.FAIL:
 					Log.v( TAG, "#handleMessage Failed to download the image from the server" );
+					// TODO: show some message in UI indicating failure
 					break;
 
 				default:
