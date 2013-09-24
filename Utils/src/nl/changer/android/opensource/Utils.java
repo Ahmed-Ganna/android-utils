@@ -1013,4 +1013,25 @@ public class Utils {
     	return resized;
     }
     
+    /****
+     * 
+     * @param compressionFactor Powers of 2 are often faster/easier for the decoder to honor
+     * **/
+    public static Bitmap compressImage( Bitmap sourceBitmap, int compressionFactor ) {
+    	BitmapFactory.Options opts = new BitmapFactory.Options();
+		opts.inPreferredConfig = Config.ARGB_8888;
+		opts.inSampleSize = compressionFactor;
+		
+		if ( Build.VERSION.SDK_INT >= 10 ) {
+			opts.inPreferQualityOverSpeed = true;
+		}
+		
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		sourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		byte[] byteArray = stream.toByteArray();
+		
+		Bitmap image = BitmapFactory.decodeByteArray( byteArray, 0, byteArray.length, opts );
+		
+		return image;
+    }
 }
