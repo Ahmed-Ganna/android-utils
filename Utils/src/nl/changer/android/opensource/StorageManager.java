@@ -39,10 +39,6 @@ public class StorageManager {
 		mEditor.commit();
 	}
 	
-/*	public void setValue(String key, Boolean value) {
-		setValue( key, value.toString() );
-	}*/
-	
 	/****
 	 * Gets the value from the settings stored natively on the device.
 	 * @param defaultValue Default value for the key, if one is not found.
@@ -82,6 +78,12 @@ public class StorageManager {
 		value = mSettings.getBoolean(key, defValue);
 		
 		return value;
+	}
+	
+	public void setValue( String key, boolean value ) {
+		
+		mEditor.putBoolean(key, value);
+		mEditor.commit();
 	}
 
 }

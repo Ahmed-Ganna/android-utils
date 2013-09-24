@@ -205,6 +205,17 @@ public class Utils {
 	    builder.show();
 	}
 	
+	public static void showAlertDialog( Context ctx, String title, String body, DialogInterface.OnClickListener okListener ) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx)
+	    .setMessage(body)
+	    .setPositiveButton( "OK", okListener );
+		
+		if( !TextUtils.isEmpty(title) )
+			builder.setTitle(title);
+		
+	    builder.show();
+	}
+	
 	/***
 	 * Serializes the Bitmap to Base64
 	 * 
@@ -969,5 +980,37 @@ public class Utils {
 
 		return Color.argb( 255, red, green, blue );
 	}
+    
+    /****
+     * Convert a given bitmap to byte array
+     * ***/
+    public static byte[] toBytes( Bitmap bmp ) {
+    	ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    	bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+    	return stream.toByteArray();
+    }
+    
+    /***
+     * Resize an image to the given width and height parameters
+     * @param sourceBitmap Bitmap to be resized
+     * @param newWidth Width of resized bitmap
+     * @param newHeight Height of the resized bitmap
+     ****/
+    public static Bitmap resizeImage( Bitmap sourceBitmap, int newWidth, int newHeight, boolean filter ) {
+    	
+    	if( sourceBitmap == null )
+    		throw new NullPointerException( "Bitmap to be resized cannot be null" );
+    	
+    	Bitmap resized = null;
+    	
+    	if( sourceBitmap.getWidth() < sourceBitmap.getHeight() ) {
+    		// image is portrait
+    		resized = Bitmap.createScaledBitmap( sourceBitmap, 720, 960, true );
+    	} else
+    		// image is landscape
+    		resized = Bitmap.createScaledBitmap( sourceBitmap, 960, 720, true );
+    	
+    	return resized;
+    }
     
 }
