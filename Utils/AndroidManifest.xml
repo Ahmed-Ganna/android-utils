@@ -4,7 +4,7 @@
     android:versionName="1.0" >
 
     <!-- Permission required to mock the geo-location on an actual android hardware device -->
- <!--    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" /> -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" /> -->
 
     <uses-sdk
         android:minSdkVersion="8"

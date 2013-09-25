@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -887,8 +889,7 @@ public class Utils {
      * to mock the location on an actual device.
      * ***/
     public static void setMockLocation( Context ctx, double longitude, double latitude ) {
-	    LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE); 
-	    // locationManager.removeTestProvider( LocationManager.GPS_PROVIDER );
+	    LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
 	    
 	    locationManager.addTestProvider (
 	      LocationManager.GPS_PROVIDER,
@@ -921,15 +922,35 @@ public class Utils {
 	       System.currentTimeMillis()
 	    );      
 
-	    locationManager.setTestProviderLocation
-	    (
-	      LocationManager.GPS_PROVIDER, 
-	      newLocation
-	    );      
+	    // http://jgrasstechtips.blogspot.it/2012/12/android-incomplete-location-object.html
+	    makeLocationObjectComplete( newLocation );
+	    
+	    locationManager.setTestProviderLocation( LocationManager.GPS_PROVIDER, newLocation );
 	}
     
     
-    /***
+    private static void makeLocationObjectComplete(Location newLocation) {
+	    Method locationJellyBeanFixMethod = null;
+		try {
+			locationJellyBeanFixMethod = Location.class.getMethod("makeComplete");
+		} catch ( NoSuchMethodException e ) {
+			e.printStackTrace();
+		}
+		
+	    if (locationJellyBeanFixMethod != null) {
+	       try {
+				locationJellyBeanFixMethod.invoke(newLocation);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+	    }
+	}
+
+	/***
      * Get the day of the week.
      * @param day Index of the day of the week. Sunday is at 0 index
      * @return Returns the name of the day of the week
