@@ -710,16 +710,16 @@ public class Utils {
 	}
 	
 	/***
-	 * Writes the given image to the external storage of the device.
-	 * @return Path of the image file that has been written.
-	 * ***/
-	public static String writeImage( byte[] imageData ) {
-		final String FILE_NAME = "photograph.jpeg";
+	 * Get the data storage directory for the device.
+	 * If the external storage is not available, this returns the reserved application
+	 * data storage directory. SD Card storage is preferred over internal storage
+	 * 
+	 * @return Data storage directory on the device. Maybe be a 
+	 * directory on SD Card or internal storage of the device.
+	 ****/
+	public static File getStorageDirectory() {
 		final String DIR_NAME = "atemp";
-		
-		String filePath = null;
 		File dir = null;
-		OutputStream imageFileOS;
 		
 		String state = Environment.getExternalStorageState();
 		
@@ -730,6 +730,32 @@ public class Utils {
 	    	// Store image in /data/data/<package-name>/cache/atemp/photograph.jpeg
 	    	dir = new File ( mContext.getCacheDir() + "/" + DIR_NAME );
 	    }
+		 
+		return dir;
+	}
+	
+	/***
+	 * Writes the given image to the external storage of the device.
+	 * @return Path of the image file that has been written.
+	 * ***/
+	public static String writeImage( byte[] imageData ) {
+		final String FILE_NAME = "photograph.jpeg";
+		
+		String filePath = null;
+		File dir = null;
+		OutputStream imageFileOS;
+		
+		/*String state = Environment.getExternalStorageState();
+		
+		 if( Environment.MEDIA_MOUNTED.equals(state) ) {
+			dir = new File ( Environment.getExternalStorageDirectory() + "/" + DIR_NAME );
+	    } else {
+	    	// media is removed, unmounted etc
+	    	// Store image in /data/data/<package-name>/cache/atemp/photograph.jpeg
+	    	dir = new File ( mContext.getCacheDir() + "/" + DIR_NAME );
+	    }*/
+		
+		dir = getStorageDirectory();
 		
 		dir.mkdirs();
 		File f = new File( dir, FILE_NAME );
