@@ -1,7 +1,6 @@
 package nl.changer.android.opensource;
 
 import java.io.BufferedReader;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -11,11 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,7 +64,12 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 public class Utils {
 	
@@ -717,7 +719,7 @@ public class Utils {
 	 * @return Data storage directory on the device. Maybe be a 
 	 * directory on SD Card or internal storage of the device.
 	 ****/
-	public static File getStorageDirectory() {
+	public static File getStorageDirectory(Context ctx) {
 		final String DIR_NAME = "atemp";
 		File dir = null;
 		
@@ -728,7 +730,7 @@ public class Utils {
 	    } else {
 	    	// media is removed, unmounted etc
 	    	// Store image in /data/data/<package-name>/cache/atemp/photograph.jpeg
-	    	dir = new File ( mContext.getCacheDir() + "/" + DIR_NAME );
+	    	dir = new File ( ctx.getCacheDir() + "/" + DIR_NAME );
 	    }
 		 
 		return dir;
@@ -755,7 +757,7 @@ public class Utils {
 	    	dir = new File ( mContext.getCacheDir() + "/" + DIR_NAME );
 	    }*/
 		
-		dir = getStorageDirectory();
+		dir = getStorageDirectory(mContext);
 		
 		dir.mkdirs();
 		File f = new File( dir, FILE_NAME );
@@ -1020,10 +1022,10 @@ public class Utils {
 	}
     
     public static int getRandomColor() {
-    	Random randomGenerator = new Random();
-		int red = randomGenerator.nextInt(255);
-		int green = randomGenerator.nextInt(255);
-		int blue = randomGenerator.nextInt(255);
+    	Random random = new Random();
+		int red = random.nextInt(255);
+		int green = random.nextInt(255);
+		int blue = random.nextInt(255);
 
 		return Color.argb( 255, red, green, blue );
 	}
@@ -1081,4 +1083,38 @@ public class Utils {
 		
 		return image;
     }
+    
+	/****
+	 * Show a photo with a rounded corners.
+	 * @param cornerRadius Should NOT be too large, ideally the value should be 8 or 10. 
+	 * Pass -1 if you dont want the rounded corners
+	 ****/
+	public static void showPhotoWithRoundedCorners( ImageView photo, String url, int cornerRadius ) {
+		
+		DisplayImageOptions options = null;
+		
+		if( cornerRadius != -1 ) {
+			options = new DisplayImageOptions.Builder()
+			 .cacheInMemory( true )
+		     .cacheOnDisc( true )
+		     .displayer( new RoundedBitmapDisplayer(cornerRadius) ) // rounded corner bitmap
+		     .build();	
+		} else {
+			// no rounded corners
+			options = new DisplayImageOptions.Builder()
+			 .cacheInMemory( true )
+		     .cacheOnDisc( true )
+		     .build();
+		}
+		
+		if( !TextUtils.isEmpty( url ) && !url.equalsIgnoreCase("null") ) {
+			photo.setVisibility( View.VISIBLE );
+			ImageLoader.getInstance().displayImage( url, photo, options );
+		} else {
+			// hide the photos in a converted view so that 
+			// older photos are not visible 
+	    	// and user does not get a perception of wrong photos
+			// photo.setVisibility( View.INVISIBLE );
+		}
+	}
 }
