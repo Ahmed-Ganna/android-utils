@@ -62,6 +62,7 @@ public class GlobalConstants {
 	public static final String KEY_FREE = "free";
 	public static final String KEY_IMAGE_URL = "image_url";
 	public static final String KEY_PAID = "paid";
+	public static final String KEY_MESSAGE = "message";
 	
 	public static final String NEW_LINE = "\n";
 	
