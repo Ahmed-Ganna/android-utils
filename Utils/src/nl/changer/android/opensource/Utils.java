@@ -1117,4 +1117,37 @@ public class Utils {
 			// photo.setVisibility( View.INVISIBLE );
 		}
 	}
+	
+	
+	/****
+	 * Parse the ISO formatted date object and return a {@link Date} object
+	 *****/
+	public static Date parseDate(String date) {
+		StringBuffer sbDate = new StringBuffer();
+    	sbDate.append( date );
+    	String newDate = null;
+    	
+    	try {
+    		newDate = sbDate.substring(0, 19).toString();	
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
+    	
+    	String rDate = newDate.replace( "T", " " );
+    	String nDate = rDate.replaceAll( "-", "/" );
+    	
+    	Date dateDT = null;
+    	
+    	try {
+    		dateDT = new java.text.SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" ).parse(nDate);
+    		// Log.v( TAG, "#parseDate dateDT: " + dateDT );
+		} catch ( ParseException e ) {
+			e.printStackTrace();
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+    	
+    	return dateDT;
+	}
+	
 }
