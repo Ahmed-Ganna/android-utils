@@ -46,6 +46,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -82,7 +83,7 @@ public class Utils {
 	/***
 	 * @param ctx Activity Context. Any other context will break the app.
 	 * ***/
-	public Utils(Context ctx) {
+	public Utils( Context ctx ) {
 		mContext = ctx;
 	}
 	
@@ -1041,6 +1042,7 @@ public class Utils {
     
     /***
      * Resize an image to the given width and height parameters
+     * Prefer using {@link Utils#decodeSampledBitmapFromResource(Context, Uri, int, int)} over this method.
      * @param sourceBitmap Bitmap to be resized
      * @param newWidth Width of resized bitmap
      * @param newHeight Height of the resized bitmap
@@ -1122,7 +1124,7 @@ public class Utils {
 	/****
 	 * Parse the ISO formatted date object and return a {@link Date} object
 	 *****/
-	public static Date parseDate(String date) {
+	public static Date parseDate( String date ) {
 		StringBuffer sbDate = new StringBuffer();
     	sbDate.append( date );
     	String newDate = null;
@@ -1148,6 +1150,74 @@ public class Utils {
 		}
     	
     	return dateDT;
+	}
+	
+	/****
+	 * Get the size of the Bitmap in MB
+	 * ***/
+    public static int sizeOf( Bitmap data ) {
+    	
+    	int sizeMB = 0;
+    	
+        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1 ) {
+            sizeMB = (data.getRowBytes() * data.getHeight()) / 1024;
+        } else {
+            sizeMB = (data.getByteCount() / 1024 ) ;
+        }
+        
+        return sizeMB;
+    }
+    
+    /****
+     * 
+     ****/
+    public static Bitmap decodeSampledBitmapFromResource( Context ctx, Uri uri, int reqWidth, int reqHeight ) {
+		
+	    // First decode with inJustDecodeBounds=true to check dimensions
+	    final BitmapFactory.Options options = new BitmapFactory.Options();
+	    options.inJustDecodeBounds = true;
+	    
+	    try {
+			BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ), new Rect(), options );
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+	    // Calculate inSampleSize
+	    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+	    // Decode bitmap with inSampleSize set
+	    options.inJustDecodeBounds = false;
+	    
+	    try {
+			return BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ), new Rect(), options );
+		} catch( FileNotFoundException e ) {
+			e.printStackTrace();
+		};
+		
+		return null;
+	}
+	
+	private static int calculateInSampleSize(
+        BitmapFactory.Options options, int reqWidth, int reqHeight) {
+	    // Raw height and width of image
+	    final int height = options.outHeight;
+	    final int width = options.outWidth;
+	    int inSampleSize = 1;
+	
+	    if (height > reqHeight || width > reqWidth) {
+	
+	        // Calculate ratios of height and width to requested height and width
+	        final int heightRatio = Math.round((float) height / (float) reqHeight);
+	        final int widthRatio = Math.round((float) width / (float) reqWidth);
+	
+	        // Choose the smallest ratio as inSampleSize value, this will guarantee
+	        // a final image with both dimensions larger than or equal to the
+	        // requested height and width.
+	        inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+	    }
+	
+	    return inSampleSize;
 	}
 	
 }
