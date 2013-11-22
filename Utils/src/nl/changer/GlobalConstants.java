@@ -55,6 +55,7 @@ public class GlobalConstants {
 	public static final String KEY_LOCATION = "location";
 	public static final String KEY_ANSWER = "answer";
 	public static final String KEY_NEXT = "next";
+	public static final String KEY_KEY = "key";
 	public static final String KEY_PARENT = "parent";
 	public static final String KEY_SUBSCRIPTIONS = "subscriptions";
 	public static final String KEY_USER = "user";
@@ -63,6 +64,9 @@ public class GlobalConstants {
 	public static final String KEY_IMAGE_URL = "image_url";
 	public static final String KEY_PAID = "paid";
 	public static final String KEY_MESSAGE = "message";
+	public static final String KEY_POLICY = "policy";
+	public static final String KEY_SIGNATURE = "signature";
+	public static final String KEY_FILE = "file";
 	
 	public static final String NEW_LINE = "\n";
 	

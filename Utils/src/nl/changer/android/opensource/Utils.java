@@ -591,7 +591,7 @@ public class Utils {
 	 * passed in target parameter in an SDK independent way. This
 	 * is the recommended way of setting background rather
 	 * than using native background setters provided by {@link View}
-	 * class 
+	 * class. This method should NOT be used for an {@link ImageView}
 	 * 
 	 * @param target View to set background to.
 	 * @param drawable background image
@@ -734,7 +734,35 @@ public class Utils {
 	    	dir = new File ( ctx.getCacheDir() + "/" + DIR_NAME );
 	    }
 		 
+		if( !dir.exists() )
+			dir.mkdirs();
+		else
+			Log.v( TAG, "#getStorageDirectory directory exits already" );
+		 
 		return dir;
+	}
+	
+	/***
+	 * Given a file name, this method creates a {@link File} on best chosen device storage
+	 * and returns the file object.
+	 * You can get the file path using {@link File#getAbsolutePath()}
+	 * ***/
+	public static File getFile( String fileName ) {
+		File dir = getStorageDirectory( mContext );
+		File f = new File( dir, fileName );
+		
+		/*try {
+			if( f.createNewFile() ) {
+				// success
+			} else
+				Log.w( TAG, "#getFile file creation failed" );
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}*/
+		
+		return f;
 	}
 	
 	/***
@@ -743,25 +771,16 @@ public class Utils {
 	 * ***/
 	public static String writeImage( byte[] imageData ) {
 		final String FILE_NAME = "photograph.jpeg";
-		
-		String filePath = null;
 		File dir = null;
+		String filePath = null;
 		OutputStream imageFileOS;
-		
-		/*String state = Environment.getExternalStorageState();
-		
-		 if( Environment.MEDIA_MOUNTED.equals(state) ) {
-			dir = new File ( Environment.getExternalStorageDirectory() + "/" + DIR_NAME );
-	    } else {
-	    	// media is removed, unmounted etc
-	    	// Store image in /data/data/<package-name>/cache/atemp/photograph.jpeg
-	    	dir = new File ( mContext.getCacheDir() + "/" + DIR_NAME );
-	    }*/
 		
 		dir = getStorageDirectory(mContext);
 		
-		dir.mkdirs();
+		// dir.mkdirs();
 		File f = new File( dir, FILE_NAME );
+		
+		// File f = getFile( FILE_NAME );
 
 		try {
 		   imageFileOS = new FileOutputStream(f);
@@ -1054,12 +1073,14 @@ public class Utils {
     	
     	Bitmap resized = null;
     	
-    	if( sourceBitmap.getWidth() < sourceBitmap.getHeight() ) {
+/*    	if( sourceBitmap.getWidth() < sourceBitmap.getHeight() ) {
     		// image is portrait
-    		resized = Bitmap.createScaledBitmap( sourceBitmap, 720, 960, true );
+    		resized = Bitmap.createScaledBitmap( sourceBitmap, newWidth, newHeight, true );
     	} else
     		// image is landscape
-    		resized = Bitmap.createScaledBitmap( sourceBitmap, 960, 720, true );
+    		resized = Bitmap.createScaledBitmap( sourceBitmap, 960, 720, true );*/
+    	
+    	resized = Bitmap.createScaledBitmap( sourceBitmap, newWidth, newHeight, true );
     	
     	return resized;
     }
@@ -1218,6 +1239,29 @@ public class Utils {
 	    }
 	
 	    return inSampleSize;
+	}
+	
+	/***
+	 * Provide the height to which the sourceImage is to be resized.
+	 * This method will calculate the resultant height.
+	 * Use scaleDownBitmap from {@link Utils} wherever possible
+	 ***/
+	public Bitmap resizeImageByHeight( int height, Bitmap sourceImage ) {
+
+		int widthO = 0;		// original width
+		int heightO = 0;	// original height
+		int widthNew = 0;
+		int heightNew = 0;
+		
+		widthO = sourceImage.getWidth();
+		heightO = sourceImage.getHeight();
+		heightNew = height;
+		
+		// Maintain the aspect ratio 
+		// of the original banner image.
+		widthNew = (heightNew * widthO) / heightO;
+		
+		return Bitmap.createScaledBitmap( sourceImage, widthNew, heightNew, true );
 	}
 	
 }

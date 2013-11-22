@@ -19,10 +19,12 @@ import android.graphics.*;
 import android.graphics.Bitmap.Config;
 import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
- * Displays bitmap with rounded corners. <br />
+ * Displays bitmap with rounded corners. This implementation works only with ImageViews wrapped in ImageViewAware.<br />
  * <b>NOTE:</b> It's strongly recommended your {@link ImageView} has defined width (<i>layout_width</i>) and height
  * (<i>layout_height</i>) .<br />
  * <b>NOTE:</b> New {@link Bitmap} object is created for displaying. So this class needs more memory and can cause
@@ -40,35 +42,51 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 	}
 
 	@Override
-	public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
-		Bitmap roundedBitmap = roundCorners(bitmap, imageView, roundPixels);
-		imageView.setImageBitmap(roundedBitmap);
+	public Bitmap display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
+		if (!(imageAware instanceof ImageViewAware)) {
+			throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
+		}
+		Bitmap roundedBitmap = roundCorners(bitmap, (ImageViewAware) imageAware, roundPixels);
+		imageAware.setImageBitmap(roundedBitmap);
 		return roundedBitmap;
 	}
 
 	/**
-	 * Process incoming {@linkplain Bitmap} to make rounded corners according to target {@link ImageView}.<br />
+	 * Process incoming {@linkplain Bitmap} to make rounded corners according to target
+	 * {@link com.nostra13.universalimageloader.core.imageaware.ImageViewAware}.<br />
 	 * This method <b>doesn't display</b> result bitmap in {@link ImageView}
 	 *
 	 * @param bitmap      Incoming Bitmap to process
-	 * @param imageView   Target {@link ImageView} to display bitmap in
-	 * @param roundPixels
+	 * @param imageAware  Target {@link com.nostra13.universalimageloader.core.imageaware.ImageAware ImageAware} to
+	 *                    display bitmap in
+	 * @param roundPixels Rounded pixels of corner
 	 * @return Result bitmap with rounded corners
 	 */
-	public static Bitmap roundCorners(Bitmap bitmap, ImageView imageView, int roundPixels) {
+	public static Bitmap roundCorners(Bitmap bitmap, ImageViewAware imageAware, int roundPixels) {
+		ImageView imageView = imageAware.getWrappedView();
+		if (imageView == null) {
+			L.w("View is collected probably. Can't round bitmap corners without view properties.");
+			return bitmap;
+		}
+
 		Bitmap roundBitmap;
 
 		int bw = bitmap.getWidth();
 		int bh = bitmap.getHeight();
-		int vw = imageView.getWidth();
-		int vh = imageView.getHeight();
+		int vw = imageAware.getWidth();
+		int vh = imageAware.getHeight();
 		if (vw <= 0) vw = bw;
 		if (vh <= 0) vh = bh;
+
+		final ImageView.ScaleType scaleType = imageView.getScaleType();
+		if (scaleType == null) {
+			return bitmap;
+		}
 
 		int width, height;
 		Rect srcRect;
 		Rect destRect;
-		switch (imageView.getScaleType()) {
+		switch (scaleType) {
 			case CENTER_INSIDE:
 				float vRation = (float) vw / vh;
 				float bRation = (float) bw / bh;
@@ -152,7 +170,8 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		return roundBitmap;
 	}
 
-	private static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int roundPixels, Rect srcRect, Rect destRect, int width, int height) {
+	private static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int roundPixels, Rect srcRect, Rect destRect, int width,
+												 int height) {
 		Bitmap output = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 		Canvas canvas = new Canvas(output);
 
