@@ -1000,10 +1000,23 @@ public class Utils {
 
 	/***
      * Get the day of the week.
-     * @param day Index of the day of the week. Sunday is at 0 index
+     * @param startDate ISO format date
      * @return Returns the name of the day of the week
      * ***/
-    public static String getDayOfWeek( int day ) {
+    public static String getDayOfWeek( String startDate ) {
+    	
+    	Date dateDT = Utils.parseDate( startDate );
+		
+    	if( dateDT == null )
+    		return null;
+    	
+		// Get current date
+		Calendar c = Calendar.getInstance();
+		// it is very important to 
+		// set the date of
+		// the calendar.
+		c.setTime(  dateDT );
+		int day = c.get( Calendar.DAY_OF_WEEK );
     	
     	String dayStr = null;
 		
@@ -1035,6 +1048,77 @@ public class Utils {
 			    
 			case Calendar.SATURDAY:
 			    dayStr = "Saturday";
+			    break;
+		}
+		
+		return dayStr;
+	}
+    
+    public static String getMonth( String startDate ) {
+    	
+    	Date dateDT = Utils.parseDate( startDate );
+		
+    	if( dateDT == null )
+    		return null;
+    	
+		// Get current date
+		Calendar c = Calendar.getInstance();
+		// it is very important to 
+		// set the date of
+		// the calendar.
+		c.setTime(  dateDT );
+		int day = c.get( Calendar.MONTH );
+    	
+    	String dayStr = null;
+		
+		switch (day) {
+		
+			case Calendar.JANUARY:
+				dayStr = "January";
+				break;
+		
+			case Calendar.FEBRUARY:
+			    dayStr = "February";
+			    break;
+			    
+			case Calendar.MARCH:
+			    dayStr = "March";
+			    break;
+			    
+			case Calendar.APRIL:
+			    dayStr = "April";
+			    break;
+			    
+			case Calendar.MAY:
+			    dayStr = "May";
+			    break;
+			    
+			case Calendar.JUNE:
+			    dayStr = "June";
+			    break;
+			    
+			case Calendar.JULY:
+			    dayStr = "July";
+			    break;
+			    
+			case Calendar.AUGUST:
+			    dayStr = "August";
+			    break;
+			    
+			case Calendar.SEPTEMBER:
+			    dayStr = "September";
+			    break;
+			    
+			case Calendar.OCTOBER:
+			    dayStr = "October";
+			    break;
+			    
+			case Calendar.NOVEMBER:
+			    dayStr = "November";
+			    break;
+			    
+			case Calendar.DECEMBER:
+			    dayStr = "December";
 			    break;
 		}
 		
@@ -1073,12 +1157,12 @@ public class Utils {
     	
     	Bitmap resized = null;
     	
-/*    	if( sourceBitmap.getWidth() < sourceBitmap.getHeight() ) {
+    	if( sourceBitmap.getWidth() < sourceBitmap.getHeight() ) {
     		// image is portrait
-    		resized = Bitmap.createScaledBitmap( sourceBitmap, newWidth, newHeight, true );
+    		resized = Bitmap.createScaledBitmap( sourceBitmap, newHeight, newWidth, true );
     	} else
     		// image is landscape
-    		resized = Bitmap.createScaledBitmap( sourceBitmap, 960, 720, true );*/
+    		resized = Bitmap.createScaledBitmap( sourceBitmap, newWidth, newHeight, true );
     	
     	resized = Bitmap.createScaledBitmap( sourceBitmap, newWidth, newHeight, true );
     	
