@@ -563,9 +563,9 @@ public class Utils {
 	}
 	
     /***
-     * 
+     * Programmatically tile the background of the for a view with viewId as a parameter.
      * ***/
-	public static void tileBackground( Context ctx, int layoutIdOfRootView, int resIdOfTile ) {
+	public static void tileBackground( Context ctx, int viewId, int resIdOfTile ) {
     	
     	try {
     		//Tiling the background.
@@ -574,7 +574,7 @@ public class Utils {
             // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
         	BitmapDrawable bitmapDrawable = new BitmapDrawable( ctx.getResources(), bmp);
             bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-            View view = ((Activity) ctx).findViewById( layoutIdOfRootView );
+            View view = ((Activity) ctx).findViewById( viewId );
             
             if( view == null )
             	throw new NullPointerException("View to which the tile has to be applied should not be null");
@@ -591,7 +591,7 @@ public class Utils {
 	 * passed in target parameter in an SDK independent way. This
 	 * is the recommended way of setting background rather
 	 * than using native background setters provided by {@link View}
-	 * class. This method should NOT be used for an {@link ImageView}
+	 * class. This method should NOT be used for setting background of an {@link ImageView}
 	 * 
 	 * @param target View to set background to.
 	 * @param drawable background image
@@ -701,6 +701,9 @@ public class Utils {
 		return stringArray;
 	}
 	
+	/***
+	 * Convert a given list of {@link String} into a {@link JSONArray}
+	 ****/
 	public static JSONArray toJSONArray(ArrayList<String> stringArr) {
 		JSONArray jsonArr = new JSONArray();
 		
@@ -715,12 +718,12 @@ public class Utils {
 	/***
 	 * Get the data storage directory for the device.
 	 * If the external storage is not available, this returns the reserved application
-	 * data storage directory. SD Card storage is preferred over internal storage
+	 * data storage directory. SD Card storage will be preferred over internal storage.
 	 * 
 	 * @return Data storage directory on the device. Maybe be a 
 	 * directory on SD Card or internal storage of the device.
 	 ****/
-	public static File getStorageDirectory(Context ctx) {
+	public static File getStorageDirectory( Context ctx ) {
 		final String DIR_NAME = "atemp";
 		File dir = null;
 		
@@ -736,8 +739,8 @@ public class Utils {
 		 
 		if( !dir.exists() )
 			dir.mkdirs();
-		else
-			Log.v( TAG, "#getStorageDirectory directory exits already" );
+		/*else
+			Log.v( TAG, "#getStorageDirectory directory exits already" );*/
 		 
 		return dir;
 	}
@@ -1260,7 +1263,7 @@ public class Utils {
 	/****
 	 * Get the size of the Bitmap in MB
 	 * ***/
-    public static int sizeOf( Bitmap data ) {
+	/*public static int sizeOf( Bitmap data ) {
     	
     	int sizeMB = 0;
     	
@@ -1271,7 +1274,7 @@ public class Utils {
         }
         
         return sizeMB;
-    }
+    }*/
     
     /****
      * 
