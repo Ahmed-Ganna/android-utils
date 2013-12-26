@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -875,42 +876,31 @@ public class Utils {
     
     /***
      * Calculates the elapsed time after the given parameter date.
-     * @param eventTime ISO formatted time when the event occurred
+     * @param time ISO formatted time when the event occurred in local time zone.
      * ***/
-    public static String getElapsedTime( String eventTime ) {
+    public static String getElapsedTime( String time ) {
+    	TimeZone defaultTimeZone = TimeZone.getDefault();
     	
-    	StringBuffer sbDate = new StringBuffer();
-    	sbDate.append(eventTime);
-    	String newDate = null;
+    	// TODO: its advicable not to use this method. Change it at some time in future.
+    	TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     	
-    	try {
-    		newDate = sbDate.substring(0, 19).toString();	
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-    	
-    	String rDate = newDate.replace( "T", " " );
-    	String nDate = rDate.replaceAll( "-", "/" );
-    	
-    	long epoch = -1;
-    	
-    	try {
-			epoch = new java.text.SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" ).parse(nDate).getTime();
-		} catch (java.text.ParseException e) {
-			e.printStackTrace();
-		}
+    	Date eventTime = parseDate( time );
 		
     	Date currentDate = new Date();
-    	long diffInSeconds = ( currentDate.getTime() - epoch ) / 1000;
+    	
+    	Log.v( TAG, "#getElapsedTime time:  " + time + " currentDate: " + currentDate );
+    	
+    	long diffInSeconds = ( currentDate.getTime() - eventTime.getTime() ) / 1000;
     	String elapsed = "";
     	long seconds = diffInSeconds;
     	long mins = diffInSeconds / 60;
-    	long hours = diffInSeconds / 3600;
+    	long hours = diffInSeconds / (60 * 60);
     	long days = diffInSeconds / 86400;
     	long weeks = diffInSeconds / 604800;
     	long months = diffInSeconds / 2592000;
 
+    	Log.v( TAG, "#getElapsedTime seconds: " + seconds + " mins: " + mins + " hours: " + hours + " days: " + days );
+    	
     	if ( seconds < 120 ) {
     	    elapsed = "a min ago";
     	} else if ( mins < 60 ) {
@@ -928,6 +918,8 @@ public class Utils {
     	} else {
     	    elapsed = "more than a year ago";
     	}
+    	
+    	TimeZone.setDefault( defaultTimeZone );
     	
     	return elapsed;
 	}
