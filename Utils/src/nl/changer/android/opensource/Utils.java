@@ -1003,12 +1003,12 @@ public class Utils {
 
 	/***
      * Get the day of the week.
-     * @param startDate ISO format date
-     * @return Returns the name of the day of the week
+     * @param date ISO format date
+     * @return The name of the day of the week
      * ***/
-    public static String getDayOfWeek( String startDate ) {
+    public static String getDayOfWeek( String date ) {
     	
-    	Date dateDT = Utils.parseDate( startDate );
+    	Date dateDT = Utils.parseDate( date );
 		
     	if( dateDT == null )
     		return null;
@@ -1057,9 +1057,14 @@ public class Utils {
 		return dayStr;
 	}
     
-    public static String getMonth( String startDate ) {
+    /***
+     * Get the month from the given date.
+     * @param date ISO format date
+     * @return Returns the name of the month
+     * ***/
+    public static String getMonth( String date ) {
     	
-    	Date dateDT = Utils.parseDate( startDate );
+    	Date dateDT = Utils.parseDate( date );
 		
     	if( dateDT == null )
     		return null;
