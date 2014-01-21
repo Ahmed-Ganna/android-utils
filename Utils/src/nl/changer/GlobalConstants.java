@@ -7,7 +7,12 @@ package nl.changer;
 
 public class GlobalConstants {
 	
+	/***Use API_OUTPUT_STATUS_CODE and API_OUTPUT_STATUS_LINE***/
+	@Deprecated
 	public static final String API_OUTPUT_STATUS = "status";
+	
+	public static final String API_OUTPUT_STATUS_CODE = "status_code";
+	public static final String API_OUTPUT_STATUS_LINE = "status_line";
 	public static final String API_OUTPUT_STATUS_SUCCESS = "success";
 	public static final String API_OUTPUT_STATUS_ERROR = "error";
 	public static final String API_OUTPUT_STATUS_MESSAGE = "message";
@@ -67,6 +72,8 @@ public class GlobalConstants {
 	public static final String KEY_POLICY = "policy";
 	public static final String KEY_SIGNATURE = "signature";
 	public static final String KEY_FILE = "file";
+	public static final String KEY_URI = "uri";
+	public static final String KEY_TYPE = "type";
 	
 	public static final String NEW_LINE = "\n";
 	

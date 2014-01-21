@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1347,5 +1348,61 @@ public class Utils {
 		
 		return Bitmap.createScaledBitmap( sourceImage, widthNew, heightNew, true );
 	}
+	
+
+    public static boolean isValidURL(String url) {  
+  
+        URL u = null;
+        
+        try {  
+            u = new URL(url);  
+        } catch (MalformedURLException e) {  
+            return false;  
+        }  
+        try {  
+            u.toURI();
+        } catch (URISyntaxException e) {  
+            return false;  
+        }
+        
+        return true;  
+    }
+    
+    /****
+     * Identifies if the content represented by the parameter mimeType
+     * is media. Image, Audio and Video is treated as media by this method.
+     * You can refer to standard MIME type here.
+     * <a href="http://www.iana.org/assignments/media-types/media-types.xhtml">Standard MIME types.</a>
+     * @param mimeType standard MIME type of the data.
+     ****/
+    public static boolean isMedia( String mimeType ) {
+    	  
+        boolean isMedia = false;
+        
+        if( mimeType != null ) {
+        	if( mimeType.startsWith("image/") || mimeType.startsWith("video/") || mimeType.startsWith("audio/") )
+        		isMedia = true;
+        } else
+        	isMedia = false;
+        
+        return isMedia;
+    }
+    
+    /***
+     * Get the Uri without the fragment.
+     * For e.g
+     * if the uri is content://com.android.storage/data/images/48829#is_png
+     * the part after '#' is called as fragment.
+     * This method strips the fragment and return the url.
+     * ***/
+    public static String removeUriFragment( String uri ) {
+  	  
+        if( uri == null || uri.length() == 0 )
+        	return null;
+        
+        String[] arr = uri.split("#");
+        
+        return arr[0];
+    }   
 	
 }

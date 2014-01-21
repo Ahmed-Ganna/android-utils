@@ -2,17 +2,25 @@ package nl.changer.android.opensource;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.URL;
+import java.util.HashMap;
+
+import nl.changer.GlobalConstants;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.protocol.HTTP;
 
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 public class NetworkManager {
@@ -246,5 +254,93 @@ public class NetworkManager {
 		conn.setRequestProperty("charset", "utf-8");
   		conn.setUseCaches(false);
 	}
+	
+	/***
+	 * Posts the input JSON data to the specified URL. Returns the error message, if any, in the HashMap.
+	 * The error message can be retrieve by using {@link HashMap#get(Object)} for the key 'message'
+	 * @return Response from the server.
+	 * ***/
+	protected String putDataToUrl( String url, Object inputData, HashMap<String, Object> outputData ) {
+		
+		HttpURLConnection conn = null;
+		URL urlObj = null;
+		String response = null;
+		InputStream inputStream = null;
+		
+		Log.v( TAG, "#putDataToUrl inputData: " + inputData );
+		
+		try {
+			urlObj = new URL(url);
+			Log.v( TAG, "#putDataToUrl url: " + urlObj );
+		} catch ( MalformedURLException e ) {
+			e.printStackTrace();
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+		
+		try {
+  			conn = (HttpURLConnection) urlObj.openConnection();
+  			
+  			executeHttpPut( conn, MimeType.APPLICATION_JSON );
+  			
+  			if( inputData != null && inputData.toString().length() > 0 ) {
+  				DataOutputStream dos = new DataOutputStream( conn.getOutputStream() );
+  		  		dos.writeBytes( inputData.toString() );
+  		  		dos.flush();
+  		  		dos.close();
+  			}
+	  		
+  			inputStream = conn.getInputStream();
+  			
+  			if( inputStream != null )
+  				response = readStream( inputStream );
+	  		
+	  		// Log.d( TAG, "#putDataToUrl response: " + response );
+	  		
+		} catch ( FileNotFoundException e ) {
+			Log.e( TAG, "#putDataToUrl FileNotFoundException while making an API call. Reason: " + e.getMessage() );
+			
+			if( conn.getErrorStream() != null ) {
+				String errMsg = readStream( conn.getErrorStream() );
+				Log.v( TAG, "#putDataToUrl FileNotFoundException Error from the errorStream. Reason: " + errMsg );
+				outputData.put( GlobalConstants.API_OUTPUT_STATUS_MESSAGE, errMsg );	
+			}
+				
+		} catch ( IOException e ) {
+			
+			Log.e( TAG, "#putDataToUrl IOException while making an API call. Reason: " + e.getMessage() );
+			if( conn.getErrorStream() != null ) {
+				String errMsg = readStream( conn.getErrorStream() );
+				Log.v( TAG, "#putDataToUrl IOException Error from the errorStream. Reason: " + errMsg );
+				outputData.put( GlobalConstants.API_OUTPUT_STATUS_MESSAGE, errMsg );				
+			}
 
+		} catch ( Exception e ) {
+			
+			Log.e( TAG, "#putDataToUrl Exception while making an API call. Reason: " + e.getMessage() );
+			
+			if( conn.getErrorStream() != null ) {
+				String errMsg = readStream( conn.getErrorStream() );			
+				Log.v( TAG, "#putDataToUrl Exception Error from the errorStream. Reason: " + errMsg );
+				outputData.put( GlobalConstants.API_OUTPUT_STATUS_MESSAGE, errMsg );				
+			}
+
+		} finally {
+			try {
+				if( conn != null ) {
+					Log.d( TAG, "#putDataToUrl responseCode: " + conn.getResponseCode() );
+					outputData.put( GlobalConstants.API_OUTPUT_STATUS_CODE, conn.getResponseCode() );
+					outputData.put( GlobalConstants.API_OUTPUT_STATUS_LINE, conn.getResponseMessage() );
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			conn.disconnect();
+		}
+		
+		return response;
+	}
 }
