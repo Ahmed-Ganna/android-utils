@@ -75,5 +75,9 @@ public class AWSUploader {
 
 		return url;
 	}
+	
+	public static void uploadObject( String url, String contentType ) {
+		
+	}
 
 }
