@@ -382,10 +382,12 @@ public class NetworkManager {
 	  		
   			inputStream = conn.getInputStream();
   			
-  			if( inputStream != null )
+  			if( inputStream != null ) {
   				response = readStream( inputStream );
-	  		
-	  		Log.d( TAG, "#putDataToUrl response: " + response );
+  		  		Log.d( TAG, "#putDataToUrl response: " + response );
+  			} else {
+  				Log.w( TAG, "#putDataToUrl InputStream is null" );
+  			}
 	  		
 		} catch ( FileNotFoundException e ) {
 			Log.e( TAG, "#putDataToUrl FileNotFoundException while making an API call. Reason: " + e.getMessage() );

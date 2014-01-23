@@ -1397,6 +1397,7 @@ public class Utils {
 
 	public static boolean isImage(String mimeType) {
         
+		// TODO: apply regex patter for checking the MIME type
         if( mimeType != null ) {
         	if( mimeType.startsWith("image/") )
         		return true;
@@ -1404,6 +1405,30 @@ public class Utils {
             	return false;
         } else
         	return false;
-	}   
+	}
+	
+	public static boolean isAudio(String mimeType) {
+        
+		// TODO: apply regex patter for checking the MIME type
+        if( mimeType != null ) {
+        	if( mimeType.startsWith("audio/") )
+        		return true;
+        	else
+            	return false;
+        } else
+        	return false;
+	}
+
+	public static boolean isVideo(String mimeType) {
+		
+		// TODO: apply regex patter for checking the MIME type
+	    if( mimeType != null ) {
+	    	if( mimeType.startsWith("video/") )
+	    		return true;
+	    	else
+	        	return false;
+	    } else
+	    	return false;
+	}
 	
 }

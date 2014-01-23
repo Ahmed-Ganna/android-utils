@@ -1,16 +1,23 @@
 package nl.changer.android.opensource;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Images.Media;
+import android.provider.MediaStore.Video;
 import android.util.Log;
 
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -83,27 +90,76 @@ public class AWSUploader {
 		return url;
 	}
 	
-	public static void uploadObject( Context ctx, String uri, String contentType, String url ) {
+	
+	public static void uploadObject( Context ctx, Uri uri, String contentType, String url ) {
+		
+		// TODO: check if the parameters are null or invalid.
+		// TODO: uri validity
 		Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
 		NetworkManager nwMgr = new NetworkManager();
 		Bitmap bmp = null;
+		byte[] data = null;
 		
 		if( Utils.isImage(contentType) ) {
 			try {
-				bmp = Media.getBitmap( ctx.getContentResolver(), Uri.parse(uri) );
+				// bmp = Media.getBitmap( ctx.getContentResolver(), Uri.parse(uri) );
+				
+				bmp = BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ) );
+				
+				if( bmp != null )
+					Log.v( TAG, "#uploadObject bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() );
+				
+				data = Utils.toBytes(bmp);
 			} catch ( FileNotFoundException e ) {
 				e.printStackTrace();
-			} catch ( IOException e ) {
+			} catch ( Exception e ) {
 				e.printStackTrace();
 			}
+		} else if( Utils.isAudio(contentType) ) {
+			// android.provider.MediaStore.Audio.
+			// TODO:
+		} else if( Utils.isVideo(contentType) ) {
+			// TODO:
+			// video uri = "content://media/external/video/media/45492"
+			data = getMediaData( ctx, uri );
 		}
 		
 		// TODO: also check for video and audio types and retrieve the files to
 		// upload.
 		
-		String inputData = "Mr. Jay";
+		/*String inputData = "Mr. Jay";
 		HashMap<String, Object> outputData = new HashMap<String, Object>();
-		nwMgr.postDataToUrl( url, inputData, outputData );
+		nwMgr.postDataToUrl( url, inputData, outputData );*/
+	}
+	
+	private static byte[] getMediaData( Context ctx, Uri uri ) {
+		
+		// TODO: check if uri does not have 'media' in it,
+		// it is possibily wrong media content URI.
+		
+		Cursor cur = ctx.getContentResolver().query( uri, new String[]{ Media.DATA }, null, null, null );
+		byte[]  data = null;
+		
+		if( cur != null && cur.getCount() > 0 ) {
+			while( cur.moveToNext() ) {
+				String path = cur.getString( cur.getColumnIndex(Video.Media.DATA) );
+				
+				try {
+					File f = new File(path);
+					FileInputStream fis = new FileInputStream(f);
+					data = NetworkManager.readStreamToBytes( fis );
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch ( Exception e) {
+					e.printStackTrace();
+				}
+				
+				// Log.v( TAG, "#getVideoData byte.size: " + data.length );
+			}	// end while
+		} else
+			Log.e(TAG, "#getVideoData cur is null or blank" );
+		
+		return data;
 	}
 
 }
