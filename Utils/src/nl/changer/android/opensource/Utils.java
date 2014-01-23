@@ -167,19 +167,6 @@ public class Utils {
 	    
 	    return false;
 	}
-	
-	/***
-	 * Checks if the SD Card is mounted on the device.
-	 * 
-	 * @deprecated
-	 * This method has been deprecated. Use {@link Utils#isInternetAvailable()} instead.
-	 * ***/
-	/*public boolean isSDCARDMounted() {
-	    String status = Environment.getExternalStorageState();
-	    if( status.equals(Environment.MEDIA_MOUNTED) )
-	        return true;
-	    return false;
-	}*/
 	 
 	 /***
 	 * Checks if the SD Card is mounted on the device.
@@ -293,11 +280,13 @@ public class Utils {
 	 ***/
 	public static void showProgressDialog( Context ctx, String title, String body, boolean isCancellable ) {
 		
-		if( !((Activity) ctx).isFinishing() ) {
-			Log.v( TAG, "#showProgressDialog isFinishing: " + ((Activity) ctx).isFinishing() );
-			mProgressDialog = ProgressDialog.show( mContext, title, body, true );
-			mProgressDialog.setIcon(null);
-			mProgressDialog.setCancelable( isCancellable );	
+		if( ctx instanceof Activity ) {
+			if( !((Activity) ctx).isFinishing() ) {
+				Log.v( TAG, "#showProgressDialog isFinishing: " + ((Activity) ctx).isFinishing() );
+				mProgressDialog = ProgressDialog.show( mContext, title, body, true );
+				mProgressDialog.setIcon(null);
+				mProgressDialog.setCancelable( isCancellable );	
+			}	
 		}
 	}
 
@@ -316,6 +305,7 @@ public class Utils {
 	 * Read the {@link InputStream} and convert the data received
 	 * into the {@link String}
 	 * 
+	 * @deprecated This method is deprecated. Use {@linkplain NetworkManager} instead.
 	 * TODO: This method should goto {@linkplain NetworkManager}
 	 * ***/
 	public static String readStream( InputStream in ) {
@@ -1403,6 +1393,17 @@ public class Utils {
         String[] arr = uri.split("#");
         
         return arr[0];
-    }   
+    }
+
+	public static boolean isImage(String mimeType) {
+        
+        if( mimeType != null ) {
+        	if( mimeType.startsWith("image/") )
+        		return true;
+        	else
+            	return false;
+        } else
+        	return false;
+	}   
 	
 }

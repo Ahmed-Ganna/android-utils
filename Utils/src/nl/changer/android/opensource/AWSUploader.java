@@ -1,9 +1,16 @@
 package nl.changer.android.opensource;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore.Images.Media;
 import android.util.Log;
 
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -76,8 +83,27 @@ public class AWSUploader {
 		return url;
 	}
 	
-	public static void uploadObject( String url, String contentType ) {
+	public static void uploadObject( Context ctx, String uri, String contentType, String url ) {
+		Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
+		NetworkManager nwMgr = new NetworkManager();
+		Bitmap bmp = null;
 		
+		if( Utils.isImage(contentType) ) {
+			try {
+				bmp = Media.getBitmap( ctx.getContentResolver(), Uri.parse(uri) );
+			} catch ( FileNotFoundException e ) {
+				e.printStackTrace();
+			} catch ( IOException e ) {
+				e.printStackTrace();
+			}
+		}
+		
+		// TODO: also check for video and audio types and retrieve the files to
+		// upload.
+		
+		String inputData = "Mr. Jay";
+		HashMap<String, Object> outputData = new HashMap<String, Object>();
+		nwMgr.postDataToUrl( url, inputData, outputData );
 	}
 
 }

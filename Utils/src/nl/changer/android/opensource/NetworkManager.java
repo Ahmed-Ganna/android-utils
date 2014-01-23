@@ -30,9 +30,9 @@ public class NetworkManager {
 	/***
 	 * Convert {@linkplain InputStream} to byte array.
 	 * 
-	 * @throws NullPointerException If input parameter inputstream is null
+	 * @throws NullPointerException If input parameter {@link InputStream} is null
 	 * **/
-	public byte[] readStreamToBytes(InputStream inputStream) {
+	public static byte[] readStreamToBytes(InputStream inputStream) {
 		
 		if( inputStream == null )
 			throw new NullPointerException("InputStream is null");
@@ -81,9 +81,9 @@ public class NetworkManager {
 	/***
 	 * Convert {@linkplain InputStream} to byte array.
 	 * 
-	 * @throws NullPointerException If input parameter inputstream is null
+	 * @throws NullPointerException If input parameter {@link InputStream} is null
 	 * **/
-	public String readStream(InputStream inputStream) {
+	public static String readStream(InputStream inputStream) {
 		
 		if( inputStream == null )
 			throw new NullPointerException("InputStream is null");
@@ -260,7 +260,7 @@ public class NetworkManager {
 	 * The error message can be retrieve by using {@link HashMap#get(Object)} for the key 'message'
 	 * @return Response from the server.
 	 * ***/
-	protected String putDataToUrl( String url, Object inputData, HashMap<String, Object> outputData ) {
+	public String putDataToUrl( String url, Object inputData, HashMap<String, Object> outputData ) {
 		
 		HttpURLConnection conn = null;
 		URL urlObj = null;
@@ -385,7 +385,7 @@ public class NetworkManager {
   			if( inputStream != null )
   				response = readStream( inputStream );
 	  		
-	  		// Log.d( TAG, "#putDataToUrl response: " + response );
+	  		Log.d( TAG, "#putDataToUrl response: " + response );
 	  		
 		} catch ( FileNotFoundException e ) {
 			Log.e( TAG, "#putDataToUrl FileNotFoundException while making an API call. Reason: " + e.getMessage() );
