@@ -1435,14 +1435,15 @@ public class Utils {
 	    	return false;
 	}
 	
-	public static int toMegaBytes(int byteCount) {
-		int kiloBytes = byteCount / 1000;
-		int megaBytes = kiloBytes / 1000;
+	public static int toMegaBytes(long byteCount) {
+		long kiloBytes = byteCount / 1000;
+		int megaBytes = (int) (kiloBytes / 1000);
 		return megaBytes;
 	}
 	
 	/****
 	 * Get the media data from the one of the following media {@link ContentProvider}
+	 * This method should not be called from the main thread of the application.
 	 * <ul>
 	 * 		<li>{@link android.provider.MediaStore.Images.Media}</li>
 	 * 		<li>{@link android.provider.MediaStore.Audio.Media}</li>
@@ -1460,26 +1461,62 @@ public class Utils {
 		Cursor cur = ctx.getContentResolver().query( uri, new String[]{ Media.DATA }, null, null, null );
 		byte[]  data = null;
 		
-		if( cur != null && cur.getCount() > 0 ) {
-			while( cur.moveToNext() ) {
-				String path = cur.getString( cur.getColumnIndex(Video.Media.DATA) );
-				
-				try {
-					File f = new File(path);
-					FileInputStream fis = new FileInputStream(f);
-					data = NetworkManager.readStreamToBytes( fis );
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch ( Exception e) {
-					e.printStackTrace();
-				}
-				
-				// Log.v( TAG, "#getVideoData byte.size: " + data.length );
-			}	// end while
-		} else
-			Log.e(TAG, "#Media cur is null or blank" );
+		try {
+			if( cur != null && cur.getCount() > 0 ) {
+				while( cur.moveToNext() ) {
+					String path = cur.getString( cur.getColumnIndex(Media.DATA) );
+					
+					try {
+						File f = new File(path);
+						FileInputStream fis = new FileInputStream(f);
+						data = NetworkManager.readStreamToBytes( fis );
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch ( Exception e) {
+						e.printStackTrace();
+					}
+					
+					// Log.v( TAG, "#getVideoData byte.size: " + data.length );
+				}	// end while
+			} else
+				Log.e(TAG, "#getMediaData cur is null or blank" );	
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
 		
 		return data;
 	}
+	
+	/***
+	 * Get the size of the media resource pointed to by the paramter mediaUri.
+	 * 
+	 * Known bug: for unknown reason, the image size for some images was found to be 0
+	 * 
+	 * @param mediaUri uri to the media resource. For e.g.
+	 * content://media/external/images/media/45490
+	 ****/
+	public static long getMediaSize( Context ctx, Uri mediaUri ) {
+		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ Media.SIZE }, null, null, null );
+		long size = -1;
+		
+		try {
+			if( cur != null && cur.getCount() > 0 ) {
+				while( cur.moveToNext() ) {
+					size = cur.getLong( cur.getColumnIndex(Media.SIZE ) );
+					
+					// for unknown reason, the image size for some
+					// images was found to be 0
+					// Log.v( TAG, "#getSize byte.size: " + size );
+				}	// end while
+			} else
+				Log.e( TAG, "#getSize cur is null or blank" );	
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
+		
+		return size;
+    }
 	
 }

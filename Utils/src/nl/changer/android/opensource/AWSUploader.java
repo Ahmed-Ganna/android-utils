@@ -102,6 +102,7 @@ public class AWSUploader {
 	
 	/***
 	 * Uploads the object pointed to by the Uri parameter to AWS S3.
+	 * Compresses the image if it is larger than 1MB in size.
 	 * 
 	 * @param ctx
 	 * @param uri Media Uri of the resource on the device
@@ -121,15 +122,20 @@ public class AWSUploader {
 			// content://media/external/images/media/45490
 			try {
 				
+				// TODO: use Utils#getMediaData from uri, rather than doing this manually
 				bmp = BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ) );
 				
-				if( bmp != null )
-					Log.v( TAG, "#uploadObject bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toMegaBytes(bmp.getByteCount()) + " MB" );
+				int size = Utils.toMegaBytes(Utils.getMediaSize(ctx, uri));
 				
-				// TODO: compress the image only if the image
-				// is too big
-				bmp = Utils.compressImage( bmp, 8 );
-				Log.v( TAG, "#uploadObject bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toMegaBytes(bmp.getByteCount()) + " MB" );
+				if( bmp != null )
+					Log.v( TAG, "#uploadObject BEFORE bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + size + " MB" );
+				
+				// if size cannot be determined or
+				// great than 1MB, compress the image
+				if( size == 0 || size > 1 )
+					bmp = Utils.compressImage( bmp, 8 );
+				
+				Log.v( TAG, "#uploadObject AFTER bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toMegaBytes( Utils.getMediaSize(ctx, uri) ) + " MB" );
 				
 				data = Utils.toBytes(bmp);
 			} catch ( FileNotFoundException e ) {
