@@ -7,10 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.UnknownServiceException;
 import java.util.HashMap;
 
 import nl.changer.GlobalConstants;
@@ -19,6 +21,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -375,7 +379,14 @@ public class NetworkManager {
   			
   			if( inputData != null && inputData.toString().length() > 0 ) {
   				DataOutputStream dos = new DataOutputStream( conn.getOutputStream() );
-  		  		dos.writeBytes( inputData.toString() );
+  				
+  				if( inputData instanceof JSONObject || inputData instanceof JSONArray || inputData instanceof String )
+  					dos.writeBytes( inputData.toString() );
+  				else if ( inputData instanceof byte[] ) {
+  					byte[] buffer = (byte[]) inputData;
+  					dos.write( buffer, 0, buffer.length );	
+  				}
+  				
   		  		dos.flush();
   		  		dos.close();
   			}
@@ -436,4 +447,5 @@ public class NetworkManager {
 		
 		return response;
 	}
+	
 }

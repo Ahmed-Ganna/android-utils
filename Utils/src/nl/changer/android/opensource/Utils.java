@@ -1431,4 +1431,10 @@ public class Utils {
 	    	return false;
 	}
 	
+	public static int toMegaBytes(int byteCount) {
+		int kiloBytes = byteCount / 1000;
+		int megaBytes = kiloBytes / 1000;
+		return megaBytes;
+	}
+	
 }
