@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,6 +35,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentProvider;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,6 +64,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Video;
+import android.provider.MediaStore.Images.Media;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -1435,6 +1439,47 @@ public class Utils {
 		int kiloBytes = byteCount / 1000;
 		int megaBytes = kiloBytes / 1000;
 		return megaBytes;
+	}
+	
+	/****
+	 * Get the media data from the one of the following media {@link ContentProvider}
+	 * <ul>
+	 * 		<li>{@link android.provider.MediaStore.Images.Media}</li>
+	 * 		<li>{@link android.provider.MediaStore.Audio.Media}</li>
+	 * 		<li>{@link android.provider.MediaStore.Video.Media}</li>
+	 * </ul>
+	 * 
+	 * @param ctx Context object
+	 * @param uri Media content uri of the image, audio or video resource
+	 ****/
+	public static byte[] getMediaData( Context ctx, Uri uri ) {
+		
+		// TODO: check if uri does not have 'media' in it,
+		// it is possibly wrong media content URI.
+		
+		Cursor cur = ctx.getContentResolver().query( uri, new String[]{ Media.DATA }, null, null, null );
+		byte[]  data = null;
+		
+		if( cur != null && cur.getCount() > 0 ) {
+			while( cur.moveToNext() ) {
+				String path = cur.getString( cur.getColumnIndex(Video.Media.DATA) );
+				
+				try {
+					File f = new File(path);
+					FileInputStream fis = new FileInputStream(f);
+					data = NetworkManager.readStreamToBytes( fis );
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch ( Exception e) {
+					e.printStackTrace();
+				}
+				
+				// Log.v( TAG, "#getVideoData byte.size: " + data.length );
+			}	// end while
+		} else
+			Log.e(TAG, "#Media cur is null or blank" );
+		
+		return data;
 	}
 	
 }

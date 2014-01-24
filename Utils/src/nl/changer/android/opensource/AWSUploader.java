@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
@@ -103,18 +104,18 @@ public class AWSUploader {
 	 * Uploads the object pointed to by the Uri parameter to AWS S3.
 	 * 
 	 * @param ctx
-	 * @param uri
+	 * @param uri Media Uri of the resource on the device
 	 * @param contentType
 	 * @param url Signed URL to upload to AWS
 	 * ****/
-	public static void uploadObject( Context ctx, Uri uri, String contentType, String url ) {
+	public static boolean uploadMediaObject( Context ctx, Uri uri, String contentType, String url ) {
 		
 		// TODO: check if the parameters are null or invalid.
 		// TODO: uri validity
-		Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
-		NetworkManager nwMgr = new NetworkManager();
+		// Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
 		Bitmap bmp = null;
 		byte[] data = null;
+		boolean isSucccessful = false;
 		
 		if( Utils.isImage(contentType) ) {
 			// content://media/external/images/media/45490
@@ -125,7 +126,8 @@ public class AWSUploader {
 				if( bmp != null )
 					Log.v( TAG, "#uploadObject bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toMegaBytes(bmp.getByteCount()) + " MB" );
 				
-				
+				// TODO: compress the image only if the image
+				// is too big
 				bmp = Utils.compressImage( bmp, 8 );
 				Log.v( TAG, "#uploadObject bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toMegaBytes(bmp.getByteCount()) + " MB" );
 				
@@ -140,51 +142,31 @@ public class AWSUploader {
 			// TODO:
 		} else if( Utils.isVideo(contentType) ) {
 			// video uri = "content://media/external/video/media/45492"
-			data = getMediaData( ctx, uri );
+			data = Utils.getMediaData( ctx, uri );
 		}
 		
 		// TODO: also check for video and audio types and retrieve the files to
 		// upload.
 		Log.v(TAG, "#uploadObject uploading...");
 		HashMap<String, Object> outputData = new HashMap<String, Object>();
-		uploadObjectToAWS( url, contentType, data, outputData );
+		isSucccessful = uploadObjectToAWS( url, contentType, data, outputData );
 		
-		Log.v(TAG, "#uploadObject uploading FINISHED");
+		return isSucccessful;
 	}
 	
-	private static byte[] getMediaData( Context ctx, Uri uri ) {
-		
-		// TODO: check if uri does not have 'media' in it,
-		// it is possibly wrong media content URI.
-		
-		Cursor cur = ctx.getContentResolver().query( uri, new String[]{ Media.DATA }, null, null, null );
-		byte[]  data = null;
-		
-		if( cur != null && cur.getCount() > 0 ) {
-			while( cur.moveToNext() ) {
-				String path = cur.getString( cur.getColumnIndex(Video.Media.DATA) );
-				
-				try {
-					File f = new File(path);
-					FileInputStream fis = new FileInputStream(f);
-					data = NetworkManager.readStreamToBytes( fis );
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch ( Exception e) {
-					e.printStackTrace();
-				}
-				
-				// Log.v( TAG, "#getVideoData byte.size: " + data.length );
-			}	// end while
-		} else
-			Log.e(TAG, "#getVideoData cur is null or blank" );
-		
-		return data;
-	}
+
 	
-	public static void uploadObjectToAWS(String urlStr, String contentType, Object inputData, HashMap<String, Object> outputData) {
+	/****
+	 * @param urlStr SignedUrl to upload the object to
+	 * @param contentType Standard HTTP Content type of the object to be uploaded to the server
+	 * @param inputData {@link JSONObject} or byte[] to be uploaded to the server
+	 * @param outputData Map to return the result back
+	 ****/
+	public static boolean uploadObjectToAWS( String urlStr, String contentType, Object inputData, HashMap<String, Object> outputData ) {
 		
 		URL url = null;
+		boolean isSucccessful = false;
+		
 		try {
 			url = new URL(urlStr);
 			Log.v(TAG, "#uplaodObject url: " + url );
@@ -242,9 +224,17 @@ public class AWSUploader {
 		try {
 			int responseCode = connection.getResponseCode();
 			Log.v( TAG, "#uploadObject resCode: " + responseCode );
+			
+			if( responseCode == HttpStatus.SC_OK )
+				isSucccessful = true;
+			else
+				isSucccessful = false;
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		return isSucccessful;
 	}
 
 }
