@@ -271,11 +271,10 @@ public class NetworkManager {
 		String response = null;
 		InputStream inputStream = null;
 		
-		Log.v( TAG, "#putDataToUrl inputData: " + inputData );
+		// Log.v( TAG, "#putDataToUrl inputData: " + inputData );
 		
 		try {
 			urlObj = new URL(url);
-			Log.v( TAG, "#putDataToUrl url: " + urlObj );
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
 		} catch ( Exception e ) {
