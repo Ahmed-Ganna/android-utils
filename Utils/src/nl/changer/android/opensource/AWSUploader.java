@@ -143,7 +143,7 @@ public class AWSUploader {
 			} catch ( Exception e ) {
 				e.printStackTrace();
 			}
-		} else if( Utils.isAudio(contentType) ) {
+		} else if( Utils.isAudio( contentType ) ) {
 			// android.provider.MediaStore.Audio.
 			// TODO:
 		} else if( Utils.isVideo(contentType) ) {

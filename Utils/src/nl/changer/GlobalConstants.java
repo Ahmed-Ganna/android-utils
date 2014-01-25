@@ -74,6 +74,8 @@ public class GlobalConstants {
 	public static final String KEY_FILE = "file";
 	public static final String KEY_URI = "uri";
 	public static final String KEY_TYPE = "type";
+	public static final String KEY_EXTRAS = "extras";
+	public static final String KEY_ITEM = "item";
 	
 	public static final String NEW_LINE = "\n";
 	
