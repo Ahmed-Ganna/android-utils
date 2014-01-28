@@ -1,5 +1,6 @@
 package nl.changer.android.opensource;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -113,7 +114,7 @@ public class AWSUploader {
 		
 		// TODO: check if the parameters are null or invalid.
 		// TODO: uri validity
-		// Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
+		Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
 		Bitmap bmp = null;
 		byte[] data = null;
 		boolean isSucccessful = false;
@@ -125,7 +126,7 @@ public class AWSUploader {
 				// TODO: use Utils#getMediaData from uri, rather than doing this manually
 				bmp = BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ) );
 				
-				int size = Utils.toMegaBytes(Utils.getMediaSize(ctx, uri));
+				int size = Utils.toMegaBytes( Utils.getMediaSize(ctx, uri) );
 				
 				if( bmp != null )
 					Log.v( TAG, "#uploadObject BEFORE bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + size + " MB" );
@@ -175,7 +176,7 @@ public class AWSUploader {
 		
 		try {
 			url = new URL(urlStr);
-			Log.v(TAG, "#uplaodObject url: " + url );
+			Log.v(TAG, "#uploadObjectToAWS url: " + url );
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
 		} catch ( Exception e ) {
@@ -198,22 +199,28 @@ public class AWSUploader {
 			e.printStackTrace();
 		}
 		
-		OutputStreamWriter out = null;
+		// OutputStreamWriter out = null;
+		DataOutputStream out = null; 
 		try {
-			out = new OutputStreamWriter( connection.getOutputStream() );
+			// out = new OutputStreamWriter( connection.getOutputStream() );
+			out = new DataOutputStream( connection.getOutputStream() );
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		Log.v(TAG, "#uploadObjectToAWS uploading using " + out.getClass().getSimpleName() );
 		
 		if( out != null ) {
 			if( inputData != null && inputData.toString().length() > 0 ) {
 				
 				try {
 					if( inputData instanceof JSONObject || inputData instanceof JSONArray || inputData instanceof String )	
-							out.write( inputData.toString() );
+						// out.write( inputData.toString() );
+						out.write( inputData.toString().getBytes() );
 					else if ( inputData instanceof byte[] ) {
 						byte[] buffer = (byte[]) inputData;
-						out.write( new String(buffer) );
+						// out.write( new String(buffer) );
+						out.write( buffer );
 					}
 					
 					out.flush();

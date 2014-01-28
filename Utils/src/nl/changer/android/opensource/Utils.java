@@ -1479,7 +1479,7 @@ public class Utils {
 					// Log.v( TAG, "#getVideoData byte.size: " + data.length );
 				}	// end while
 			} else
-				Log.e(TAG, "#getMediaData cur is null or blank" );	
+				Log.e( TAG, "#getMediaData cur is null or blank" );
 		} finally {
 			if( cur != null && !cur.isClosed() )
 				cur.close();
