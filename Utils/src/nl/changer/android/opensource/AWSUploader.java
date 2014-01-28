@@ -149,6 +149,7 @@ public class AWSUploader {
 			// TODO:
 		} else if( Utils.isVideo(contentType) ) {
 			// video uri = "content://media/external/video/media/45492"
+			Log.v( TAG, "#uploadObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
 			data = Utils.getMediaData( ctx, uri );
 		}
 		
