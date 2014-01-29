@@ -64,6 +64,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Images.Media;
 import android.telephony.TelephonyManager;
@@ -799,6 +800,14 @@ public class Utils {
 		return filePath;
 	}
 	
+	/****
+	 * Insert an image into {@link Media} content provider of the device.
+	 * @return The URL to the newly created image, or null if the image failed to be stored for any reason.
+	 * ***/
+	public static String writeImageToMedia( Context ctx, Bitmap image, String title, String description ) {
+		return Images.Media.insertImage(ctx.getContentResolver(), image, title, description);
+	}
+	
 	/***
 	 * Get the name of the application that has been defined in AndroidManifest.xml
 	 * ***/
@@ -1439,6 +1448,10 @@ public class Utils {
 		long kiloBytes = byteCount / 1000;
 		int megaBytes = (int) (kiloBytes / 1000);
 		return megaBytes;
+	}
+	
+	public static long toKiloBytes(long byteCount) {
+		return (byteCount / 1000);
 	}
 	
 	/****

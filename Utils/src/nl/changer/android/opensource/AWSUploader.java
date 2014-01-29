@@ -126,17 +126,17 @@ public class AWSUploader {
 				// TODO: use Utils#getMediaData from uri, rather than doing this manually
 				bmp = BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ) );
 				
-				int size = Utils.toMegaBytes( Utils.getMediaSize(ctx, uri) );
+				long size = Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) );
 				
 				if( bmp != null )
-					Log.v( TAG, "#uploadObject BEFORE bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + size + " MB" );
+					Log.v( TAG, "#uploadObject BEFORE bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + size + " KB" );
 				
 				// if size cannot be determined or
 				// great than 1MB, compress the image
 				if( size == 0 || size > 1 )
 					bmp = Utils.compressImage( bmp, 8 );
 				
-				Log.v( TAG, "#uploadObject AFTER bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toMegaBytes( Utils.getMediaSize(ctx, uri) ) + " MB" );
+				Log.v( TAG, "#uploadObject AFTER bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) ) + " KB" );
 				
 				data = Utils.toBytes(bmp);
 			} catch ( FileNotFoundException e ) {
