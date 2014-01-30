@@ -141,20 +141,20 @@ public class AWSUploader {
 				data = Utils.toBytes(bmp);
 			} catch ( FileNotFoundException e ) {
 				e.printStackTrace();
+				// TODO: return this error.
 			} catch ( Exception e ) {
 				e.printStackTrace();
+				// TODO: return this error.
 			}
 		} else if( Utils.isAudio( contentType ) ) {
 			// android.provider.MediaStore.Audio.
-			// TODO:
+			data = Utils.getMediaData( ctx, uri );
 		} else if( Utils.isVideo(contentType) ) {
-			// video uri = "content://media/external/video/media/45492"
+			// sample video uri = "content://media/external/video/media/45492"
 			Log.v( TAG, "#uploadObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
 			data = Utils.getMediaData( ctx, uri );
 		}
 		
-		// TODO: also check for video and audio types and retrieve the files to
-		// upload.
 		Log.v(TAG, "#uploadObject uploading...");
 		HashMap<String, Object> outputData = new HashMap<String, Object>();
 		isSucccessful = uploadObjectToAWS( url, contentType, data, outputData );
