@@ -1468,8 +1468,12 @@ public class Utils {
 	 ****/
 	public static byte[] getMediaData( Context ctx, Uri uri ) {
 		
-		// TODO: check if uri does not have 'media' in it,
-		// it is possibly wrong media content URI.
+		if( uri == null )
+			throw new NullPointerException("Uri cannot be null");
+		
+		if( !uri.toString().contains("content://media/") ) {
+			Log.w(TAG, "#getMediaData probably the uri is not a media content uri");
+		}
 		
 		Cursor cur = ctx.getContentResolver().query( uri, new String[]{ Media.DATA }, null, null, null );
 		byte[]  data = null;
@@ -1507,7 +1511,7 @@ public class Utils {
 	 * Known bug: for unknown reason, the image size for some images was found to be 0
 	 * 
 	 * @param mediaUri uri to the media resource. For e.g.
-	 * content://media/external/images/media/45490
+	 * content://media/external/images/media/45490 or content://media/external/video/media/45490
 	 ****/
 	public static long getMediaSize( Context ctx, Uri mediaUri ) {
 		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ Media.SIZE }, null, null, null );
@@ -1518,12 +1522,17 @@ public class Utils {
 				while( cur.moveToNext() ) {
 					size = cur.getLong( cur.getColumnIndex(Media.SIZE ) );
 					
-					// for unknown reason, the image size for some
-					// images was found to be 0
+					// for unknown reason, the image size for image was found to be 0
 					// Log.v( TAG, "#getSize byte.size: " + size );
+					
+					if( size == 0 )
+						Log.e( TAG, "#getSize for unknown reason, the image size for image was found to be 0" );
+					
 				}	// end while
+			} else if( cur.getCount() == 0 ) {
+				Log.e( TAG, "#getSize cur size is 0. File may not exist" );
 			} else
-				Log.e( TAG, "#getSize cur is null or blank" );	
+				Log.e( TAG, "#getSize cur is null" );
 		} finally {
 			if( cur != null && !cur.isClosed() )
 				cur.close();
