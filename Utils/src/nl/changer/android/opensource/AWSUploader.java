@@ -114,7 +114,7 @@ public class AWSUploader {
 		
 		// TODO: check if the parameters are null or invalid.
 		// TODO: uri validity
-		Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
+		// Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
 		Bitmap bmp = null;
 		byte[] data = null;
 		boolean isSucccessful = false;
@@ -133,10 +133,10 @@ public class AWSUploader {
 				
 				// if size cannot be determined or
 				// great than 1MB, compress the image
-				if( size == 0 || size > 1 )
+				if( size == 0 || size > 1 ) {
 					bmp = Utils.compressImage( bmp, 8 );
-				
-				Log.v( TAG, "#uploadObject AFTER bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) ) + " KB" );
+					Log.v( TAG, "#uploadObject AFTER bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) ) + " KB" );
+				}
 				
 				data = Utils.toBytes(bmp);
 			} catch ( FileNotFoundException e ) {
@@ -151,11 +151,11 @@ public class AWSUploader {
 			data = Utils.getMediaData( ctx, uri );
 		} else if( Utils.isVideo(contentType) ) {
 			// sample video uri = "content://media/external/video/media/45492"
-			Log.v( TAG, "#uploadObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
+			Log.i( TAG, "#uploadObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
 			data = Utils.getMediaData( ctx, uri );
 		}
 		
-		Log.v(TAG, "#uploadObject uploading...");
+		// Log.v(TAG, "#uploadObject uploading...");
 		HashMap<String, Object> outputData = new HashMap<String, Object>();
 		isSucccessful = uploadObjectToAWS( url, contentType, data, outputData );
 		
@@ -177,7 +177,7 @@ public class AWSUploader {
 		
 		try {
 			url = new URL(urlStr);
-			Log.v(TAG, "#uploadObjectToAWS url: " + url );
+			// Log.v(TAG, "#uploadObjectToAWS url: " + url );
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
 		} catch ( Exception e ) {
@@ -209,7 +209,7 @@ public class AWSUploader {
 			e.printStackTrace();
 		}
 		
-		Log.v(TAG, "#uploadObjectToAWS uploading using " + out.getClass().getSimpleName() );
+		// Log.v(TAG, "#uploadObjectToAWS uploading using " + out.getClass().getSimpleName() );
 		
 		if( out != null ) {
 			if( inputData != null && inputData.toString().length() > 0 ) {

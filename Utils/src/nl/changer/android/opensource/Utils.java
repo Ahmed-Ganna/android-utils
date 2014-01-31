@@ -465,6 +465,10 @@ public class Utils {
      * Checks if the service with the given name is currently running on the device.
      * **/
     public static boolean isServiceRunning( Context ctx, String serviceName ) {
+    	
+    	if( serviceName == null )
+    		throw new NullPointerException("Service name cannot be null");
+    	
         ActivityManager manager = (ActivityManager) ctx.getSystemService( Context.ACTIVITY_SERVICE );
         for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (service.service.getClassName().equals(serviceName)) {
@@ -1526,7 +1530,7 @@ public class Utils {
 					// Log.v( TAG, "#getSize byte.size: " + size );
 					
 					if( size == 0 )
-						Log.e( TAG, "#getSize for unknown reason, the image size for image was found to be 0" );
+						Log.w( TAG, "#getSize The image size was found to be 0. Reason: UNKNOWN" );
 					
 				}	// end while
 			} else if( cur.getCount() == 0 ) {
