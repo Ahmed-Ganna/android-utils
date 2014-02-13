@@ -36,6 +36,8 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -65,7 +67,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
-import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Images.Media;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -547,6 +548,28 @@ public class Utils {
 	}
 	
 	/***
+	 * Check if the input parameter uri is valid.
+	 * ***/
+	/*public static boolean isValidUri( final Uri uri ) {
+		boolean isValid = true;
+		
+		if( uri == null )
+			isValid = false;
+		else {
+			try {
+				Uri.parse( uri.toString() );
+				isValid = true;
+			} catch (MalformedURLException e) {
+				
+			}
+			
+		}
+		
+		
+		return isValid;
+	}*/
+	
+	/***
 	 * Capitalize a each word in the string.
 	 * ***/
 	public static String capitalizeString( String string ) {
@@ -724,26 +747,29 @@ public class Utils {
 	 * @return Data storage directory on the device. Maybe be a 
 	 * directory on SD Card or internal storage of the device.
 	 ****/
-	public static File getStorageDirectory( Context ctx ) {
-		final String DIR_NAME = "atemp";
-		File dir = null;
+	public static File getStorageDirectory( Context ctx, String dirName ) {
+		
+		if( TextUtils.isEmpty( dirName) )
+			dirName = "atemp";
+		
+		File f = null;
 		
 		String state = Environment.getExternalStorageState();
 		
 		 if( Environment.MEDIA_MOUNTED.equals(state) ) {
-			dir = new File ( Environment.getExternalStorageDirectory() + "/" + DIR_NAME );
+			f = new File ( Environment.getExternalStorageDirectory() + "/" + dirName );
 	    } else {
 	    	// media is removed, unmounted etc
 	    	// Store image in /data/data/<package-name>/cache/atemp/photograph.jpeg
-	    	dir = new File ( ctx.getCacheDir() + "/" + DIR_NAME );
+	    	f = new File ( ctx.getCacheDir() + "/" + dirName );
 	    }
 		 
-		if( !dir.exists() )
-			dir.mkdirs();
+		if( !f.exists() )
+			f.mkdirs();
 		/*else
 			Log.v( TAG, "#getStorageDirectory directory exits already" );*/
 		 
-		return dir;
+		return f;
 	}
 	
 	/***
@@ -752,7 +778,7 @@ public class Utils {
 	 * You can get the file path using {@link File#getAbsolutePath()}
 	 * ***/
 	public static File getFile( String fileName ) {
-		File dir = getStorageDirectory( mContext );
+		File dir = getStorageDirectory( mContext, null );
 		File f = new File( dir, fileName );
 		
 		/*try {
@@ -779,7 +805,7 @@ public class Utils {
 		String filePath = null;
 		OutputStream imageFileOS;
 		
-		dir = getStorageDirectory(mContext);
+		dir = getStorageDirectory(mContext, null);
 		
 		// dir.mkdirs();
 		File f = new File( dir, FILE_NAME );
@@ -806,10 +832,35 @@ public class Utils {
 	
 	/****
 	 * Insert an image into {@link Media} content provider of the device.
-	 * @return The URL to the newly created image, or null if the image failed to be stored for any reason.
+	 * @return The media content Uri to the newly created image, or null if the image failed to be stored for any reason.
 	 * ***/
 	public static String writeImageToMedia( Context ctx, Bitmap image, String title, String description ) {
 		return Images.Media.insertImage(ctx.getContentResolver(), image, title, description);
+	}
+	
+	/****
+	 * Insert an audio into {@link Media} content provider of the device.
+	 * @return The media content Uri to the newly created audio, or null if failed for any reason.
+	 * ***/
+	public static Uri writeAudioToMedia( Context ctx, File audioFile ) {
+		  ContentValues values = new ContentValues();
+		  values.put( MediaStore.MediaColumns.DATA, audioFile.getAbsolutePath() );
+		  values.put( MediaStore.MediaColumns.TITLE, "Name Of Your File" );
+		  values.put( MediaStore.MediaColumns.MIME_TYPE, "audio/mpeg" );
+		  values.put( MediaStore.MediaColumns.SIZE, audioFile.length() );
+		  values.put( MediaStore.Audio.Media.ARTIST, "Artist Name" );
+		  values.put( MediaStore.Audio.Media.IS_RINGTONE, false );
+		  // Now set some extra features it depend on you
+		  values.put( MediaStore.Audio.Media.IS_NOTIFICATION, false );
+		  values.put( MediaStore.Audio.Media.IS_ALARM, false );
+		  values.put( MediaStore.Audio.Media.IS_MUSIC, false );
+		  
+		  Uri uri = MediaStore.Audio.Media.getContentUriForPath( audioFile.getAbsolutePath() );
+		  Log.v( TAG, "#writeAudioToMedia uri: " + uri + " absPath: " + audioFile.getAbsolutePath() );
+		  Uri uri2 = ctx.getContentResolver().insert( uri, values );
+		  Log.v( TAG, "#writeAudioToMedia uri2: " + uri2 );
+		  
+		  return uri2;
 	}
 	
 	/***
@@ -825,7 +876,7 @@ public class Utils {
 		    appInfo = null;
 		}
 		
-		final String applicationName = (String) (appInfo != null ? packageMgr.getApplicationLabel(appInfo) : "(unknown)");
+		final String applicationName = (String) (appInfo != null ? packageMgr.getApplicationLabel(appInfo) : "UNKNOWN");
 		
 		return applicationName;
 	}
@@ -1284,7 +1335,7 @@ public class Utils {
     /****
      * 
      ****/
-    public static Bitmap decodeSampledBitmapFromResource( Context ctx, Uri uri, int reqWidth, int reqHeight ) {
+    public static Bitmap decodeSampledBitmapFromResource( Context ctx, Uri uri, int reqWidth, int reqHeight ) throws FileNotFoundException {
 		
 	    // First decode with inJustDecodeBounds=true to check dimensions
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -1305,10 +1356,8 @@ public class Utils {
 	    try {
 			return BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ), new Rect(), options );
 		} catch( FileNotFoundException e ) {
-			e.printStackTrace();
-		};
-		
-		return null;
+			throw new FileNotFoundException( e.getMessage() );
+		}
 	}
 	
 	private static int calculateInSampleSize(

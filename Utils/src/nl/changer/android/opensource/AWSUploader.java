@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.Video;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -112,8 +113,15 @@ public class AWSUploader {
 	 * ****/
 	public static boolean uploadMediaObject( Context ctx, Uri uri, String contentType, String url ) {
 		
-		// TODO: check if the parameters are null or invalid.
-		// TODO: uri validity
+		if( uri == null )
+			throw new NullPointerException(" uri cannot be null or blank");
+		
+		if( TextUtils.isEmpty(contentType) )
+			throw new NullPointerException(" contentType cannot be null or blank");
+		
+		if( TextUtils.isEmpty(url) )
+			throw new NullPointerException(" url cannot be null or blank");
+	
 		// Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
 		Bitmap bmp = null;
 		byte[] data = null;
@@ -121,8 +129,8 @@ public class AWSUploader {
 		
 		if( Utils.isImage(contentType) ) {
 			// content://media/external/images/media/45490
+			
 			try {
-				
 				// TODO: use Utils#getMediaData from uri, rather than doing this manually
 				bmp = BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ) );
 				
