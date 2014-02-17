@@ -1600,7 +1600,7 @@ public class Utils {
     }
 	
 	/****
-	 * 
+	 * @throws NullPointerException if parameter is null
 	 ****/
 	public static ArrayList<KeyValueTuple> toKeyValueList(JSONArray keyValueArray) {
 		ArrayList<KeyValueTuple> list = null;

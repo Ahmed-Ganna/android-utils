@@ -555,6 +555,9 @@ public class NetworkManager {
 
 	private void addHeaders( HttpURLConnection conn, ArrayList<KeyValueTuple> headers ) {
 	
+		if( headers == null || headers.size() == 0 )
+			return;
+		
 		Log.v(TAG, "#addHeaders adding headers now");
 		for ( int i = 0; i < headers.size(); i++ ) {
 			KeyValueTuple tuple = headers.get(i);
