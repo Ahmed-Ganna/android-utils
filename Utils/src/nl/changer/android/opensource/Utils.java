@@ -26,8 +26,12 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nl.changer.GlobalConstants;
+import nl.changer.KeyValueTuple;
+
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -68,6 +72,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.Media;
+import android.security.KeyChain;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -1593,5 +1598,45 @@ public class Utils {
 		
 		return size;
     }
+	
+	/****
+	 * 
+	 ****/
+	public static ArrayList<KeyValueTuple> toKeyValueList(JSONArray keyValueArray) {
+		ArrayList<KeyValueTuple> list = null;
+		
+		if( keyValueArray == null )
+			throw new NullPointerException( "key-values array cannot be null" );
+		
+		if( keyValueArray.length() > 0 )
+			list = new ArrayList<KeyValueTuple>();
+		
+		for (int i = 0; i < keyValueArray.length(); i++) {
+			JSONObject obj = null;
+			String key = null;
+			String value = null;
+			
+			try {
+				obj = keyValueArray.getJSONObject(i);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+			if( obj == null )
+				continue;
+			
+			try {
+				key = obj.getString( GlobalConstants.KEY_KEY );
+				value = obj.getString( GlobalConstants.KEY_VALUE );
+				list.add( new KeyValueTuple(key, value) );
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return list;
+	}
 	
 }

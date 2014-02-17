@@ -13,12 +13,14 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.UnknownServiceException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import nl.changer.GlobalConstants;
+import nl.changer.KeyValueTuple;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -455,7 +457,7 @@ public class NetworkManager {
 	 * The error message can be retrieve by using {@link HashMap#get(Object)} for the key 'message'
 	 * @return Response from the server.
 	 * ***/
-	protected String postDataToUrl( String url, Object inputData, HashMap<String, Object> outputData, HashMap<String, Object> headers ) {
+	protected String postDataToUrl( String url, Object inputData, HashMap<String, Object> outputData, ArrayList<KeyValueTuple> headers ) {
 		
 		HttpURLConnection conn = null;
 		URL urlObj = null;
@@ -551,20 +553,18 @@ public class NetworkManager {
 		return response;
 	}
 
-	private void addHeaders( HttpURLConnection conn, HashMap<String, Object> headers ) {
-		/*Set<String> keys = headers.keySet();
-		Iterator<String> iterator = keys.iterator();
-        while ( iterator.hasNext() ) {
-            String key = (String) iterator.next();
-            map.put( key, fromJson(object.get(key)) );
-        }*/
-		
-		Iterator it = headers.entrySet().iterator();
-	    while( it.hasNext() ) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-	        Log.v( TAG, "#addHeaders " + pairs.getKey() + " = " + pairs.getValue() );
-	        conn.addRequestProperty( pairs.getKey().toString(), pairs.getValue().toString() );
-	    }	// end while
+	private void addHeaders( HttpURLConnection conn, ArrayList<KeyValueTuple> headers ) {
+	
+		Log.v(TAG, "#addHeaders adding headers now");
+		for ( int i = 0; i < headers.size(); i++ ) {
+			KeyValueTuple tuple = headers.get(i);
+			String headerName = tuple.mKey;
+			String headerValue = tuple.mValue;
+			
+			Log.v( TAG, "#addHeaders headerName: " + headerName + " AND headerValue: " + headerValue );
+			
+			conn.addRequestProperty( headerName, headerValue );
+		}	// end for
 	}
 
 }
