@@ -14,6 +14,9 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.UnknownServiceException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import nl.changer.GlobalConstants;
 
@@ -360,11 +363,11 @@ public class NetworkManager {
 		String response = null;
 		InputStream inputStream = null;
 		
-		Log.v( TAG, "#putDataToUrl inputData: " + inputData );
+		Log.v( TAG, "#postDataToUrl inputData: " + inputData );
 		
 		try {
 			urlObj = new URL(url);
-			Log.v( TAG, "#putDataToUrl url: " + urlObj );
+			Log.v( TAG, "#postDataToUrl url: " + urlObj );
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
 		} catch ( Exception e ) {
@@ -394,43 +397,43 @@ public class NetworkManager {
   			
   			if( inputStream != null ) {
   				response = readStream( inputStream );
-  		  		Log.d( TAG, "#putDataToUrl response: " + response );
+  		  		Log.d( TAG, "#postDataToUrl response: " + response );
   			} else {
-  				Log.w( TAG, "#putDataToUrl InputStream is null" );
+  				Log.w( TAG, "#postDataToUrl InputStream is null" );
   			}
 	  		
 		} catch ( FileNotFoundException e ) {
-			Log.e( TAG, "#putDataToUrl FileNotFoundException while making an API call. Reason: " + e.getMessage() );
+			Log.e( TAG, "#postDataToUrl FileNotFoundException while making an API call. Reason: " + e.getMessage() );
 			
 			if( conn.getErrorStream() != null ) {
 				String errMsg = readStream( conn.getErrorStream() );
-				Log.v( TAG, "#putDataToUrl FileNotFoundException Error from the errorStream. Reason: " + errMsg );
+				Log.v( TAG, "#postDataToUrl FileNotFoundException Error from the errorStream. Reason: " + errMsg );
 				outputData.put( GlobalConstants.API_OUTPUT_STATUS_MESSAGE, errMsg );	
 			}
 				
 		} catch ( IOException e ) {
 			
-			Log.e( TAG, "#putDataToUrl IOException while making an API call. Reason: " + e.getMessage() );
+			Log.e( TAG, "#postDataToUrl IOException while making an API call. Reason: " + e.getMessage() );
 			if( conn.getErrorStream() != null ) {
 				String errMsg = readStream( conn.getErrorStream() );
-				Log.v( TAG, "#putDataToUrl IOException Error from the errorStream. Reason: " + errMsg );
+				Log.v( TAG, "#postDataToUrl IOException Error from the errorStream. Reason: " + errMsg );
 				outputData.put( GlobalConstants.API_OUTPUT_STATUS_MESSAGE, errMsg );				
 			}
 
 		} catch ( Exception e ) {
 			
-			Log.e( TAG, "#putDataToUrl Exception while making an API call. Reason: " + e.getMessage() );
+			Log.e( TAG, "#postDataToUrl Exception while making an API call. Reason: " + e.getMessage() );
 			
 			if( conn.getErrorStream() != null ) {
 				String errMsg = readStream( conn.getErrorStream() );			
-				Log.v( TAG, "#putDataToUrl Exception Error from the errorStream. Reason: " + errMsg );
+				Log.v( TAG, "#postDataToUrl Exception Error from the errorStream. Reason: " + errMsg );
 				outputData.put( GlobalConstants.API_OUTPUT_STATUS_MESSAGE, errMsg );				
 			}
 
 		} finally {
 			try {
 				if( conn != null ) {
-					Log.d( TAG, "#putDataToUrl responseCode: " + conn.getResponseCode() );
+					Log.d( TAG, "#postDataToUrl responseCode: " + conn.getResponseCode() );
 					outputData.put( GlobalConstants.API_OUTPUT_STATUS, conn.getResponseCode() );
 					outputData.put( GlobalConstants.API_OUTPUT_STATUS_CODE, conn.getResponseCode() );
 					outputData.put( GlobalConstants.API_OUTPUT_STATUS_LINE, conn.getResponseMessage() );
@@ -447,4 +450,121 @@ public class NetworkManager {
 		return response;
 	}
 	
+	/***
+	 * Posts the input JSON data to the specified URL. Returns the error message, if any, in the HashMap.
+	 * The error message can be retrieve by using {@link HashMap#get(Object)} for the key 'message'
+	 * @return Response from the server.
+	 * ***/
+	protected String postDataToUrl( String url, Object inputData, HashMap<String, Object> outputData, HashMap<String, Object> headers ) {
+		
+		HttpURLConnection conn = null;
+		URL urlObj = null;
+		String response = null;
+		InputStream inputStream = null;
+		
+		Log.v( TAG, "#postDataToUrl inputData: " + inputData );
+		
+		try {
+			urlObj = new URL(url);
+			Log.v( TAG, "#postDataToUrl url: " + urlObj );
+		} catch ( MalformedURLException e ) {
+			e.printStackTrace();
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+		
+		try {
+  			conn = (HttpURLConnection) urlObj.openConnection();
+  			
+  			addHeaders(conn, headers);
+  			
+  			executeHttpPost( conn, MimeType.APPLICATION_JSON );
+  			
+  			if( inputData != null && inputData.toString().length() > 0 ) {
+  				DataOutputStream dos = new DataOutputStream( conn.getOutputStream() );
+  				
+  				if( inputData instanceof JSONObject || inputData instanceof JSONArray || inputData instanceof String )
+  					dos.writeBytes( inputData.toString() );
+  				else if ( inputData instanceof byte[] ) {
+  					byte[] buffer = (byte[]) inputData;
+  					dos.write( buffer, 0, buffer.length );	
+  				}
+  				
+  		  		dos.flush();
+  		  		dos.close();
+  			}
+	  		
+  			inputStream = conn.getInputStream();
+  			
+  			if( inputStream != null ) {
+  				response = readStream( inputStream );
+  		  		Log.d( TAG, "#postDataToUrl response: " + response );
+  			} else {
+  				Log.w( TAG, "#postDataToUrl InputStream is null" );
+  			}
+	  		
+		} catch ( FileNotFoundException e ) {
+			Log.e( TAG, "#postDataToUrl FileNotFoundException while making an API call. Reason: " + e.getMessage() );
+			
+			if( conn.getErrorStream() != null ) {
+				String errMsg = readStream( conn.getErrorStream() );
+				Log.v( TAG, "#postDataToUrl FileNotFoundException Error from the errorStream. Reason: " + errMsg );
+				outputData.put( GlobalConstants.API_OUTPUT_STATUS_MESSAGE, errMsg );	
+			}
+				
+		} catch ( IOException e ) {
+			
+			Log.e( TAG, "#postDataToUrl IOException while making an API call. Reason: " + e.getMessage() );
+			if( conn.getErrorStream() != null ) {
+				String errMsg = readStream( conn.getErrorStream() );
+				Log.v( TAG, "#postDataToUrl IOException Error from the errorStream. Reason: " + errMsg );
+				outputData.put( GlobalConstants.API_OUTPUT_STATUS_MESSAGE, errMsg );				
+			}
+
+		} catch ( Exception e ) {
+			
+			Log.e( TAG, "#postDataToUrl Exception while making an API call. Reason: " + e.getMessage() );
+			
+			if( conn.getErrorStream() != null ) {
+				String errMsg = readStream( conn.getErrorStream() );			
+				Log.v( TAG, "#postDataToUrl Exception Error from the errorStream. Reason: " + errMsg );
+				outputData.put( GlobalConstants.API_OUTPUT_STATUS_MESSAGE, errMsg );				
+			}
+
+		} finally {
+			try {
+				if( conn != null ) {
+					Log.d( TAG, "#postDataToUrl responseCode: " + conn.getResponseCode() );
+					outputData.put( GlobalConstants.API_OUTPUT_STATUS, conn.getResponseCode() );
+					outputData.put( GlobalConstants.API_OUTPUT_STATUS_CODE, conn.getResponseCode() );
+					outputData.put( GlobalConstants.API_OUTPUT_STATUS_LINE, conn.getResponseMessage() );
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			conn.disconnect();
+		}
+		
+		return response;
+	}
+
+	private void addHeaders( HttpURLConnection conn, HashMap<String, Object> headers ) {
+		/*Set<String> keys = headers.keySet();
+		Iterator<String> iterator = keys.iterator();
+        while ( iterator.hasNext() ) {
+            String key = (String) iterator.next();
+            map.put( key, fromJson(object.get(key)) );
+        }*/
+		
+		Iterator it = headers.entrySet().iterator();
+	    while( it.hasNext() ) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        Log.v( TAG, "#addHeaders " + pairs.getKey() + " = " + pairs.getValue() );
+	        conn.addRequestProperty( pairs.getKey().toString(), pairs.getValue().toString() );
+	    }	// end while
+	}
+
 }
