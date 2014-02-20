@@ -558,13 +558,12 @@ public class NetworkManager {
 		if( headers == null || headers.size() == 0 )
 			return;
 		
-		Log.v(TAG, "#addHeaders adding headers now");
 		for ( int i = 0; i < headers.size(); i++ ) {
 			KeyValueTuple tuple = headers.get(i);
 			String headerName = tuple.mKey;
 			String headerValue = tuple.mValue;
 			
-			Log.v( TAG, "#addHeaders headerName: " + headerName + " AND headerValue: " + headerValue );
+			// Log.v( TAG, "#addHeaders headerName: " + headerName + " AND headerValue: " + headerValue );
 			
 			conn.addRequestProperty( headerName, headerValue );
 		}	// end for

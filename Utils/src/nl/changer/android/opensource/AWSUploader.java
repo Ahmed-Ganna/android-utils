@@ -142,7 +142,7 @@ public class AWSUploader {
 				// if size cannot be determined or
 				// great than 1MB, compress the image
 				if( size == 0 || size > 1 ) {
-					bmp = Utils.compressImage( bmp, 8 );
+					bmp = Utils.compressImage( bmp, 4 );
 					Log.v( TAG, "#uploadObject AFTER bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) ) + " KB" );
 				}
 				
