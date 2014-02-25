@@ -952,7 +952,7 @@ public class Utils {
 		
     	Date currentDate = new Date();
     	
-    	Log.v( TAG, "#getElapsedTime time:  " + time + " currentDate: " + currentDate );
+    	// Log.v( TAG, "#getElapsedTime time:  " + time + " currentDate: " + currentDate );
     	
     	long diffInSeconds = ( currentDate.getTime() - eventTime.getTime() ) / 1000;
     	String elapsed = "";
@@ -963,7 +963,7 @@ public class Utils {
     	long weeks = diffInSeconds / 604800;
     	long months = diffInSeconds / 2592000;
 
-    	Log.v( TAG, "#getElapsedTime seconds: " + seconds + " mins: " + mins + " hours: " + hours + " days: " + days );
+    	// Log.v( TAG, "#getElapsedTime seconds: " + seconds + " mins: " + mins + " hours: " + hours + " days: " + days );
     	
     	if ( seconds < 120 ) {
     	    elapsed = "a min ago";
