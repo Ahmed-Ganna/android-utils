@@ -88,7 +88,8 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 public class Utils {
 	
 	private static final String TAG = Utils.class.getSimpleName();
-	
+
+	@Deprecated
 	protected static Context mContext;
 	
 	static ProgressDialog mProgressDialog;
@@ -294,7 +295,7 @@ public class Utils {
 		if( ctx instanceof Activity ) {
 			if( !((Activity) ctx).isFinishing() ) {
 				Log.v( TAG, "#showProgressDialog isFinishing: " + ((Activity) ctx).isFinishing() );
-				mProgressDialog = ProgressDialog.show( mContext, title, body, true );
+				mProgressDialog = ProgressDialog.show( ctx, title, body, true );
 				mProgressDialog.setIcon(null);
 				mProgressDialog.setCancelable( isCancellable );	
 			}	
@@ -782,8 +783,8 @@ public class Utils {
 	 * and returns the file object.
 	 * You can get the file path using {@link File#getAbsolutePath()}
 	 * ***/
-	public static File getFile( String fileName ) {
-		File dir = getStorageDirectory( mContext, null );
+	public static File getFile( Context ctx, String fileName ) {
+		File dir = getStorageDirectory( ctx, null );
 		File f = new File( dir, fileName );
 		
 		/*try {
@@ -804,13 +805,13 @@ public class Utils {
 	 * Writes the given image to the external storage of the device.
 	 * @return Path of the image file that has been written.
 	 * ***/
-	public static String writeImage( byte[] imageData ) {
+	public static String writeImage( Context ctx, byte[] imageData ) {
 		final String FILE_NAME = "photograph.jpeg";
 		File dir = null;
 		String filePath = null;
 		OutputStream imageFileOS;
 		
-		dir = getStorageDirectory(mContext, null);
+		dir = getStorageDirectory(ctx, null);
 		
 		// dir.mkdirs();
 		File f = new File( dir, FILE_NAME );
@@ -871,12 +872,12 @@ public class Utils {
 	/***
 	 * Get the name of the application that has been defined in AndroidManifest.xml
 	 * ***/
-	public static String getApplicationName() {
-		final PackageManager packageMgr = mContext.getPackageManager();
+	public static String getApplicationName(Context ctx) {
+		final PackageManager packageMgr = ctx.getPackageManager();
 		ApplicationInfo appInfo;
 		
 		try {
-		    appInfo = packageMgr.getApplicationInfo( mContext.getPackageName(), PackageManager.SIGNATURE_MATCH );
+		    appInfo = packageMgr.getApplicationInfo( ctx.getPackageName(), PackageManager.SIGNATURE_MATCH );
 		} catch (final NameNotFoundException e) {
 		    appInfo = null;
 		}
