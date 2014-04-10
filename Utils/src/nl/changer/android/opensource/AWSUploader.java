@@ -173,7 +173,7 @@ public class AWSUploader {
 
 	
 	/****
-	 * @param urlStr SignedUrl to upload the object to
+	 * @param urlStr Signed HTTP PUT Url to upload the object to
 	 * @param contentType Standard HTTP Content type of the object to be uploaded to the server
 	 * @param inputData {@link JSONObject} or byte[] to be uploaded to the server
 	 * @param outputData Map to return the result back

@@ -40,7 +40,6 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -72,9 +71,12 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.Media;
-import android.security.KeyChain;
 import android.telephony.TelephonyManager;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -1638,6 +1640,20 @@ public class Utils {
 		}
 		
 		return list;
+	}
+	
+	/****
+	 * Returns {@link SpannableString} in Bold typeface
+	 * ***/
+	public static SpannableStringBuilder toBold(String sourceText) {
+		final SpannableStringBuilder sb = new SpannableStringBuilder(sourceText);
+
+		// Span to set text color to some RGB value
+		final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
+
+		// set text bold
+		sb.setSpan(bss, 0, sb.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE); 
+		return sb;
 	}
 	
 }

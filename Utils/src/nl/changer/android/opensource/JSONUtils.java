@@ -30,16 +30,19 @@ public class JSONUtils {
         return object.names() == null;
     }
 
-    public static Map<String, Object> getMap(JSONObject object, String key) throws JSONException {
-        return toMap(object.getJSONObject(key));
+    public static Map<String, Object> getMap(JSONObject object, String key, HashMap<String, Object> map) throws JSONException {
+        return toMap(object.getJSONObject(key), map);
     }
 
-    public static HashMap<String, Object> toMap(JSONObject object) throws JSONException {
-    	HashMap<String, Object> map = new HashMap();
+    public static HashMap<String, Object> toMap(JSONObject object, HashMap<String, Object> map) throws JSONException {
+    	
+    	if( map == null )
+    		map = new HashMap();
+    	
         Iterator keys = object.keys();
         while (keys.hasNext()) {
             String key = (String) keys.next();
-            map.put(key, fromJson(object.get(key)));
+            map.put(key, fromJson(object.get(key), null));
         }
         return map;
     }
@@ -47,16 +50,16 @@ public class JSONUtils {
     public static List toList(JSONArray array) throws JSONException {
         List list = new ArrayList();
         for (int i = 0; i < array.length(); i++) {
-            list.add(fromJson(array.get(i)));
+            list.add(fromJson(array.get(i), null));
         }
         return list;
     }
 
-    private static Object fromJson(Object json) throws JSONException {
+    private static Object fromJson(Object json, HashMap<String, Object> map) throws JSONException {
         if (json == JSONObject.NULL) {
             return null;
         } else if (json instanceof JSONObject) {
-            return toMap((JSONObject) json);
+            return toMap((JSONObject) json, map);
         } else if (json instanceof JSONArray) {
             return toList((JSONArray) json);
         } else {
