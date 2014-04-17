@@ -847,8 +847,11 @@ public class Utils {
 	}
 	
 	/****
+	 * @deprecated
 	 * Insert an audio into {@link Media} content provider of the device.
 	 * @return The media content Uri to the newly created audio, or null if failed for any reason.
+	 * 
+	 * @see {@link AudioUtils#writeAudioToMedia(Context, File)}
 	 * ***/
 	public static Uri writeAudioToMedia( Context ctx, File audioFile ) {
 		  ContentValues values = new ContentValues();
@@ -1467,6 +1470,26 @@ public class Utils {
         String[] arr = uri.split("#");
         
         return arr[0];
+    }
+    
+    /*public static String removeQuertParameters( String url ) {
+    	  
+        if( url == null || url.length() == 0 )
+        	return null;
+        
+        String[] arr = url.split("?");
+        
+        return arr[0];
+    }*/
+    
+    public static String removeQueryParameters(Uri uri) {
+        assert(uri.getAuthority() != null);
+        assert(uri.getPath() != null);
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(uri.getScheme());
+        builder.encodedAuthority(uri.getAuthority());
+        builder.encodedPath(uri.getPath());
+        return builder.build().toString();
     }
 
 	public static boolean isImage(String mimeType) {
