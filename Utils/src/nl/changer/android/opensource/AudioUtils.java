@@ -18,11 +18,11 @@ public class AudioUtils {
 	private static final String TAG = AudioUtils.class.getSimpleName();
 	
 	private static String mFileName;
-	private static MediaRecorder mRecorder = new MediaRecorder();
+	private static MediaRecorder mRecorder;
 	
 	public static void startRecordingAudio(Context ctx) {
 		
-		// mRecorder = new MediaRecorder();
+		mRecorder = new MediaRecorder();
         mRecorder.setAudioSource( MediaRecorder.AudioSource.MIC );
         mRecorder.setOutputFormat( MediaRecorder.OutputFormat.MPEG_4 );
         // Winamp does not play the 
@@ -71,9 +71,7 @@ public class AudioUtils {
 		  values.put( MediaStore.Audio.Media.IS_MUSIC, false );
 		  
 		  Uri uri = MediaStore.Audio.Media.getContentUriForPath( audioFile.getAbsolutePath() );
-		  Log.v( TAG, "#writeAudioToMedia uri: " + uri + " absPath: " + audioFile.getAbsolutePath() );
 		  Uri uri2 = ctx.getContentResolver().insert( uri, values );
-		  Log.v( TAG, "#writeAudioToMedia uri2: " + uri2 );
 		  
 		  if( uri2 == null || TextUtils.isEmpty(uri2.toString()) )
 			  Log.w(TAG, "Something went wrong while inserting data to content resolver");
