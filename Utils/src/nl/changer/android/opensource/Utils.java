@@ -69,8 +69,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.Media;
+import android.provider.MediaStore.MediaColumns;
+import android.provider.MediaStore.Video;
 import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -79,7 +82,9 @@ import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -1626,6 +1631,69 @@ public class Utils {
     }
 	
 	/****
+	 * Get runtime duration of media such as audio or video in milliseconds
+	 ****/
+	public static long getMediaDuration( Context ctx, Uri mediaUri ) {
+		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ Video.Media.DURATION }, null, null, null );
+		long duration = -1;
+		
+		try {
+			if( cur != null && cur.getCount() > 0 ) {
+				while( cur.moveToNext() ) {
+					duration = cur.getLong( cur.getColumnIndex(Video.Media.DURATION ) );
+					
+					// for unknown reason, the image size for image was found to be 0
+					// Log.v( TAG, "#getSize byte.size: " + size );
+					
+					if( duration == 0 )
+						Log.w( TAG, "#getMediaDuration The image size was found to be 0. Reason: UNKNOWN" );
+					
+				}	// end while
+			} else if( cur.getCount() == 0 ) {
+				Log.e( TAG, "#getMediaDuration cur size is 0. File may not exist" );
+			} else
+				Log.e( TAG, "#getMediaDuration cur is null" );
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
+		
+		return duration;
+    }
+	
+	/****
+	 * Get media file name.
+	 ****/
+	public static String getMediaFileName( Context ctx, Uri mediaUri ) {
+		String colName = MediaColumns.DISPLAY_NAME;
+		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ colName }, null, null, null );
+		String dispName = null;
+		
+		try {
+			if( cur != null && cur.getCount() > 0 ) {
+				while( cur.moveToNext() ) {
+					dispName = cur.getString( cur.getColumnIndex(colName) );
+					
+					// for unknown reason, the image size for image was found to be 0
+					// Log.v( TAG, "#getMediaFileName byte.size: " + size );
+					
+					if( TextUtils.isEmpty(colName) )
+						Log.w( TAG, "#getMediaFileName The file name is blank or null. Reason: UNKNOWN" );
+					
+				}	// end while
+			} else if( cur.getCount() == 0 ) {
+				Log.e( TAG, "#getMediaFileName File may not exist" );
+			} else
+				Log.e( TAG, "#getMediaFileName cur is null" );
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
+		
+		return dispName;
+    }
+	
+	/****
 	 * @throws NullPointerException if parameter is null
 	 ****/
 	public static ArrayList<KeyValueTuple> toKeyValueList(JSONArray keyValueArray) {
@@ -1677,6 +1745,24 @@ public class Utils {
 		// set text bold
 		sb.setSpan(bss, 0, sb.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE); 
 		return sb;
+	}
+	
+	/****
+	 * Make the dialog fill 90% width.
+	 * ***/
+	public static View dialogify(Activity ctx, int dialogLayoutId) {
+		// retrieve display dimensions
+		Rect displayRectangle = new Rect();
+		Window window = ctx.getWindow();
+		window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+
+		// inflate and adjust layout
+		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(dialogLayoutId, null);
+		layout.setMinimumWidth((int)(displayRectangle.width() * 0.9f));
+		layout.setMinimumHeight((int)(displayRectangle.height() * 0.2f));
+		
+		return layout;
 	}
 	
 }

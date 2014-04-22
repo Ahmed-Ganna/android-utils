@@ -33,6 +33,7 @@ public class AudioUtils {
 
         try {
             mRecorder.prepare();
+            mRecorder.start();
         } catch ( IllegalStateException e ) {
             Log.e(TAG, " failed" + e.getMessage() );
         } catch ( IOException e ) {
@@ -40,18 +41,55 @@ public class AudioUtils {
         } catch ( Exception e ) {
         	Log.e(TAG, " failed" + e.getMessage() );
         }
-
-        mRecorder.start();
 	}
 	
 	public static Uri stopRecordingAudio( Context ctx) {
 		
-		mRecorder.stop();
-        mRecorder.release();
+		try {
+			mRecorder.stop();
+	        mRecorder.release();	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
         mRecorder = null;
         
         return saveAudio(ctx);
 	}
+	
+	 private String mTargetRecordFileName = "myrecording";
+	
+	/*public static Uri pauseRecording( Context ctx) {
+		
+		try {
+            mRecorder.stop();
+            mRecorder.release();
+        } catch (Exception e) {
+        	e.getMessage();
+        }
+        
+        appendToFile(mTargetRecordFileName, getTemporaryFileName(ctx));
+        
+		try {
+			mRecorder.stop();
+	        mRecorder.release();	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+        mRecorder = null;
+        
+        return saveAudio(ctx);
+		return null;
+	}
+	
+	private String getTemporaryFileName(Context context) {
+        return context.getCacheDir().getAbsolutePath() + File.separator + "tmprecord";
+    }
+
+    private void appendToFile(final String targetFileName, final String newFileName) {
+        Mp4ParserWrapper.append(targetFileName, newFileName);
+    }*/
 	
 	/****
 	 * Insert an audio into {@link Media} content provider of the device.
@@ -80,6 +118,6 @@ public class AudioUtils {
 	}
 	
 	private static Uri saveAudio(Context ctx) {
-		return Utils.writeAudioToMedia(ctx, new File(mFileName ) );
+		return writeAudioToMedia(ctx, new File(mFileName ) );
 	}
 }

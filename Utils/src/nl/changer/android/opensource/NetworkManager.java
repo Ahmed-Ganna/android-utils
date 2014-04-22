@@ -563,7 +563,7 @@ public class NetworkManager {
 			String headerName = tuple.mKey;
 			String headerValue = tuple.mValue;
 			
-			// Log.v( TAG, "#addHeaders headerName: " + headerName + " AND headerValue: " + headerValue );
+			Log.v( TAG, "#addHeaders headerName: " + headerName + " headerValue: " + headerValue );
 			
 			conn.addRequestProperty( headerName, headerValue );
 		}	// end for
