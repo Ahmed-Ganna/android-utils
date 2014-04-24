@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1587,12 +1588,20 @@ public class Utils {
 	    	return false;
 	}
 	
+	/***
+	 * @deprecated
+	 * Use {@link Utils#formatSize(long)}
+	 * **/
 	public static int toMegaBytes(long byteCount) {
 		long kiloBytes = byteCount / 1000;
 		int megaBytes = (int) (kiloBytes / 1000);
 		return megaBytes;
 	}
 	
+	/***
+	 * @deprecated 
+	 * Use {@link Utils#formatSize(long)}
+	 * **/
 	public static long toKiloBytes(long byteCount) {
 		return (byteCount / 1000);
 	}
@@ -1655,6 +1664,8 @@ public class Utils {
 	 * 
 	 * @param mediaUri uri to the media resource. For e.g.
 	 * content://media/external/images/media/45490 or content://media/external/video/media/45490
+	 * 
+	 * @return Size in bytes
 	 ****/
 	public static long getMediaSize( Context ctx, Uri mediaUri ) {
 		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ Media.SIZE }, null, null, null );
@@ -1669,7 +1680,7 @@ public class Utils {
 					// Log.v( TAG, "#getSize byte.size: " + size );
 					
 					if( size == 0 )
-						Log.w( TAG, "#getSize The image size was found to be 0. Reason: UNKNOWN" );
+						Log.w( TAG, "#getSize The media size was found to be 0. Reason: UNKNOWN" );
 					
 				}	// end while
 			} else if( cur.getCount() == 0 ) {
@@ -1745,6 +1756,25 @@ public class Utils {
 		}
 		
 		return dispName;
+    }
+	
+	/****
+	 * Get media type from the Uri.
+	 ****/
+	public static String getMediaType( Context ctx, Uri mediaUri ) {
+		if(mediaUri == null)
+			throw new NullPointerException("Uri cannot be null");
+		
+		String uriStr = mediaUri.toString();
+		
+		if(uriStr.contains("video"))
+			return "video";
+		else if(uriStr.contains("audio"))
+			return "audio";
+		else if(uriStr.contains("image"))
+			return "image";
+		else
+			return null;
     }
 	
 	/****
@@ -1835,5 +1865,27 @@ public class Utils {
 		
 		return layout;
 	}
+
+	/***
+	 * Format given size in bytes to KB, MB, GB or whatever.
+	 * This will work up to 1000 TB
+	 * ***/
+	public static String formatSize(long size) {
+	    if(size <= 0) return "0";
+	    final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+	    int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+	    return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+	}
 	
+	/***
+	 * Format given size in bytes to KB, MB, GB or whatever.
+	 * Preferably use this method for performance efficiency.
+	 * ***/
+	public static String formatSize(long bytes, boolean si) {
+	    int unit = si ? 1000 : 1024;
+	    if (bytes < unit) return bytes + " B";
+	    int exp = (int) (Math.log(bytes) / Math.log(unit));
+	    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+	    return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+	}
 }

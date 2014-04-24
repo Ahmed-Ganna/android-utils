@@ -2,17 +2,17 @@ package nl.changer.android.opensource;
 
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
@@ -22,14 +22,8 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.net.Uri;
-import android.provider.MediaStore.Audio;
-import android.provider.MediaStore.Images.Media;
-import android.provider.MediaStore.Video;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -38,6 +32,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
+import com.github.kevinsawicki.http.HttpRequest;
 
 
 
@@ -195,6 +190,7 @@ public class AWSUploader {
 
 	
 	/****
+	 * @deprecated Try using other version {@link AWSUploader#uploadObject} of this same method.
 	 * @param urlStr Signed HTTP PUT Url to upload the object to
 	 * @param contentType Standard HTTP Content type of the object to be uploaded to the server
 	 * @param inputData {@link JSONObject} or byte[] to be uploaded to the server
@@ -305,6 +301,28 @@ public class AWSUploader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		return isSucccessful;
+	}
+	
+	
+	/****
+	 * @param inputData Can be a String object or byte[]
+	 * **/
+	public static boolean uploadObject( Context ctx, String urlStr, String contentType, Object inputData, HashMap<String, Object> outputData ) {
+		
+		boolean isSucccessful = false;
+		
+		int responseCode = HttpRequest.put(urlStr)
+							.contentType(contentType)
+							.accept("*/*")
+							.code();
+		Log.i(TAG, "#uploadObject resCode: " + responseCode );
+		
+		if( responseCode == HttpStatus.SC_OK )
+			isSucccessful = true;
+		else
+			isSucccessful = false;
 		
 		return isSucccessful;
 	}
