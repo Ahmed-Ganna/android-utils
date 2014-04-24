@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -38,7 +39,24 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 
+
+
 public class AWSUploader {
+	
+	/*private UploadProgressListener mUploadable;
+	
+	public interface UploadProgressListener {
+		public void onProgressUpdate(long progress, long total);
+	}
+	
+	private void setUploadProgressListener() {
+
+	}*/
+	
+	public static final String INTENT_UPLOAD_PROGRESS = "nl.changer.intent.awsuploader.progress";
+	// public static final String INTENT_EXTRA_PROGRESS_CURRENT_PERCENT = "nl.changer.intent.awsuploader.progress.current.precent";
+	public static final String INTENT_EXTRA_PROGRESS_CURRENT = "nl.changer.intent.awsuploader.progress.current";
+	public static final String INTENT_EXTRA_PROGRESS_MAX = "nl.changer.intent.awsuploader.progress.max";
 
 	private static final String TAG = AWSUploader.class.getSimpleName();
 	
@@ -109,7 +127,7 @@ public class AWSUploader {
 	 * @param ctx
 	 * @param uri Media Uri of the resource on the device
 	 * @param contentType
-	 * @param url Signed URL to upload to AWS
+	 * @param url Signed PUT URL to upload to AWS
 	 * ****/
 	public static boolean uploadMediaObject( Context ctx, Uri uri, String contentType, String url ) {
 		
@@ -122,29 +140,29 @@ public class AWSUploader {
 		if( TextUtils.isEmpty(url) )
 			throw new NullPointerException(" url cannot be null or blank");
 	
-		// Log.v( TAG, "#uploadObject uri: " + uri + " contentType: " + contentType + " url: " + url );
+		// Log.v( TAG, "#uploadMediaObject uri: " + uri + " contentType: " + contentType + " url: " + url );
 		Bitmap bmp = null;
 		byte[] data = null;
 		boolean isSucccessful = false;
 		
 		if( Utils.isImage(contentType) ) {
 			// content://media/external/images/media/45490
-			
+			/*
 			try {
 				// TODO: use Utils#getMediaData from uri, rather than doing this manually
 				bmp = BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ) );
 				
-				/*long size = Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) );
+				long size = Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) );
 				
 				if( bmp != null )
-					Log.v( TAG, "#uploadObject BEFORE bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + size + " KB" );
+					Log.v( TAG, "#uploadMediaObject BEFORE bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + size + " KB" );
 				
 				// if size cannot be determined or
 				// great than 1MB, compress the image
 				if( size == 0 || size > 1 ) {
 					bmp = Utils.compressImage( bmp, 4 );
-					Log.v( TAG, "#uploadObject AFTER bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) ) + " KB" );
-				}*/
+					Log.v( TAG, "#uploadMediaObject AFTER bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) ) + " KB" );
+				}
 				
 				data = Utils.toBytes(bmp);
 			} catch ( FileNotFoundException e ) {
@@ -153,19 +171,23 @@ public class AWSUploader {
 			} catch ( Exception e ) {
 				e.printStackTrace();
 				// TODO: return this error.
-			}
+			}*/
+			
+			data = Utils.getMediaData( ctx, uri );
 		} else if( Utils.isAudio( contentType ) ) {
 			// android.provider.MediaStore.Audio.
 			data = Utils.getMediaData( ctx, uri );
 		} else if( Utils.isVideo(contentType) ) {
 			// sample video uri = "content://media/external/video/media/45492"
-			Log.i( TAG, "#uploadObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
+			Log.i( TAG, "#uploadMediaObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
 			data = Utils.getMediaData( ctx, uri );
-		}
+		} else
+			Log.e( TAG, "#uploadMediaObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
+			
 		
 		// Log.v(TAG, "#uploadObject uploading...");
 		HashMap<String, Object> outputData = new HashMap<String, Object>();
-		isSucccessful = uploadObjectToAWS( url, contentType, data, outputData );
+		isSucccessful = uploadObjectToAWS( ctx, url, contentType, data, outputData );
 		
 		return isSucccessful;
 	}
@@ -178,7 +200,7 @@ public class AWSUploader {
 	 * @param inputData {@link JSONObject} or byte[] to be uploaded to the server
 	 * @param outputData Map to return the result back
 	 ****/
-	public static boolean uploadObjectToAWS( String urlStr, String contentType, Object inputData, HashMap<String, Object> outputData ) {
+	public static boolean uploadObjectToAWS( Context ctx, String urlStr, String contentType, Object inputData, HashMap<String, Object> outputData ) {
 		
 		URL url = null;
 		boolean isSucccessful = false;
@@ -222,15 +244,43 @@ public class AWSUploader {
 		if( out != null ) {
 			if( inputData != null && inputData.toString().length() > 0 ) {
 				
+				byte[] buffer = null;
 				try {
-					if( inputData instanceof JSONObject || inputData instanceof JSONArray || inputData instanceof String )	
-						// out.write( inputData.toString() );
-						out.write( inputData.toString().getBytes() );
+					if( inputData instanceof JSONObject || inputData instanceof JSONArray || inputData instanceof String )
+						buffer = inputData.toString().getBytes();
+						// out.write( inputData.toString().getBytes() );
 					else if ( inputData instanceof byte[] ) {
-						byte[] buffer = (byte[]) inputData;
-						// out.write( new String(buffer) );
-						out.write( buffer );
+						buffer = (byte[]) inputData;
+						
+						// comment this. Send each byte individually to update progress.
+						// out.write(buffer);
 					}
+					
+					
+					// byte[] bucket;// = new byte[256];
+					int bucketSize = 256;
+					int packetSent = 0;
+					//int offset = 0;
+					// newly added code, not tested yet.
+					
+					/*while(packetSent != buffer.length) {
+						int sizeToSent = (packetSent+bucketSize) > buffer.length ? buffer.length - packetSent : packetSent + bucketSize;
+						out.write(buffer, packetSent, sizeToSent);
+						packetSent = packetSent + sizeToSent;
+						
+						Intent intent = new Intent(INTENT_UPLOAD_PROGRESS);
+						intent.putExtra(INTENT_EXTRA_PROGRESS_CURRENT, packetSent);
+						intent.putExtra(INTENT_EXTRA_PROGRESS_MAX, buffer.length);
+						ctx.sendBroadcast(intent);
+					}*/
+					
+					for (int i = 0; i < buffer.length; i++) {
+						out.write( buffer[i] );
+						Intent intent = new Intent(INTENT_UPLOAD_PROGRESS);
+						intent.putExtra(INTENT_EXTRA_PROGRESS_CURRENT, i);
+						intent.putExtra(INTENT_EXTRA_PROGRESS_MAX, buffer.length);
+						ctx.sendBroadcast(intent);
+					}	// end for
 					
 					out.flush();
 			  		out.close();

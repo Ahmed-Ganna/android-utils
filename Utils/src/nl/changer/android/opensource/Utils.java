@@ -429,6 +429,51 @@ public class Utils {
 	    .setNegativeButton("No", noListener)
 	    .show();
 	}
+	
+	/***
+	 * Creates a confirmation dialog that show a pop-up
+	 * with button labelled as parameters labels.
+	 * 
+	 * @param ctx {@link Activity} {@link Context}
+	 * @param message Message to be shown in the dialog.
+	 * @param dialogClickListener For e.g.
+	 * <pre>
+	 * DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+		    
+		    public void onClick(DialogInterface dialog, int which) {
+		        switch (which){
+		        case DialogInterface.BUTTON_POSITIVE:
+		            //Yes button clicked
+		            break;
+		
+		        case DialogInterface.BUTTON_NEGATIVE:
+		            //No button clicked
+		            break;
+		        }
+		    }
+		};
+	 * </pre>
+	 * 
+	 * @param positiveBtnLabel For e.g. "Yes"
+	 * @param negativeBtnLabel For e.g. "No"
+	 * ***/
+	public static void showDialog( Context ctx, String message, String positiveBtnLabel, String negativeBtnLabel, DialogInterface.OnClickListener dialogClickListener) {
+
+		if( dialogClickListener == null )
+			throw new NullPointerException("Action listener cannot be null");
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+		
+		
+		/*builder.setMessage(message)
+		.setPositiveButton("Yes", yesListener)
+	    .setNegativeButton("No", noListener)
+	    .show();*/
+		builder.setMessage(message)
+			.setPositiveButton(positiveBtnLabel, dialogClickListener)
+		    .setNegativeButton(negativeBtnLabel, dialogClickListener)
+		    .show();
+	}
 
 	/***
 	 * Gets the version name of the application.
@@ -1440,6 +1485,25 @@ public class Utils {
         return true;  
     }
     
+    /***
+     * Get the type of the media. Audio, Video or Image.
+     * @return Lower case string for one of above listed media type
+     * ***/
+    public static String getMediaType(String contentType) {  
+    	if(isMedia(contentType)) {
+    		if(isVideo(contentType))
+    			return "video";
+    		else if(isAudio(contentType))
+    			return "audio";
+    		else if(isImage(contentType))
+    			return "image";
+    		else
+    			return null;
+    	} else {
+    		return null;
+    	}
+    }
+    
     /****
      * Identifies if the content represented by the parameter mimeType
      * is media. Image, Audio and Video is treated as media by this method.
@@ -1476,16 +1540,6 @@ public class Utils {
         
         return arr[0];
     }
-    
-    /*public static String removeQuertParameters( String url ) {
-    	  
-        if( url == null || url.length() == 0 )
-        	return null;
-        
-        String[] arr = url.split("?");
-        
-        return arr[0];
-    }*/
     
     public static String removeQueryParameters(Uri uri) {
         assert(uri.getAuthority() != null);
@@ -1748,7 +1802,7 @@ public class Utils {
 	}
 	
 	/****
-	 * Make the dialog fill 90% width.
+	 * Make the dialog fill 90% of screen width and minHeight 20% of screen height
 	 * ***/
 	public static View dialogify(Activity ctx, int dialogLayoutId) {
 		// retrieve display dimensions
@@ -1761,6 +1815,23 @@ public class Utils {
 		View layout = inflater.inflate(dialogLayoutId, null);
 		layout.setMinimumWidth((int)(displayRectangle.width() * 0.9f));
 		layout.setMinimumHeight((int)(displayRectangle.height() * 0.2f));
+		
+		return layout;
+	}
+	
+	/****
+	 * Make the dialog fill 90% width.
+	 * ***/
+	public static View dialogifyWidth(Activity ctx, int dialogLayoutId) {
+		// retrieve display dimensions
+		Rect displayRectangle = new Rect();
+		Window window = ctx.getWindow();
+		window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+
+		// inflate and adjust layout
+		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(dialogLayoutId, null);
+		layout.setMinimumWidth((int)(displayRectangle.width() * 0.9f));
 		
 		return layout;
 	}
