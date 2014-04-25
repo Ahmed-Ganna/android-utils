@@ -366,24 +366,66 @@ public class Utils {
 	}
 	
 	/***
+	 * @deprecated Use {@link ImageUtils#scaleDownBitmap(Context, Bitmap, int)} instead.
+	 * 
+	 * <br/><br/>
 	 * Scales the image depending upon the display density of the
 	 * device.
 	 * 
 	 * When dealing with the bitmaps of bigger size, this method must be called
 	 * from a non-UI thread.
 	 * ***/
-	public static Bitmap scaleDownBitmap( Context ctx, Bitmap photo, int newHeight ) {
-
-		 final float densityMultiplier = getDensityMultiplier(ctx);
-	
-		 int h = (int) ( newHeight * densityMultiplier );
-		 int w = (int) ( h * photo.getWidth() / ((double) photo.getHeight()) );
+	public static Bitmap scaleDownBitmap( Context ctx, Bitmap source, int newHeight ) {
+		final float densityMultiplier = getDensityMultiplier(ctx);
+		
+		Log.v( TAG, "#scaleDownBitmap Original w: " + source.getWidth() + " h: " + source.getHeight() );
+		
+		int h = (int) ( newHeight * densityMultiplier );
+		int w = (int) ( h * source.getWidth() / ((double) source.getHeight()) );
 		 
-		 // Log.v( TAG, "#scaleDownBitmap banneredImage w: " + w + " h: " + h );
+		Log.v( TAG, "#scaleDownBitmap Computed w: " + w + " h: " + h );
 	
-		 photo = Bitmap.createScaledBitmap( photo, w, h, true );
+		Bitmap photo = Bitmap.createScaledBitmap( source, w, h, true );
+		
+		Log.v( TAG, "#scaleDownBitmap Final w: " + w + " h: " + h );
 	
-		 return photo;
+		return photo;
+	}
+	
+	/***
+	 *  @deprecated Use {@link ImageUtils#scaleBitmap(Context, Bitmap, int)} instead.
+	 * 
+	 * <br/><br/>
+	 * Scales the image independently of the screen density of the device.
+	 * 
+	 * When dealing with the bitmaps of bigger size, this method must be called
+	 * from a non-UI thread.
+	 * ***/
+	public static Bitmap scaleBitmap( Context ctx, Bitmap source, int newHeight) {
+		
+		Log.v( TAG, "#scaleDownBitmap Original w: " + source.getWidth() + " h: " + source.getHeight() );
+		
+		int w = (int) ( newHeight * source.getWidth() / ((double) source.getHeight()) );
+		 
+		Log.v( TAG, "#scaleDownBitmap Computed w: " + w + " h: " + newHeight );
+	
+		Bitmap photo = Bitmap.createScaledBitmap( source, w, newHeight, true );
+		
+		Log.v( TAG, "#scaleDownBitmap Final w: " + w + " h: " + newHeight );
+	
+		return photo;
+	}
+	
+	/***
+	 * @deprecated Use {@link ImageUtils#scaleDownBitmap(Context, Uri, int)} instead.
+	 * 
+	 * <br/><br/>
+	 * Scales the image independently of the screen density of the device.
+	 * @param uri Uri of the source bitmap
+	 ****/
+	public static Bitmap scaleDownBitmap( Context ctx, Uri uri, int newHeight ) throws FileNotFoundException, IOException {
+		Bitmap original = Media.getBitmap(ctx.getContentResolver(), uri);
+		return scaleBitmap(ctx, original, newHeight);
 	}
 	
 	/***
@@ -391,8 +433,7 @@ public class Utils {
 	 * manipulating view sizes and changing dimension and display pixels etc.
 	 * ***/
 	public static float getDensityMultiplier(Context ctx) {
-		float densityMultiplier = ctx.getResources().getDisplayMetrics().density;
-		return densityMultiplier;
+		return ctx.getResources().getDisplayMetrics().density;
 	}
 	
 	/***
@@ -899,7 +940,10 @@ public class Utils {
 	
 	/****
 	 * @deprecated
-	 * Insert an audio into {@link Media} content provider of the device.
+	 * Use {@link AudioUtils#writeAudioToMedia(Context, File)} instead.
+	 * 
+	 * <br/>
+	 * Inserts an audio into {@link Media} content provider of the device.
 	 * @return The media content Uri to the newly created audio, or null if failed for any reason.
 	 * 
 	 * @see {@link AudioUtils#writeAudioToMedia(Context, File)}
