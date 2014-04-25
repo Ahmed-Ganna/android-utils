@@ -7,7 +7,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Media;
-import android.util.Log;
 
 public class ImageUtils {
 
@@ -65,5 +64,23 @@ public class ImageUtils {
 	public static Bitmap scaleDownBitmap( Context ctx, Uri uri, int newHeight ) throws FileNotFoundException, IOException {
 		Bitmap original = Media.getBitmap(ctx.getContentResolver(), uri);
 		return scaleBitmap(ctx, original, newHeight);
+	}
+	
+	/***
+	 * Scales the image independently of the screen density of the device. Maintains image aspect ratio.
+	 * @param uri Uri of the source bitmap
+	 ****/
+	public static Uri scaleDownBitmapForUri( Context ctx, Uri uri, int newHeight ) throws FileNotFoundException, IOException {
+		Bitmap original = Media.getBitmap(ctx.getContentResolver(), uri);
+		Bitmap bmp = scaleBitmap(ctx, original, newHeight);
+		
+		Uri destUri = null;
+		String uriStr = Utils.writeImageToMedia( ctx, bmp, "", "" );
+		
+		if( uriStr != null ) {
+			destUri = Uri.parse(uriStr);
+		}
+		
+		return destUri;
 	}
 }
