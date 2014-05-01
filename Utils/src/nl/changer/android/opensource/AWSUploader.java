@@ -182,7 +182,7 @@ public class AWSUploader {
 		
 		// Log.v(TAG, "#uploadObject uploading...");
 		HashMap<String, Object> outputData = new HashMap<String, Object>();
-		isSucccessful = uploadObjectToAWS( ctx, url, contentType, data, outputData );
+		isSucccessful = uploadObject( ctx, url, contentType, data, outputData );
 		
 		return isSucccessful;
 	}
