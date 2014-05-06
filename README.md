@@ -25,6 +25,10 @@ And there you are good to go with the project.
 
 ----
 
+Dependencies
+=============
+
+https://github.com/nostra13/Android-Universal-Image-Loader
 
 The MIT License
 =============
