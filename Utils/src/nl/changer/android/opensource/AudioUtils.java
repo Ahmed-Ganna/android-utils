@@ -120,4 +120,20 @@ public class AudioUtils {
 	private static Uri saveAudio(Context ctx) {
 		return writeAudioToMedia(ctx, new File(mFileName ) );
 	}
+	
+	/****
+	 * Remove audio file that is existing on the device.
+	 * 
+	 * @param ctx {@link Context}
+	 * @param uri {@link Uri} of the audio file
+	 * 
+	 * @throws NullPointerException if the Uri parameter is null
+	 * */
+	public static boolean removeAudio(Context ctx, Uri uri) {
+		
+		if(uri == null)
+			throw new NullPointerException("Uri cannot be null");
+			
+		return (ctx.getContentResolver().delete(uri, null, null) != 0 );
+	}
 }
