@@ -103,6 +103,7 @@ public class Utils {
 	static ProgressDialog mProgressDialog;
 
 	/***
+	 * @deprecated
 	 * @param ctx Activity Context. Any other context will break the app.
 	 * ***/
 	public Utils( Context ctx ) {
@@ -156,7 +157,7 @@ public class Utils {
 	 * @deprecated
 	 * This method has been deprecated. Use {@link Utils#isInternetAvailable()} instead.
 	 * **/
-	public boolean isNetworkAvailable() {
+	/*public boolean isNetworkAvailable() {
 	    ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService( Context.CONNECTIVITY_SERVICE );
 	    
 	    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -168,7 +169,7 @@ public class Utils {
 	    }
 	    
 	    return false;
-	}
+	}*/
 	
 	/***
 	 * Checks if the Internet connection is available.
@@ -189,9 +190,21 @@ public class Utils {
 	}
 	 
 	 /***
+	  * 
 	 * Checks if the SD Card is mounted on the device.
+	 * 
+	 * @deprecated use {@link #isSdCardMounted()}
 	 * ***/
 	public static boolean isSDCARDMounted() {
+	    String status = Environment.getExternalStorageState();
+	    
+	    if( status.equals(Environment.MEDIA_MOUNTED) )
+	        return true;
+	    
+	    return false;
+	}
+	
+	public static boolean isSdCardMounted() {
 	    String status = Environment.getExternalStorageState();
 	    
 	    if( status.equals(Environment.MEDIA_MOUNTED) )
@@ -281,7 +294,7 @@ public class Utils {
 	public static InputStream bitmapToInputStream(Bitmap bitmap) throws NullPointerException {
 		
 		if( bitmap == null )
-			throw new NullPointerException( "Parameter bitmap cannot be null" );
+			throw new NullPointerException( "Bitmap cannot be null" );
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		bitmap.compress( Bitmap.CompressFormat.PNG, 100, baos );
@@ -554,10 +567,20 @@ public class Utils {
 	}
 	
 	/***
+	 * @deprecated Use {@link #getOsVersion()} instead
+	 * 
 	 * Get the version number of the Android OS
 	 * For e.g. 2.3.4 or 4.1.2
 	 ***/
 	public static String getOSVersion() {	
+		return Build.VERSION.RELEASE;
+	}
+	
+	/***
+	 * Get the version number of the Android OS
+	 * For e.g. 2.3.4 or 4.1.2
+	 ***/
+	public static String getOsVersion() {	
 		return Build.VERSION.RELEASE;
 	}
 	
@@ -573,7 +596,6 @@ public class Utils {
         ActivityManager manager = (ActivityManager) ctx.getSystemService( Context.ACTIVITY_SERVICE );
         for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (service.service.getClassName().equals(serviceName)) {
-            	// Log.i(TAG, "#isServiceAlreadyRunning " + serviceName + " is already running.");
                 return true;
             }
         }
@@ -688,6 +710,8 @@ public class Utils {
 	
     /***
      * Programmatically tile the background of the for a view with viewId as a parameter.
+     * 
+     * @deprecated Use {@link ViewUtils#tileBackground(Context, int, View, int)} instead.
      * ***/
 	public static void tileBackground( Context ctx, int viewId, int resIdOfTile ) {
     	
@@ -719,6 +743,8 @@ public class Utils {
 	 * 
 	 * @param target View to set background to.
 	 * @param drawable background image
+	 * 
+	 * @deprecated Use {@link ViewUtils#setBackground(View, Drawable)} instead.
 	 * ***/
 	@SuppressLint("NewApi")
 	public static void setBackground(View target, Drawable drawable) {
@@ -729,7 +755,11 @@ public class Utils {
     	}
 	}
     
-	
+	/***
+	 * Programmatically tile the background of the for a view with viewId as a parameter.
+	 * 
+	 * @deprecated Use {@link ViewUtils#setBackground(View, Drawable)} instead.
+	 ***/
     public static void tileBackground( Context ctx, int layoutId, View viewToTileBg, int resIdOfTile ) {
     	
     	try {
@@ -1316,7 +1346,7 @@ public class Utils {
      * @param newHeight Height of the resized bitmap
      ****/
     public static Bitmap resizeImage( Bitmap sourceBitmap, int newWidth, int newHeight, boolean filter ) {
-    	
+    	// TODO: move this method to ImageUtils
     	if( sourceBitmap == null )
     		throw new NullPointerException( "Bitmap to be resized cannot be null" );
     	
@@ -1335,10 +1365,10 @@ public class Utils {
     }
     
     /****
-     * 
      * @param compressionFactor Powers of 2 are often faster/easier for the decoder to honor
      * **/
     public static Bitmap compressImage( Bitmap sourceBitmap, int compressionFactor ) {
+    	// TODO: move this method to ImageUtils
     	BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inPreferredConfig = Config.ARGB_8888;
 		opts.inSampleSize = compressionFactor;
@@ -1362,7 +1392,7 @@ public class Utils {
 	 * Pass -1 if you dont want the rounded corners
 	 ****/
 	public static void showPhotoWithRoundedCorners( ImageView photo, String url, int cornerRadius ) {
-		
+		// TODO: move this method to ViewUtils
 		DisplayImageOptions options = null;
 		
 		if( cornerRadius != -1 ) {
@@ -1442,7 +1472,7 @@ public class Utils {
      * 
      ****/
     public static Bitmap decodeSampledBitmapFromResource( Context ctx, Uri uri, int reqWidth, int reqHeight ) throws FileNotFoundException {
-		
+    	// TODO: move this method to ImageUtils
 	    // First decode with inJustDecodeBounds=true to check dimensions
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
 	    options.inJustDecodeBounds = true;
@@ -1494,7 +1524,7 @@ public class Utils {
 	 * Use scaleDownBitmap from {@link Utils} wherever possible
 	 ***/
 	public Bitmap resizeImageByHeight( int height, Bitmap sourceImage ) {
-
+		// TODO: move this method to ImageUtils
 		int widthO = 0;		// original width
 		int heightO = 0;	// original height
 		int widthNew = 0;

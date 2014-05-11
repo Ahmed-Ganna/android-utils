@@ -1,12 +1,27 @@
 package nl.changer.android.opensource;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ViewUtils {
+
+	private static final String TAG = ViewUtils.class.getSimpleName();
+
 
 	/***
 	 * Show live character counter for the number of characters typed in the parameter {@link EditText}
@@ -65,5 +80,68 @@ public class ViewUtils {
 		InputFilter[] fArray = new InputFilter[1];
 		fArray[0] = new InputFilter.LengthFilter(maxLength);
 		textView.setFilters(fArray);
+	}
+	
+    /***
+     * Programmatically tile the background of the for a view with viewId as a parameter.
+     * ***/
+	public static void tileBackground( Context ctx, int viewId, int resIdOfTile ) {
+    	
+    	try {
+    		//Tiling the background.
+        	Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), resIdOfTile);
+        	// deprecated constructor call
+            // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+        	BitmapDrawable bitmapDrawable = new BitmapDrawable( ctx.getResources(), bmp);
+            bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+            View view = ((Activity) ctx).findViewById( viewId );
+            
+            if( view == null )
+            	throw new NullPointerException("View to which the tile has to be applied should not be null");
+            else
+            	setBackground( view, bitmapDrawable);
+            		
+		} catch (Exception e) {
+			Log.w(TAG, "#tileBackground Exception while tiling the background of the view");
+		}
+	}
+	
+	/***
+	 * Sets the passed-in drawable parameter as a background to the 
+	 * passed in target parameter in an SDK independent way. This
+	 * is the recommended way of setting background rather
+	 * than using native background setters provided by {@link View}
+	 * class. This method should NOT be used for setting background of an {@link ImageView}
+	 * 
+	 * @param target View to set background to.
+	 * @param drawable background image
+	 * ***/
+	@SuppressLint("NewApi")
+	public static void setBackground(View target, Drawable drawable) {
+		if( Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+    		target.setBackgroundDrawable(drawable);
+    	} else {
+    		target.setBackground(drawable);
+    	}
+	}
+    
+	
+    public static void tileBackground( Context ctx, int layoutId, View viewToTileBg, int resIdOfTile ) {
+    	
+    	try {
+            //Tiling the background.
+        	Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), resIdOfTile);
+        	// deprecated constructor
+            // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+        	BitmapDrawable bitmapDrawable = new BitmapDrawable( ctx.getResources(), bmp);
+            bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+            View view = viewToTileBg.findViewById(layoutId);
+            
+            if( view != null )
+            	setBackground(view, bitmapDrawable);
+            
+		} catch (Exception e) {
+			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
+		}
 	}
 }
