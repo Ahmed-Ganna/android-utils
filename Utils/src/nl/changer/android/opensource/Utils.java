@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,8 +27,12 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nl.changer.GlobalConstants;
+import nl.changer.KeyValueTuple;
+
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -34,6 +40,8 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentProvider;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,11 +70,22 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Audio;
+import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Images.Media;
+import android.provider.MediaStore.MediaColumns;
+import android.provider.MediaStore.Video;
 import android.telephony.TelephonyManager;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -77,7 +96,8 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 public class Utils {
 	
 	private static final String TAG = Utils.class.getSimpleName();
-	
+
+	@Deprecated
 	protected static Context mContext;
 	
 	static ProgressDialog mProgressDialog;
@@ -283,7 +303,7 @@ public class Utils {
 		if( ctx instanceof Activity ) {
 			if( !((Activity) ctx).isFinishing() ) {
 				Log.v( TAG, "#showProgressDialog isFinishing: " + ((Activity) ctx).isFinishing() );
-				mProgressDialog = ProgressDialog.show( mContext, title, body, true );
+				mProgressDialog = ProgressDialog.show( ctx, title, body, true );
 				mProgressDialog.setIcon(null);
 				mProgressDialog.setCancelable( isCancellable );	
 			}	
@@ -346,24 +366,66 @@ public class Utils {
 	}
 	
 	/***
+	 * @deprecated Use {@link ImageUtils#scaleDownBitmap(Context, Bitmap, int)} instead.
+	 * 
+	 * <br/><br/>
 	 * Scales the image depending upon the display density of the
 	 * device.
 	 * 
 	 * When dealing with the bitmaps of bigger size, this method must be called
 	 * from a non-UI thread.
 	 * ***/
-	public static Bitmap scaleDownBitmap( Context ctx, Bitmap photo, int newHeight ) {
-
-		 final float densityMultiplier = getDensityMultiplier(ctx);
-	
-		 int h = (int) ( newHeight * densityMultiplier );
-		 int w = (int) ( h * photo.getWidth() / ((double) photo.getHeight()) );
+	public static Bitmap scaleDownBitmap( Context ctx, Bitmap source, int newHeight ) {
+		final float densityMultiplier = getDensityMultiplier(ctx);
+		
+		Log.v( TAG, "#scaleDownBitmap Original w: " + source.getWidth() + " h: " + source.getHeight() );
+		
+		int h = (int) ( newHeight * densityMultiplier );
+		int w = (int) ( h * source.getWidth() / ((double) source.getHeight()) );
 		 
-		 // Log.v( TAG, "#scaleDownBitmap banneredImage w: " + w + " h: " + h );
+		Log.v( TAG, "#scaleDownBitmap Computed w: " + w + " h: " + h );
 	
-		 photo = Bitmap.createScaledBitmap( photo, w, h, true );
+		Bitmap photo = Bitmap.createScaledBitmap( source, w, h, true );
+		
+		Log.v( TAG, "#scaleDownBitmap Final w: " + w + " h: " + h );
 	
-		 return photo;
+		return photo;
+	}
+	
+	/***
+	 *  @deprecated Use {@link ImageUtils#scaleBitmap(Context, Bitmap, int)} instead.
+	 * 
+	 * <br/><br/>
+	 * Scales the image independently of the screen density of the device.
+	 * 
+	 * When dealing with the bitmaps of bigger size, this method must be called
+	 * from a non-UI thread.
+	 * ***/
+	public static Bitmap scaleBitmap( Context ctx, Bitmap source, int newHeight) {
+		
+		Log.v( TAG, "#scaleDownBitmap Original w: " + source.getWidth() + " h: " + source.getHeight() );
+		
+		int w = (int) ( newHeight * source.getWidth() / ((double) source.getHeight()) );
+		 
+		Log.v( TAG, "#scaleDownBitmap Computed w: " + w + " h: " + newHeight );
+	
+		Bitmap photo = Bitmap.createScaledBitmap( source, w, newHeight, true );
+		
+		Log.v( TAG, "#scaleDownBitmap Final w: " + w + " h: " + newHeight );
+	
+		return photo;
+	}
+	
+	/***
+	 * @deprecated Use {@link ImageUtils#scaleDownBitmap(Context, Uri, int)} instead.
+	 * 
+	 * <br/><br/>
+	 * Scales the image independently of the screen density of the device.
+	 * @param uri Uri of the source bitmap
+	 ****/
+	public static Bitmap scaleDownBitmap( Context ctx, Uri uri, int newHeight ) throws FileNotFoundException, IOException {
+		Bitmap original = Media.getBitmap(ctx.getContentResolver(), uri);
+		return scaleBitmap(ctx, original, newHeight);
 	}
 	
 	/***
@@ -371,8 +433,7 @@ public class Utils {
 	 * manipulating view sizes and changing dimension and display pixels etc.
 	 * ***/
 	public static float getDensityMultiplier(Context ctx) {
-		float densityMultiplier = ctx.getResources().getDisplayMetrics().density;
-		return densityMultiplier;
+		return ctx.getResources().getDisplayMetrics().density;
 	}
 	
 	/***
@@ -409,6 +470,51 @@ public class Utils {
 		.setPositiveButton("Yes", yesListener)
 	    .setNegativeButton("No", noListener)
 	    .show();
+	}
+	
+	/***
+	 * Creates a confirmation dialog that show a pop-up
+	 * with button labelled as parameters labels.
+	 * 
+	 * @param ctx {@link Activity} {@link Context}
+	 * @param message Message to be shown in the dialog.
+	 * @param dialogClickListener For e.g.
+	 * <pre>
+	 * DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+		    
+		    public void onClick(DialogInterface dialog, int which) {
+		        switch (which){
+		        case DialogInterface.BUTTON_POSITIVE:
+		            //Yes button clicked
+		            break;
+		
+		        case DialogInterface.BUTTON_NEGATIVE:
+		            //No button clicked
+		            break;
+		        }
+		    }
+		};
+	 * </pre>
+	 * 
+	 * @param positiveBtnLabel For e.g. "Yes"
+	 * @param negativeBtnLabel For e.g. "No"
+	 * ***/
+	public static void showDialog( Context ctx, String message, String positiveBtnLabel, String negativeBtnLabel, DialogInterface.OnClickListener dialogClickListener) {
+
+		if( dialogClickListener == null )
+			throw new NullPointerException("Action listener cannot be null");
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+		
+		
+		/*builder.setMessage(message)
+		.setPositiveButton("Yes", yesListener)
+	    .setNegativeButton("No", noListener)
+	    .show();*/
+		builder.setMessage(message)
+			.setPositiveButton(positiveBtnLabel, dialogClickListener)
+		    .setNegativeButton(negativeBtnLabel, dialogClickListener)
+		    .show();
 	}
 
 	/***
@@ -460,6 +566,10 @@ public class Utils {
      * Checks if the service with the given name is currently running on the device.
      * **/
     public static boolean isServiceRunning( Context ctx, String serviceName ) {
+    	
+    	if( serviceName == null )
+    		throw new NullPointerException("Service name cannot be null");
+    	
         ActivityManager manager = (ActivityManager) ctx.getSystemService( Context.ACTIVITY_SERVICE );
         for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (service.service.getClassName().equals(serviceName)) {
@@ -536,6 +646,28 @@ public class Utils {
 		else
 			return false;
 	}
+	
+	/***
+	 * Check if the input parameter uri is valid.
+	 * ***/
+	/*public static boolean isValidUri( final Uri uri ) {
+		boolean isValid = true;
+		
+		if( uri == null )
+			isValid = false;
+		else {
+			try {
+				Uri.parse( uri.toString() );
+				isValid = true;
+			} catch (MalformedURLException e) {
+				
+			}
+			
+		}
+		
+		
+		return isValid;
+	}*/
 	
 	/***
 	 * Capitalize a each word in the string.
@@ -715,26 +847,29 @@ public class Utils {
 	 * @return Data storage directory on the device. Maybe be a 
 	 * directory on SD Card or internal storage of the device.
 	 ****/
-	public static File getStorageDirectory( Context ctx ) {
-		final String DIR_NAME = "atemp";
-		File dir = null;
+	public static File getStorageDirectory( Context ctx, String dirName ) {
+		
+		if( TextUtils.isEmpty( dirName) )
+			dirName = "atemp";
+		
+		File f = null;
 		
 		String state = Environment.getExternalStorageState();
 		
 		 if( Environment.MEDIA_MOUNTED.equals(state) ) {
-			dir = new File ( Environment.getExternalStorageDirectory() + "/" + DIR_NAME );
+			f = new File ( Environment.getExternalStorageDirectory() + "/" + dirName );
 	    } else {
 	    	// media is removed, unmounted etc
 	    	// Store image in /data/data/<package-name>/cache/atemp/photograph.jpeg
-	    	dir = new File ( ctx.getCacheDir() + "/" + DIR_NAME );
+	    	f = new File ( ctx.getCacheDir() + "/" + dirName );
 	    }
 		 
-		if( !dir.exists() )
-			dir.mkdirs();
+		if( !f.exists() )
+			f.mkdirs();
 		/*else
 			Log.v( TAG, "#getStorageDirectory directory exits already" );*/
 		 
-		return dir;
+		return f;
 	}
 	
 	/***
@@ -742,8 +877,8 @@ public class Utils {
 	 * and returns the file object.
 	 * You can get the file path using {@link File#getAbsolutePath()}
 	 * ***/
-	public static File getFile( String fileName ) {
-		File dir = getStorageDirectory( mContext );
+	public static File getFile( Context ctx, String fileName ) {
+		File dir = getStorageDirectory( ctx, null );
 		File f = new File( dir, fileName );
 		
 		/*try {
@@ -764,13 +899,13 @@ public class Utils {
 	 * Writes the given image to the external storage of the device.
 	 * @return Path of the image file that has been written.
 	 * ***/
-	public static String writeImage( byte[] imageData ) {
+	public static String writeImage( Context ctx, byte[] imageData ) {
 		final String FILE_NAME = "photograph.jpeg";
 		File dir = null;
 		String filePath = null;
 		OutputStream imageFileOS;
 		
-		dir = getStorageDirectory(mContext);
+		dir = getStorageDirectory(ctx, null);
 		
 		// dir.mkdirs();
 		File f = new File( dir, FILE_NAME );
@@ -795,20 +930,59 @@ public class Utils {
 		return filePath;
 	}
 	
+	/****
+	 * Insert an image into {@link Media} content provider of the device.
+	 * @return The media content Uri to the newly created image, or null if the image failed to be stored for any reason.
+	 * ***/
+	public static String writeImageToMedia( Context ctx, Bitmap image, String title, String description ) {
+		return Images.Media.insertImage(ctx.getContentResolver(), image, title, description);
+	}
+	
+	/****
+	 * @deprecated
+	 * Use {@link AudioUtils#writeAudioToMedia(Context, File)} instead.
+	 * 
+	 * <br/>
+	 * Inserts an audio into {@link Media} content provider of the device.
+	 * @return The media content Uri to the newly created audio, or null if failed for any reason.
+	 * 
+	 * @see {@link AudioUtils#writeAudioToMedia(Context, File)}
+	 * ***/
+	public static Uri writeAudioToMedia( Context ctx, File audioFile ) {
+		  ContentValues values = new ContentValues();
+		  values.put( MediaStore.MediaColumns.DATA, audioFile.getAbsolutePath() );
+		  values.put( MediaStore.MediaColumns.TITLE, "Name Of Your File" );
+		  values.put( MediaStore.MediaColumns.MIME_TYPE, "audio/mpeg" );
+		  values.put( MediaStore.MediaColumns.SIZE, audioFile.length() );
+		  values.put( MediaStore.Audio.Media.ARTIST, "Artist Name" );
+		  values.put( MediaStore.Audio.Media.IS_RINGTONE, false );
+		  // Now set some extra features it depend on you
+		  values.put( MediaStore.Audio.Media.IS_NOTIFICATION, false );
+		  values.put( MediaStore.Audio.Media.IS_ALARM, false );
+		  values.put( MediaStore.Audio.Media.IS_MUSIC, false );
+		  
+		  Uri uri = MediaStore.Audio.Media.getContentUriForPath( audioFile.getAbsolutePath() );
+		  Log.v( TAG, "#writeAudioToMedia uri: " + uri + " absPath: " + audioFile.getAbsolutePath() );
+		  Uri uri2 = ctx.getContentResolver().insert( uri, values );
+		  Log.v( TAG, "#writeAudioToMedia uri2: " + uri2 );
+		  
+		  return uri2;
+	}
+	
 	/***
 	 * Get the name of the application that has been defined in AndroidManifest.xml
 	 * ***/
-	public static String getApplicationName() {
-		final PackageManager packageMgr = mContext.getPackageManager();
+	public static String getApplicationName(Context ctx) {
+		final PackageManager packageMgr = ctx.getPackageManager();
 		ApplicationInfo appInfo;
 		
 		try {
-		    appInfo = packageMgr.getApplicationInfo( mContext.getPackageName(), PackageManager.SIGNATURE_MATCH );
+		    appInfo = packageMgr.getApplicationInfo( ctx.getPackageName(), PackageManager.SIGNATURE_MATCH );
 		} catch (final NameNotFoundException e) {
 		    appInfo = null;
 		}
 		
-		final String applicationName = (String) (appInfo != null ? packageMgr.getApplicationLabel(appInfo) : "(unknown)");
+		final String applicationName = (String) (appInfo != null ? packageMgr.getApplicationLabel(appInfo) : "UNKNOWN");
 		
 		return applicationName;
 	}
@@ -879,7 +1053,7 @@ public class Utils {
 		
     	Date currentDate = new Date();
     	
-    	Log.v( TAG, "#getElapsedTime time:  " + time + " currentDate: " + currentDate );
+    	// Log.v( TAG, "#getElapsedTime time:  " + time + " currentDate: " + currentDate );
     	
     	long diffInSeconds = ( currentDate.getTime() - eventTime.getTime() ) / 1000;
     	String elapsed = "";
@@ -890,7 +1064,7 @@ public class Utils {
     	long weeks = diffInSeconds / 604800;
     	long months = diffInSeconds / 2592000;
 
-    	Log.v( TAG, "#getElapsedTime seconds: " + seconds + " mins: " + mins + " hours: " + hours + " days: " + days );
+    	// Log.v( TAG, "#getElapsedTime seconds: " + seconds + " mins: " + mins + " hours: " + hours + " days: " + days );
     	
     	if ( seconds < 120 ) {
     	    elapsed = "a min ago";
@@ -1267,7 +1441,7 @@ public class Utils {
     /****
      * 
      ****/
-    public static Bitmap decodeSampledBitmapFromResource( Context ctx, Uri uri, int reqWidth, int reqHeight ) {
+    public static Bitmap decodeSampledBitmapFromResource( Context ctx, Uri uri, int reqWidth, int reqHeight ) throws FileNotFoundException {
 		
 	    // First decode with inJustDecodeBounds=true to check dimensions
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -1288,10 +1462,8 @@ public class Utils {
 	    try {
 			return BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ), new Rect(), options );
 		} catch( FileNotFoundException e ) {
-			e.printStackTrace();
-		};
-		
-		return null;
+			throw new FileNotFoundException( e.getMessage() );
+		}
 	}
 	
 	private static int calculateInSampleSize(
@@ -1358,6 +1530,25 @@ public class Utils {
         return true;  
     }
     
+    /***
+     * Get the type of the media. Audio, Video or Image.
+     * @return Lower case string for one of above listed media type
+     * ***/
+    public static String getMediaType(String contentType) {  
+    	if(isMedia(contentType)) {
+    		if(isVideo(contentType))
+    			return "video";
+    		else if(isAudio(contentType))
+    			return "audio";
+    		else if(isImage(contentType))
+    			return "image";
+    		else
+    			return null;
+    	} else {
+    		return null;
+    	}
+    }
+    
     /****
      * Identifies if the content represented by the parameter mimeType
      * is media. Image, Audio and Video is treated as media by this method.
@@ -1394,9 +1585,20 @@ public class Utils {
         
         return arr[0];
     }
+    
+    public static String removeQueryParameters(Uri uri) {
+        assert(uri.getAuthority() != null);
+        assert(uri.getPath() != null);
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(uri.getScheme());
+        builder.encodedAuthority(uri.getAuthority());
+        builder.encodedPath(uri.getPath());
+        return builder.build().toString();
+    }
 
 	public static boolean isImage(String mimeType) {
         
+		// TODO: apply regex patter for checking the MIME type
         if( mimeType != null ) {
         	if( mimeType.startsWith("image/") )
         		return true;
@@ -1404,6 +1606,330 @@ public class Utils {
             	return false;
         } else
         	return false;
-	}   
+	}
 	
+	public static boolean isAudio(String mimeType) {
+        
+		// TODO: apply regex patter for checking the MIME type
+        if( mimeType != null ) {
+        	if( mimeType.startsWith("audio/") )
+        		return true;
+        	else
+            	return false;
+        } else
+        	return false;
+	}
+
+	public static boolean isVideo(String mimeType) {
+		
+		// TODO: apply regex patter for checking the MIME type
+	    if( mimeType != null ) {
+	    	if( mimeType.startsWith("video/") )
+	    		return true;
+	    	else
+	        	return false;
+	    } else
+	    	return false;
+	}
+	
+	/***
+	 * @deprecated
+	 * Use {@link Utils#formatSize(long)}
+	 * **/
+	public static int toMegaBytes(long byteCount) {
+		long kiloBytes = byteCount / 1000;
+		int megaBytes = (int) (kiloBytes / 1000);
+		return megaBytes;
+	}
+	
+	/***
+	 * @deprecated 
+	 * Use {@link Utils#formatSize(long)}
+	 * **/
+	public static long toKiloBytes(long byteCount) {
+		return (byteCount / 1000);
+	}
+	
+	/****
+	 * Get the media data from the one of the following media {@link ContentProvider}
+	 * This method should not be called from the main thread of the application.
+	 * <ul>
+	 * 		<li>{@link android.provider.MediaStore.Images.Media}</li>
+	 * 		<li>{@link android.provider.MediaStore.Audio.Media}</li>
+	 * 		<li>{@link android.provider.MediaStore.Video.Media}</li>
+	 * </ul>
+	 * 
+	 * @param ctx Context object
+	 * @param uri Media content uri of the image, audio or video resource
+	 ****/
+	public static byte[] getMediaData( Context ctx, Uri uri ) {
+		
+		if( uri == null )
+			throw new NullPointerException("Uri cannot be null");
+		
+		if( !uri.toString().contains("content://media/") ) {
+			Log.w(TAG, "#getMediaData probably the uri is not a media content uri");
+		}
+		
+		Cursor cur = ctx.getContentResolver().query( uri, new String[]{ Media.DATA }, null, null, null );
+		byte[]  data = null;
+		
+		try {
+			if( cur != null && cur.getCount() > 0 ) {
+				while( cur.moveToNext() ) {
+					String path = cur.getString( cur.getColumnIndex(Media.DATA) );
+					
+					try {
+						File f = new File(path);
+						FileInputStream fis = new FileInputStream(f);
+						data = NetworkManager.readStreamToBytes( fis );
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch ( Exception e) {
+						e.printStackTrace();
+					}
+					
+					// Log.v( TAG, "#getVideoData byte.size: " + data.length );
+				}	// end while
+			} else
+				Log.e( TAG, "#getMediaData cur is null or blank" );
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
+		
+		return data;
+	}
+	
+	/***
+	 * Get the size of the media resource pointed to by the paramter mediaUri.
+	 * 
+	 * Known bug: for unknown reason, the image size for some images was found to be 0
+	 * 
+	 * @param mediaUri uri to the media resource. For e.g.
+	 * content://media/external/images/media/45490 or content://media/external/video/media/45490
+	 * 
+	 * @return Size in bytes
+	 ****/
+	public static long getMediaSize( Context ctx, Uri mediaUri ) {
+		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ Media.SIZE }, null, null, null );
+		long size = -1;
+		
+		try {
+			if( cur != null && cur.getCount() > 0 ) {
+				while( cur.moveToNext() ) {
+					size = cur.getLong( cur.getColumnIndex(Media.SIZE ) );
+					
+					// for unknown reason, the image size for image was found to be 0
+					// Log.v( TAG, "#getSize byte.size: " + size );
+					
+					if( size == 0 )
+						Log.w( TAG, "#getSize The media size was found to be 0. Reason: UNKNOWN" );
+					
+				}	// end while
+			} else if( cur.getCount() == 0 ) {
+				Log.e( TAG, "#getSize cur size is 0. File may not exist" );
+			} else
+				Log.e( TAG, "#getSize cur is null" );
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
+		
+		return size;
+    }
+	
+	/****
+	 * Get runtime duration of media such as audio or video in milliseconds
+	 ****/
+	public static long getMediaDuration( Context ctx, Uri mediaUri ) {
+		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ Video.Media.DURATION }, null, null, null );
+		long duration = -1;
+		
+		try {
+			if( cur != null && cur.getCount() > 0 ) {
+				while( cur.moveToNext() ) {
+					duration = cur.getLong( cur.getColumnIndex(Video.Media.DURATION ) );
+					
+					// for unknown reason, the image size for image was found to be 0
+					// Log.v( TAG, "#getSize byte.size: " + size );
+					
+					if( duration == 0 )
+						Log.w( TAG, "#getMediaDuration The image size was found to be 0. Reason: UNKNOWN" );
+					
+				}	// end while
+			} else if( cur.getCount() == 0 ) {
+				Log.e( TAG, "#getMediaDuration cur size is 0. File may not exist" );
+			} else
+				Log.e( TAG, "#getMediaDuration cur is null" );
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
+		
+		return duration;
+    }
+	
+	/****
+	 * Get media file name.
+	 ****/
+	public static String getMediaFileName( Context ctx, Uri mediaUri ) {
+		String colName = MediaColumns.DISPLAY_NAME;
+		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ colName }, null, null, null );
+		String dispName = null;
+		
+		try {
+			if( cur != null && cur.getCount() > 0 ) {
+				while( cur.moveToNext() ) {
+					dispName = cur.getString( cur.getColumnIndex(colName) );
+					
+					// for unknown reason, the image size for image was found to be 0
+					// Log.v( TAG, "#getMediaFileName byte.size: " + size );
+					
+					if( TextUtils.isEmpty(colName) )
+						Log.w( TAG, "#getMediaFileName The file name is blank or null. Reason: UNKNOWN" );
+					
+				}	// end while
+			} else if( cur.getCount() == 0 ) {
+				Log.e( TAG, "#getMediaFileName File may not exist" );
+			} else
+				Log.e( TAG, "#getMediaFileName cur is null" );
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
+		
+		return dispName;
+    }
+	
+	/****
+	 * Get media type from the Uri.
+	 ****/
+	public static String getMediaType( Context ctx, Uri mediaUri ) {
+		if(mediaUri == null)
+			throw new NullPointerException("Uri cannot be null");
+		
+		String uriStr = mediaUri.toString();
+		
+		if(uriStr.contains("video"))
+			return "video";
+		else if(uriStr.contains("audio"))
+			return "audio";
+		else if(uriStr.contains("image"))
+			return "image";
+		else
+			return null;
+    }
+	
+	/****
+	 * @throws NullPointerException if parameter is null
+	 ****/
+	public static ArrayList<KeyValueTuple> toKeyValueList(JSONArray keyValueArray) {
+		ArrayList<KeyValueTuple> list = null;
+		
+		if( keyValueArray == null )
+			throw new NullPointerException( "key-values array cannot be null" );
+		
+		if( keyValueArray.length() > 0 )
+			list = new ArrayList<KeyValueTuple>();
+		
+		for (int i = 0; i < keyValueArray.length(); i++) {
+			JSONObject obj = null;
+			String key = null;
+			String value = null;
+			
+			try {
+				obj = keyValueArray.getJSONObject(i);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+			if( obj == null )
+				continue;
+			
+			try {
+				key = obj.getString( GlobalConstants.KEY_KEY );
+				value = obj.getString( GlobalConstants.KEY_VALUE );
+				list.add( new KeyValueTuple(key, value) );
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return list;
+	}
+	
+	/****
+	 * Returns {@link SpannableString} in Bold typeface
+	 * ***/
+	public static SpannableStringBuilder toBold(String sourceText) {
+		final SpannableStringBuilder sb = new SpannableStringBuilder(sourceText);
+
+		// Span to set text color to some RGB value
+		final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
+
+		// set text bold
+		sb.setSpan(bss, 0, sb.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE); 
+		return sb;
+	}
+	
+	/****
+	 * Make the dialog fill 90% of screen width and minHeight 20% of screen height
+	 * ***/
+	public static View dialogify(Activity ctx, int dialogLayoutId) {
+		// retrieve display dimensions
+		Rect displayRectangle = new Rect();
+		Window window = ctx.getWindow();
+		window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+
+		// inflate and adjust layout
+		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(dialogLayoutId, null);
+		layout.setMinimumWidth((int)(displayRectangle.width() * 0.9f));
+		layout.setMinimumHeight((int)(displayRectangle.height() * 0.2f));
+		
+		return layout;
+	}
+	
+	/****
+	 * Make the dialog fill 90% width.
+	 * ***/
+	public static View dialogifyWidth(Activity ctx, int dialogLayoutId) {
+		// retrieve display dimensions
+		Rect displayRectangle = new Rect();
+		Window window = ctx.getWindow();
+		window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+
+		// inflate and adjust layout
+		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(dialogLayoutId, null);
+		layout.setMinimumWidth((int)(displayRectangle.width() * 0.9f));
+		
+		return layout;
+	}
+
+	/***
+	 * Format given size in bytes to KB, MB, GB or whatever.
+	 * This will work up to 1000 TB
+	 * ***/
+	public static String formatSize(long size) {
+	    if(size <= 0) return "0";
+	    final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+	    int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+	    return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+	}
+	
+	/***
+	 * Format given size in bytes to KB, MB, GB or whatever.
+	 * Preferably use this method for performance efficiency.
+	 * ***/
+	public static String formatSize(long bytes, boolean si) {
+	    int unit = si ? 1000 : 1024;
+	    if (bytes < unit) return bytes + " B";
+	    int exp = (int) (Math.log(bytes) / Math.log(unit));
+	    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+	    return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+	}
 }
