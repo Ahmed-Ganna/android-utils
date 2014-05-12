@@ -11,11 +11,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +29,9 @@ import java.util.Random;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import nl.changer.GlobalConstants;
 import nl.changer.KeyValueTuple;
@@ -70,7 +76,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.MediaColumns;
@@ -1961,5 +1966,53 @@ public class Utils {
 	    int exp = (int) (Math.log(bytes) / Math.log(unit));
 	    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
 	    return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+	}
+	
+	/****
+	 * Get HMacSha1 hash
+	 ****/
+	/*public static String getHash(String value, String key) {
+		
+		String type = "HmacSHA1";
+	    try {
+	        Mac mac = javax.crypto.Mac.getInstance(type);
+	        SecretKeySpec secret = new SecretKeySpec(key.getBytes(), type);
+	        mac.init(secret);
+	        byte[] digest = mac.doFinal(value.getBytes());
+	        StringBuilder sb = new StringBuilder(digest.length*2);
+	        String s;
+	        for (byte b : digest) {
+		        s = Integer.toHexString((int)(b));
+		        if(s.length() == 1) sb.append('0');
+		        	sb.append(s);
+	        }
+	        return sb.toString();
+	    } catch (Exception e) {
+	        Log.v(TAG,"Exception ["+e.getMessage()+"]", e);
+	    }
+	        return "";
+    }*/
+	
+	public static String getHash(String value, String key)  throws UnsupportedEncodingException, NoSuchAlgorithmException,
+	        InvalidKeyException {
+	    String type = "HmacSHA1";
+	    SecretKeySpec secret = new SecretKeySpec(key.getBytes(), type);
+	    Mac mac = Mac.getInstance(type);
+	    mac.init(secret);
+	    byte[] bytes = mac.doFinal(value.getBytes());
+	    return bytesToHex(bytes);
+	}
+
+	private final static char[] hexArray = "0123456789abcdef".toCharArray();
+
+	private static String bytesToHex(byte[] bytes) {
+	    char[] hexChars = new char[bytes.length * 2];
+	    int v;
+	    for (int j = 0; j < bytes.length; j++) {
+	        v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    return new String(hexChars);
 	}
 }
