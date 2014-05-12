@@ -7,12 +7,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
@@ -34,19 +30,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.github.kevinsawicki.http.HttpRequest;
 
-
-
 public class AWSUploader {
-	
-	/*private UploadProgressListener mUploadable;
-	
-	public interface UploadProgressListener {
-		public void onProgressUpdate(long progress, long total);
-	}
-	
-	private void setUploadProgressListener() {
-
-	}*/
 	
 	public static final String INTENT_UPLOAD_PROGRESS = "nl.changer.intent.awsuploader.progress";
 	// public static final String INTENT_EXTRA_PROGRESS_CURRENT_PERCENT = "nl.changer.intent.awsuploader.progress.current.precent";
