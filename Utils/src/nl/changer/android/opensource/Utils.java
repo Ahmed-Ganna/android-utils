@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -46,6 +47,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -54,6 +56,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -75,8 +78,10 @@ import android.net.ParseException;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Video;
@@ -892,7 +897,7 @@ public class Utils {
 		String state = Environment.getExternalStorageState();
 		
 		 if( Environment.MEDIA_MOUNTED.equals(state) ) {
-			f = new File ( Environment.getExternalStorageDirectory() + "/" + dirName );
+			f = new File ( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+ "/" + dirName );
 	    } else {
 	    	// media is removed, unmounted etc
 	    	// Store image in /data/data/<package-name>/cache/atemp/photograph.jpeg
@@ -2014,5 +2019,119 @@ public class Utils {
 	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
 	    }
 	    return new String(hexChars);
+	}
+	
+	public static Uri createUri(Context ctx) {
+		File root = getStorageDirectory( ctx, null );
+		root.mkdirs();
+		File file = new File( root, Long.toString(new Date().getTime()) );
+		Uri uri = Uri.fromFile( file );
+		
+		return uri;
+	}
+	
+	public static Intent createTakeVideoIntent(Activity ctx, Uri savingUri, int durationInSeconds) {
+		
+	    // Camera.
+	    final List<Intent> cameraIntents = new ArrayList<Intent>();
+	    final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
+	    final PackageManager packageManager = ctx.getPackageManager();
+	    final List<ResolveInfo> listCam = packageManager.queryIntentActivities( captureIntent, 0 );
+	    for( ResolveInfo res : listCam ) {
+	        final String packageName = res.activityInfo.packageName;
+	        final Intent intent = new Intent(captureIntent);
+	        intent.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name) );
+	        intent.setPackage(packageName);
+	        intent.putExtra( MediaStore.EXTRA_OUTPUT, savingUri );
+	        intent.putExtra( MediaStore.EXTRA_DURATION_LIMIT, durationInSeconds );
+	        cameraIntents.add(intent);
+	    }
+
+	    // Filesystem.
+	    final Intent galleryIntent = new Intent();
+	    galleryIntent.setType("video/*");
+	    galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+	    // Chooser of filesystem options.
+	    final Intent chooserIntent = Intent.createChooser( galleryIntent, "Select Source" );
+
+	    // Add the camera options.
+	    chooserIntent.putExtra( Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}) );
+	    
+	    return chooserIntent;
+	}
+	
+	/***
+	 * Create a PICK photo & TAKE_PICTURE intent.
+	 * This intent will be aggregation of intents required to take picture from
+	 * Gallery and Camera at the minimum. The intent will also be directed towards
+	 * the apps that are capable of sourcing the image data. For e.g. Dropbox, Astro file manager.
+	 * @param cameraPhotoUri Uri to store a high resolution image at. If the user takes the picture using the camera
+	 *  the image will be stored at this uri.
+	 ****/
+	public static Intent createTakePictureIntent(Activity ctx, Uri cameraPhotoUri) {
+		
+	    // Camera.
+	    final List<Intent> cameraIntents = new ArrayList<Intent>();
+	    final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+	    final PackageManager packageManager = ctx.getPackageManager();
+	    final List<ResolveInfo> listCam = packageManager.queryIntentActivities( captureIntent, 0 );
+	    for( ResolveInfo res : listCam ) {
+	        final String packageName = res.activityInfo.packageName;
+	        final Intent intent = new Intent(captureIntent);
+	        intent.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name) );
+	        intent.setPackage(packageName);
+	        intent.putExtra( MediaStore.EXTRA_OUTPUT, cameraPhotoUri );
+	        cameraIntents.add(intent);
+	    }
+
+	    // Filesystem.
+	    final Intent galleryIntent = new Intent();
+	    galleryIntent.setType("image/*");
+	    galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+	    // Chooser of filesystem options.
+	    final Intent chooserIntent = Intent.createChooser( galleryIntent, "Select Source" );
+
+	    // Add the camera options.
+	    chooserIntent.putExtra( Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}) );
+	    
+	    return chooserIntent;
+	}
+	
+	/****
+	 * Create external content:// scheme uri to save the images at.
+	 * ***/
+	public static Uri createImageUri(Activity ctx) throws IOException {
+		
+		if(ctx == null)
+			throw new NullPointerException("Context cannot be null");
+		
+		Uri imageUri = null;
+		
+		ContentValues values = new ContentValues();
+		values.put(MediaColumns.TITLE, "");
+		values.put(ImageColumns.DESCRIPTION, "");
+		imageUri = ctx.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+		
+	    return imageUri;
+	}
+	
+	/****
+	 * Create external content:// scheme uri to save the videos at.
+	 * ***/
+	public static Uri createVideoUri(Activity ctx) throws IOException {
+		
+		if(ctx == null)
+			throw new NullPointerException("Context cannot be null");
+		
+		Uri imageUri = null;
+		
+		ContentValues values = new ContentValues();
+		values.put(MediaColumns.TITLE, "");
+		values.put(ImageColumns.DESCRIPTION, "");
+		imageUri = ctx.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+		
+	    return imageUri;
 	}
 }
