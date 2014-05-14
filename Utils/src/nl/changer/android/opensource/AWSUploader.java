@@ -297,13 +297,28 @@ public class AWSUploader {
 		
 		boolean isSucccessful = false;
 		
+		byte[] buffer = null;
+		
+		if( inputData instanceof JSONObject || inputData instanceof JSONArray || inputData instanceof String )
+			buffer = inputData.toString().getBytes();
+		else if ( inputData instanceof byte[] ) {
+			buffer = (byte[]) inputData;
+		}
+		
+		if(buffer == null)
+			throw new NullPointerException("Invalid data to be uploaded");
+		
 		int responseCode = HttpRequest.put(urlStr)
 							.contentType(contentType)
 							.accept("*/*")
+							.send(buffer)
 							.code();
+		
 		Log.i(TAG, "#uploadObject resCode: " + responseCode );
 		
-		if( responseCode == HttpStatus.SC_OK )
+		// we dont know exactly what status is sent by
+		// S3 upon successful upload. So lets keep a range.
+		if( responseCode >= HttpStatus.SC_OK && responseCode <= 299 )
 			isSucccessful = true;
 		else
 			isSucccessful = false;
