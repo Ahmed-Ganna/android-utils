@@ -157,12 +157,10 @@ public class AWSUploader {
 			// android.provider.MediaStore.Audio.
 			data = Utils.getMediaData( ctx, uri );
 		} else if( Utils.isVideo(contentType) ) {
-			// sample video uri = "content://media/external/video/media/45492"
-			Log.i( TAG, "#uploadMediaObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
 			data = Utils.getMediaData( ctx, uri );
-		} else
-			Log.e( TAG, "#uploadMediaObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
+		}
 			
+		Log.i( TAG, "#uploadMediaObject media size: " + Utils.formatSize(Utils.getMediaSize(ctx, uri), true) );
 		
 		// Log.v(TAG, "#uploadObject uploading...");
 		HashMap<String, Object> outputData = new HashMap<String, Object>();
