@@ -293,6 +293,9 @@ public class AWSUploader {
 	 * **/
 	public static boolean uploadObject( Context ctx, String urlStr, String contentType, Object inputData, HashMap<String, Object> outputData ) {
 		
+		if(inputData == null)
+			throw new NullPointerException("");
+		
 		boolean isSucccessful = false;
 		
 		byte[] buffer = null;
