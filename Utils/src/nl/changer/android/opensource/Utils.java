@@ -467,6 +467,17 @@ public class Utils {
 	 * @param message Message to be shown in the dialog.
 	 * ***/
 	public static void showConfirmDialog( Context ctx, String message, DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener ) {
+		showConfirmDialog(ctx, message, yesListener, noListener, "Yes", "No");
+	}
+	
+	/***
+	 * Creates a confirmation dialog that show a pop-up
+	 * with Yes-No Button. By default the buttons just dismiss
+	 * the dialog.
+	 * 
+	 * @param message Message to be shown in the dialog.
+	 * ***/
+	public static void showConfirmDialog( Context ctx, String message, DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener, String yesLabel, String noLabel ) {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		
@@ -490,8 +501,8 @@ public class Utils {
 		}
 		
 		builder.setMessage(message)
-		.setPositiveButton("Yes", yesListener)
-	    .setNegativeButton("No", noListener)
+		.setPositiveButton(yesLabel, yesListener)
+	    .setNegativeButton(noLabel, noListener)
 	    .show();
 	}
 	
