@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -304,10 +305,9 @@ public class AWSUploader {
 			buffer = inputData.toString().getBytes();
 		else if ( inputData instanceof byte[] ) {
 			buffer = (byte[]) inputData;
-		}
+		} else
+			throw new InvalidParameterException("Invalid data to be uploaded");
 		
-		if(buffer == null)
-			throw new NullPointerException("Invalid data to be uploaded");
 		
 		int responseCode = HttpRequest.put(urlStr)
 							.contentType(contentType)

@@ -1,16 +1,24 @@
 package nl.changer.android.opensource;
 
+import java.io.ByteArrayOutputStream;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Shader;
+import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -142,6 +150,39 @@ public class ViewUtils {
             
 		} catch (Exception e) {
 			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
+		}
+	}
+    
+    /****
+	 * Show a photo with a rounded corners.
+	 * @param cornerRadius Should NOT be too large, ideally the value should be 8 or 10. 
+	 * Pass -1 if you dont want the rounded corners.
+	 ****/
+	public static void showPhotoWithRoundedCorners( ImageView photo, String url, int cornerRadius ) {
+		DisplayImageOptions options = null;
+		
+		if( cornerRadius != -1 ) {
+			options = new DisplayImageOptions.Builder()
+						 .cacheInMemory( true )
+					     .cacheOnDisc( true )
+					     .displayer( new RoundedBitmapDisplayer(cornerRadius) ) // rounded corner bitmap
+					     .build();	
+		} else {
+			// no rounded corners
+			options = new DisplayImageOptions.Builder()
+						 .cacheInMemory( true )
+					     .cacheOnDisc( true )
+					     .build();
+		}
+		
+		if( !TextUtils.isEmpty( url ) && !url.equalsIgnoreCase("null") ) {
+			photo.setVisibility( View.VISIBLE );
+			ImageLoader.getInstance().displayImage( url, photo, options );
+		} else {
+			// hide the photos in a converted view so that 
+			// older photos are not visible 
+	    	// and user does not get a perception of wrong photos
+			// photo.setVisibility( View.INVISIBLE );
 		}
 	}
 }

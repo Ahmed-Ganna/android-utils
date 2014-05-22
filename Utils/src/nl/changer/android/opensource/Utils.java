@@ -961,18 +961,6 @@ public class Utils {
 	public static File getFile( Context ctx, String fileName ) {
 		File dir = getStorageDirectory( ctx, null );
 		File f = new File( dir, fileName );
-		
-		/*try {
-			if( f.createNewFile() ) {
-				// success
-			} else
-				Log.w( TAG, "#getFile file creation failed" );
-		} catch ( IOException e ) {
-			e.printStackTrace();
-		} catch ( Exception e ) {
-			e.printStackTrace();
-		}*/
-		
 		return f;
 	}
 	
@@ -1016,6 +1004,7 @@ public class Utils {
 	 * @return The media content Uri to the newly created image, or null if the image failed to be stored for any reason.
 	 * ***/
 	public static String writeImageToMedia( Context ctx, Bitmap image, String title, String description ) {
+		// TODO: move to MediaUtils
 		return Images.Media.insertImage(ctx.getContentResolver(), image, title, description);
 	}
 	
@@ -1088,6 +1077,7 @@ public class Utils {
 	
 	/** Transform Calendar to ISO 8601 string. */
     public static String fromCalendar(final Calendar calendar) {
+    	// TODO: move this method to DateUtils
         Date date = calendar.getTime();
         String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .format(date);
@@ -1102,6 +1092,7 @@ public class Utils {
     /** Transform ISO 8601 string to Calendar. */
     public static Calendar toCalendar(final String iso8601string)
             throws ParseException {
+    	// TODO: move this method to DateUtils
         Calendar calendar = GregorianCalendar.getInstance();
         String s = iso8601string.replace("Z", "+00:00");
         try {
@@ -1245,7 +1236,7 @@ public class Utils {
      * @return The name of the day of the week
      * ***/
     public static String getDayOfWeek( String date ) {
-    	
+    	// TODO: move to DateUtils
     	Date dateDT = Utils.parseDate( date );
 		
     	if( dateDT == null )
@@ -1301,7 +1292,7 @@ public class Utils {
      * @return Returns the name of the month
      * ***/
     public static String getMonth( String date ) {
-    	
+    	// TODO: move to DateUtils
     	Date dateDT = Utils.parseDate( date );
 		
     	if( dateDT == null )
@@ -1371,6 +1362,9 @@ public class Utils {
 		return dayStr;
 	}
     
+    /***
+     * Get random color integer
+     ****/
     public static int getRandomColor() {
     	Random random = new Random();
 		int red = random.nextInt(255);
@@ -1416,10 +1410,11 @@ public class Utils {
     }
     
     /****
+	 * 
+	 * <br/><br/>
      * @param compressionFactor Powers of 2 are often faster/easier for the decoder to honor
      * **/
     public static Bitmap compressImage( Bitmap sourceBitmap, int compressionFactor ) {
-    	// TODO: move this method to ImageUtils
     	BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inPreferredConfig = Config.ARGB_8888;
 		opts.inSampleSize = compressionFactor;
@@ -1438,12 +1433,14 @@ public class Utils {
     }
     
 	/****
+	 * @deprecated Use {@link ViewUtils#showPhotoWithRoundedCorners(ImageView, String, int)}
+	 * 
+	 * <br/><br/>
 	 * Show a photo with a rounded corners.
 	 * @param cornerRadius Should NOT be too large, ideally the value should be 8 or 10. 
 	 * Pass -1 if you dont want the rounded corners
 	 ****/
 	public static void showPhotoWithRoundedCorners( ImageView photo, String url, int cornerRadius ) {
-		// TODO: move this method to ViewUtils
 		DisplayImageOptions options = null;
 		
 		if( cornerRadius != -1 ) {
@@ -1638,7 +1635,7 @@ public class Utils {
      * @param mimeType standard MIME type of the data.
      ****/
     public static boolean isMedia( String mimeType ) {
-    	  
+    	// TODO: move to MediaUtils
         boolean isMedia = false;
         
         if( mimeType != null ) {
@@ -1678,7 +1675,7 @@ public class Utils {
     }
 
 	public static boolean isImage(String mimeType) {
-        
+		// TODO: move to MediaUtils
 		// TODO: apply regex patter for checking the MIME type
         if( mimeType != null ) {
         	if( mimeType.startsWith("image/") )
@@ -1690,7 +1687,7 @@ public class Utils {
 	}
 	
 	public static boolean isAudio(String mimeType) {
-        
+		// TODO: move to MediaUtils
 		// TODO: apply regex patter for checking the MIME type
         if( mimeType != null ) {
         	if( mimeType.startsWith("audio/") )
@@ -1702,7 +1699,7 @@ public class Utils {
 	}
 
 	public static boolean isVideo(String mimeType) {
-		
+		// TODO: move to MediaUtils
 		// TODO: apply regex patter for checking the MIME type
 	    if( mimeType != null ) {
 	    	if( mimeType.startsWith("video/") )
@@ -1744,7 +1741,7 @@ public class Utils {
 	 * @param uri Media content uri of the image, audio or video resource
 	 ****/
 	public static byte[] getMediaData( Context ctx, Uri uri ) {
-		
+		// TODO: move to MediaUtils
 		if( uri == null )
 			throw new NullPointerException("Uri cannot be null");
 		
@@ -1793,6 +1790,7 @@ public class Utils {
 	 * @return Size in bytes
 	 ****/
 	public static long getMediaSize( Context ctx, Uri mediaUri ) {
+		// TODO: move to MediaUtils
 		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ Media.SIZE }, null, null, null );
 		long size = -1;
 		
@@ -1824,6 +1822,7 @@ public class Utils {
 	 * Get runtime duration of media such as audio or video in milliseconds
 	 ****/
 	public static long getMediaDuration( Context ctx, Uri mediaUri ) {
+		// TODO: move to MediaUtils
 		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ Video.Media.DURATION }, null, null, null );
 		long duration = -1;
 		
@@ -1855,6 +1854,7 @@ public class Utils {
 	 * Get media file name.
 	 ****/
 	public static String getMediaFileName( Context ctx, Uri mediaUri ) {
+		// TODO: move to MediaUtils
 		String colName = MediaColumns.DISPLAY_NAME;
 		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ colName }, null, null, null );
 		String dispName = null;
@@ -1887,6 +1887,7 @@ public class Utils {
 	 * Get media type from the Uri.
 	 ****/
 	public static String getMediaType( Context ctx, Uri mediaUri ) {
+		// TODO: move to MediaUtils
 		if(mediaUri == null)
 			throw new NullPointerException("Uri cannot be null");
 		
@@ -2072,7 +2073,7 @@ public class Utils {
 	}
 	
 	public static Intent createTakeVideoIntent(Activity ctx, Uri savingUri, int durationInSeconds) {
-		
+		// TODO: move to MediaUtils
 	    // Camera.
 	    final List<Intent> cameraIntents = new ArrayList<Intent>();
 	    final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
@@ -2111,7 +2112,7 @@ public class Utils {
 	 *  the image will be stored at this uri.
 	 ****/
 	public static Intent createTakePictureIntent(Activity ctx, Uri cameraPhotoUri) {
-		
+		// TODO: move to MediaUtils
 	    // Camera.
 	    final List<Intent> cameraIntents = new ArrayList<Intent>();
 	    final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -2144,7 +2145,7 @@ public class Utils {
 	 * Create external content:// scheme uri to save the images at.
 	 * ***/
 	public static Uri createImageUri(Activity ctx) throws IOException {
-		
+		// TODO: move to MediaUtils
 		if(ctx == null)
 			throw new NullPointerException("Context cannot be null");
 		
@@ -2162,7 +2163,7 @@ public class Utils {
 	 * Create external content:// scheme uri to save the videos at.
 	 * ***/
 	public static Uri createVideoUri(Activity ctx) throws IOException {
-		
+		// TODO: move to MediaUtils
 		if(ctx == null)
 			throw new NullPointerException("Context cannot be null");
 		

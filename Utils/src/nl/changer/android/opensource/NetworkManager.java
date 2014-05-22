@@ -7,17 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 import nl.changer.GlobalConstants;
 import nl.changer.KeyValueTuple;
@@ -33,7 +28,6 @@ import org.json.JSONObject;
 import com.github.kevinsawicki.http.HttpRequest;
 
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 public class NetworkManager {
 	
