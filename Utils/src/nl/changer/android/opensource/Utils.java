@@ -1745,9 +1745,8 @@ public class Utils {
 		if( uri == null )
 			throw new NullPointerException("Uri cannot be null");
 		
-		if( !uri.toString().contains("content://media/") ) {
-			Log.w(TAG, "#getMediaData probably the uri is not a media content uri");
-		}
+		if( !ImageUtils.isMediaContentUri(uri) )
+			return null;
 		
 		Cursor cur = ctx.getContentResolver().query( uri, new String[]{ Media.DATA }, null, null, null );
 		byte[]  data = null;
@@ -2144,7 +2143,7 @@ public class Utils {
 	/****
 	 * Create external content:// scheme uri to save the images at.
 	 * ***/
-	public static Uri createImageUri(Activity ctx) throws IOException {
+	public static Uri createImageUri(Context ctx) throws IOException {
 		// TODO: move to MediaUtils
 		if(ctx == null)
 			throw new NullPointerException("Context cannot be null");
@@ -2162,7 +2161,7 @@ public class Utils {
 	/****
 	 * Create external content:// scheme uri to save the videos at.
 	 * ***/
-	public static Uri createVideoUri(Activity ctx) throws IOException {
+	public static Uri createVideoUri(Context ctx) throws IOException {
 		// TODO: move to MediaUtils
 		if(ctx == null)
 			throw new NullPointerException("Context cannot be null");
