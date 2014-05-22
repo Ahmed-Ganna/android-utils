@@ -823,6 +823,9 @@ public class Utils {
     }
 	
 	/***
+	 * @deprecated Use {@link Utils#getImagePathForUri(Context, Uri)}
+	 * 
+	 * <br/><br/><br/><br/>
 	 * Get the file path from the MediaStore.Images.Media Content URI
 	 * 
 	 * @param mediaContentUri Content URI pointing to a row of {@link MediaStore.Images.Media}
@@ -837,16 +840,43 @@ public class Utils {
 	        cur = ctx.getContentResolver().query( mediaContentUri, proj, null, null, null );
 	        
 	        if( cur != null && cur.getCount() != 0 ) {
-	        	cur.moveToFirst();	
+	        	cur.moveToFirst();
+	        	path = cur.getString( cur.getColumnIndexOrThrow(MediaColumns.DATA) );
 	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
+        
+        return path;
+    }
+	
+	/***
+	 * Get the file path from the Media Content Uri for video, audio or images.
+	 * 
+	 * @param mediaContentUri Media content Uri.
+	 * ***/
+	public static String getImagePathForUri( Context context, Uri mediaContentUri ) {
+
+		Cursor cur = null;
+		String path = null;
+		
+		try {
+			String[] projection = { MediaColumns.DATA };
+	        cur = context.getContentResolver().query( mediaContentUri, projection, null, null, null );
 	        
-	        path = cur.getString( cur.getColumnIndexOrThrow(MediaStore.Images.Media.DATA) );
+	        if( cur != null && cur.getCount() != 0 ) {
+	        	cur.moveToFirst();
+	        	path = cur.getString( cur.getColumnIndexOrThrow(MediaColumns.DATA) );
+	        }
 	        
 	        // Log.v( TAG, "#getRealPathFromURI Path: " + path );
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if( cur != null && cur.isClosed() )
+			if( cur != null && !cur.isClosed() )
 				cur.close();
 		}
         
