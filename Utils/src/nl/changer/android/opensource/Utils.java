@@ -121,13 +121,18 @@ public class Utils {
 	}
 	
 	/***
+	 * @deprecated
+	 * This method has been deprecated. Use its static counterpart
+	 * instead.
+	 * 
+	 * <br/>
+	 * Use {@link Utils#showToast(Context, CharSequence)}
+	 * <br/>
+	 * 
 	 * Shows the message passed in the parameter in the Toast.
 	 * 
 	 * @param msg Message to be show in the toast.
 	 * 
-	 * @deprecated
-	 * This method has been deprecated. Use its static counterpart
-	 * instead.
 	 * ***/
 	public void showToast( String msg ) {
 	    Toast toast = Toast.makeText( mContext, msg, Toast.LENGTH_SHORT );
@@ -135,15 +140,13 @@ public class Utils {
 	}
 
 	/***
-	 * Shows the message passed in the parameter in the Toast.
+	 * Shows a long time duration toast message.
 	 * 
 	 * @param msg Message to be show in the toast.
 	 * @return Toast object just shown 
 	 * ***/
 	public static Toast showToast( Context ctx, CharSequence msg ) {
-	    Toast toast = Toast.makeText( ctx, msg, Toast.LENGTH_SHORT );
-	    toast.show();
-	    return toast;
+	    return showToast(ctx, msg, Toast.LENGTH_LONG);
 	}
 	
 	/***
@@ -159,27 +162,6 @@ public class Utils {
 	    toast.show();
 	    return toast;
 	}
-	
-	/***
-	 * Checks if the Internet connection is available.
-	 * @return Returns true if the Internet connection is available. False otherwise.
-	 * 
-	 * @deprecated
-	 * This method has been deprecated. Use {@link Utils#isInternetAvailable()} instead.
-	 * **/
-	/*public boolean isNetworkAvailable() {
-	    ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService( Context.CONNECTIVITY_SERVICE );
-	    
-	    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-	    
-	    // if network is NOT available networkInfo will be null
-	    // otherwise check if we are connected
-	    if( networkInfo != null && networkInfo.isConnected() ) {
-	        return true;
-	    }
-	    
-	    return false;
-	}*/
 	
 	/***
 	 * Checks if the Internet connection is available.
@@ -208,8 +190,7 @@ public class Utils {
 	public static boolean isSDCARDMounted() {
 	    String status = Environment.getExternalStorageState();
 	    
-	    if( status.equals(Environment.MEDIA_MOUNTED) )
-	        return true;
+	    if( status.equals(Environment.MEDIA_MOUNTED) ) return true;
 	    
 	    return false;
 	}
@@ -217,8 +198,7 @@ public class Utils {
 	public static boolean isSdCardMounted() {
 	    String status = Environment.getExternalStorageState();
 	    
-	    if( status.equals(Environment.MEDIA_MOUNTED) )
-	        return true;
+	    if( status.equals(Environment.MEDIA_MOUNTED) )	return true;
 	    
 	    return false;
 	}
@@ -228,27 +208,29 @@ public class Utils {
 	 * When the user presses OK button, the dialog dismisses.
 	 * ***/
 	public static void showAlertDialog(Context ctx, String title, String body) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(ctx)
-	    .setMessage(body)
-	    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int which) { 
-	            dialog.cancel();
-	        }
-	    });
-		
-		if( !TextUtils.isEmpty(title) )
-			builder.setTitle(title);
-		
-	    builder.show();
+		showAlertDialog(ctx, title, body, null);
 	}
 	
+	/***
+	 * Shows an alert dialog with OK button
+	 ***/
 	public static void showAlertDialog( Context ctx, String title, String body, DialogInterface.OnClickListener okListener ) {
+		
+		if(okListener == null) {
+			okListener = new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int which) { 
+		            dialog.cancel();
+		        }
+		    };
+		}
+		
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx)
 	    .setMessage(body)
 	    .setPositiveButton( "OK", okListener );
 		
-		if( !TextUtils.isEmpty(title) )
-			builder.setTitle(title);
+		if(!TextUtils.isEmpty(title)) {
+			builder.setTitle(title);	
+		}
 		
 	    builder.show();
 	}
@@ -257,8 +239,14 @@ public class Utils {
 	 * Serializes the Bitmap to Base64
 	 * 
 	 * @return Base64 string value of a {@linkplain Bitmap} passed in as a parameter
+	 * @throws NullPointerException If the parameter bitmap is null.
 	 * ***/
 	public static String toBase64(Bitmap bitmap) {
+		
+		if(bitmap == null) {
+			throw new NullPointerException("Bitmap cannot be null");
+		}
+		
 		String base64Bitmap = null;
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -272,22 +260,21 @@ public class Utils {
 	/***
 	 * Converts the passed in drawable to Bitmap
 	 * representation
+	 * @throws NullPointerException If the parameter drawable is null.
 	 * ***/
 	public static Bitmap drawableToBitmap( Drawable drawable ) {
 		
-		if( drawable == null ) {
+		if(drawable == null) {
 			throw new NullPointerException("Drawable to convert should NOT be null");
 		}
 		
-	    if( drawable instanceof BitmapDrawable ) {
+	    if(drawable instanceof BitmapDrawable) {
 	        return ((BitmapDrawable)drawable).getBitmap();
 	    }
 	    
-	    if( drawable.getIntrinsicWidth() <= 0 && drawable.getIntrinsicHeight() <= 0 ) {
+	    if(drawable.getIntrinsicWidth() <= 0 && drawable.getIntrinsicHeight() <= 0) {
 	    	return null;
 	    }
-	    
-	    // Log.d(TAG, "#drawableToBitmap w: " + drawable.getIntrinsicWidth() + " h: " + drawable.getIntrinsicHeight() );
 
 	    Bitmap bitmap = Bitmap.createBitmap( drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Config.ARGB_8888 );
 	    Canvas canvas = new Canvas(bitmap); 
@@ -303,8 +290,9 @@ public class Utils {
 	 * ***/
 	public static InputStream bitmapToInputStream(Bitmap bitmap) throws NullPointerException {
 		
-		if( bitmap == null )
-			throw new NullPointerException( "Bitmap cannot be null" );
+		if( bitmap == null ) {
+			throw new NullPointerException( "Bitmap cannot be null" );	
+		}
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		bitmap.compress( Bitmap.CompressFormat.PNG, 100, baos );
@@ -314,20 +302,34 @@ public class Utils {
 	}
 	
 	/***
-	 * Show a progress dialog with a spinning animation in it.
+	 * Shows a progress dialog with a spinning animation in it.
 	 * This method must preferably called from a UI thread.
 	 * 
+	 * @param ctx Activity context
 	 * @param title Title of the progress dialog
 	 * @param body Body/Message to be shown in the progress dialog
 	 * @param isCancellable True if the dialog can be cancelled on back button press, false otherwise
 	 ***/
 	public static void showProgressDialog( Context ctx, String title, String body, boolean isCancellable ) {
+		showProgressDialog(ctx, title, body, null, isCancellable);
+	}
+	
+	/***
+	 * Shows a progress dialog with a spinning animation in it.
+	 * This method must preferably called from a UI thread.
+	 * 
+	 * @param ctx Activity context
+	 * @param title Title of the progress dialog
+	 * @param body Body/Message to be shown in the progress dialog
+	 * @param icon Icon to show in the progress dialog. It can be null.
+	 * @param isCancellable True if the dialog can be cancelled on back button press, false otherwise
+	 ***/
+	public static void showProgressDialog( Context ctx, String title, String body, Drawable icon, boolean isCancellable ) {
 		
 		if( ctx instanceof Activity ) {
 			if( !((Activity) ctx).isFinishing() ) {
-				Log.v( TAG, "#showProgressDialog isFinishing: " + ((Activity) ctx).isFinishing() );
 				mProgressDialog = ProgressDialog.show( ctx, title, body, true );
-				mProgressDialog.setIcon(null);
+				mProgressDialog.setIcon(icon);
 				mProgressDialog.setCancelable( isCancellable );	
 			}	
 		}
@@ -338,8 +340,9 @@ public class Utils {
 	 * **/
 	public static void dismissProgressDialog() {
 		
-		if( mProgressDialog != null )
-			mProgressDialog.dismiss();
+		if( mProgressDialog != null ) {
+			mProgressDialog.dismiss();	
+		}
 		
 		mProgressDialog = null;
 	}
@@ -460,24 +463,35 @@ public class Utils {
 	}
 	
 	/***
-	 * Creates a confirmation dialog that show a pop-up
+	 * Creates a confirmation dialog 
 	 * with Yes-No Button. By default the buttons just dismiss
 	 * the dialog.
 	 * 
+	 * @param ctx
+	 * @param message Message to be shown in the dialog.
+	 * @param yesListener Yes click handler
+	 * @param noListener
 	 * @param message Message to be shown in the dialog.
 	 * ***/
-	public static void showConfirmDialog( Context ctx, String message, DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener ) {
+	public static void showConfirmDialog( Context ctx, String message, DialogInterface.OnClickListener yesListener, 
+			DialogInterface.OnClickListener noListener ) {
 		showConfirmDialog(ctx, message, yesListener, noListener, "Yes", "No");
 	}
 	
 	/***
-	 * Creates a confirmation dialog that show a pop-up
+	 * Creates a confirmation dialog 
 	 * with Yes-No Button. By default the buttons just dismiss
 	 * the dialog.
 	 * 
+	 * @param ctx
 	 * @param message Message to be shown in the dialog.
+	 * @param yesListener Yes click handler
+	 * @param noListener
+	 * @param yesLabel Label for yes button
+	 * @param noLabel Label for no button
 	 * ***/
-	public static void showConfirmDialog( Context ctx, String message, DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener, String yesLabel, String noLabel ) {
+	public static void showConfirmDialog( Context ctx, String message, DialogInterface.OnClickListener yesListener, 
+			DialogInterface.OnClickListener noListener, String yesLabel, String noLabel ) {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		
@@ -501,14 +515,14 @@ public class Utils {
 		}
 		
 		builder.setMessage(message)
-		.setPositiveButton(yesLabel, yesListener)
-	    .setNegativeButton(noLabel, noListener)
-	    .show();
+			.setPositiveButton(yesLabel, yesListener)
+		    .setNegativeButton(noLabel, noListener)
+		    .show();
 	}
 	
 	/***
 	 * Creates a confirmation dialog that show a pop-up
-	 * with button labelled as parameters labels.
+	 * with button labeled as parameters labels.
 	 * 
 	 * @param ctx {@link Activity} {@link Context}
 	 * @param message Message to be shown in the dialog.
@@ -535,16 +549,12 @@ public class Utils {
 	 * ***/
 	public static void showDialog( Context ctx, String message, String positiveBtnLabel, String negativeBtnLabel, DialogInterface.OnClickListener dialogClickListener) {
 
-		if( dialogClickListener == null )
-			throw new NullPointerException("Action listener cannot be null");
+		if( dialogClickListener == null ) {
+			throw new NullPointerException("Action listener cannot be null");	
+		}
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		
-		
-		/*builder.setMessage(message)
-		.setPositiveButton("Yes", yesListener)
-	    .setNegativeButton("No", noListener)
-	    .show();*/
 		builder.setMessage(message)
 			.setPositiveButton(positiveBtnLabel, dialogClickListener)
 		    .setNegativeButton(negativeBtnLabel, dialogClickListener)
@@ -564,8 +574,6 @@ public class Utils {
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
-		
-		// Log.v( TAG, "#getApplicationVersionNumber versionName: " + versionName );
 		
 		return versionName;
 	}
@@ -590,7 +598,7 @@ public class Utils {
 	/***
 	 * @deprecated Use {@link #getOsVersion()} instead
 	 * 
-	 * Get the version number of the Android OS
+	 * Gets the version number of the Android OS
 	 * For e.g. 2.3.4 or 4.1.2
 	 ***/
 	public static String getOSVersion() {	
@@ -598,7 +606,7 @@ public class Utils {
 	}
 	
 	/***
-	 * Get the version number of the Android OS
+	 * Gets the version number of the Android OS
 	 * For e.g. 2.3.4 or 4.1.2
 	 ***/
 	public static String getOsVersion() {	
@@ -606,9 +614,12 @@ public class Utils {
 	}
 	
 	
-    /**
+    /***
      * Checks if the service with the given name is currently running on the device.
-     * **/
+     * 
+     * @param serviceName Fully qualified name of the server.
+     * <br/> For e.g. nl.changer.myservice.name
+     ***/
     public static boolean isServiceRunning( Context ctx, String serviceName ) {
     	
     	if( serviceName == null )
@@ -629,14 +640,12 @@ public class Utils {
 	 * Sometimes, this returns 00000000000000000 for the rooted devices.
 	 * ***/
 	public static String getDeviceImei( Context ctx ) {
-		
 		TelephonyManager tm = (TelephonyManager) ctx.getSystemService( Context.TELEPHONY_SERVICE );
 		return tm.getDeviceId();
-
 	}
     
     /***
-     * Share an application over the social network like Facebook, Twitter etc.
+     * Shares an application over the social network like Facebook, Twitter etc.
      * @param sharingMsg Message to be pre-populated when the 3rd party app dialog opens up.
      * @param emailSubject Message that shows up as a subject while sharing through email.
      * @param title Title of the sharing options prompt. For e.g. "Share via" or "Share using"
@@ -652,7 +661,7 @@ public class Utils {
 	}
     
     /***
-     * Check the type of data connection that is currently available on
+     * Checks the type of data connection that is currently available on
      * the device. 
      * @return <code>ConnectivityManager.TYPE_*</code> as a type of
      * internet connection on the device. Returns -1 in case of error or none of 
@@ -663,13 +672,15 @@ public class Utils {
 		ConnectivityManager connMgr =  (ConnectivityManager) ctx.getSystemService( Context.CONNECTIVITY_SERVICE );
 		
 		if( connMgr != null && connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null ) {
-			if ( connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected() )
-	        	return ConnectivityManager.TYPE_MOBILE;
-	        
-	        if ( connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() )
-	        	return ConnectivityManager.TYPE_WIFI;
-	        else
-	        	return -1;
+			if ( connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected() ) {
+				return ConnectivityManager.TYPE_MOBILE;	
+			}
+			else 
+				if ( connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() ) {
+		        	return ConnectivityManager.TYPE_WIFI;	
+		        }
+		        else
+		        	return -1;
 		} else
 			return -1;
 	}
@@ -691,42 +702,26 @@ public class Utils {
 	}
 	
 	/***
-	 * Check if the input parameter uri is valid.
-	 * ***/
-	/*public static boolean isValidUri( final Uri uri ) {
-		boolean isValid = true;
-		
-		if( uri == null )
-			isValid = false;
-		else {
-			try {
-				Uri.parse( uri.toString() );
-				isValid = true;
-			} catch (MalformedURLException e) {
-				
-			}
-			
-		}
-		
-		
-		return isValid;
-	}*/
-	
-	/***
-	 * Capitalize a each word in the string.
+	 * Capitalizes a each word in the string.
 	 * ***/
 	public static String capitalizeString( String string ) {
-	  char[] chars = string.toLowerCase().toCharArray();
-	  boolean found = false;
-	  for ( int i = 0; i < chars.length; i++ ) {
-	    if (!found && Character.isLetter(chars[i])) {
-	      chars[i] = Character.toUpperCase(chars[i]);
-	      found = true;
-	    } else if (Character.isWhitespace(chars[i]) || chars[i]=='.' || chars[i]=='\'') { // You can add other chars here
-	      found = false;
-	    }
-	  }	// end for
-	  return String.valueOf(chars);
+		
+		if(string == null) {
+			throw new NullPointerException("String to capitalize cannot be null");
+		}
+		
+		char[] chars = string.toLowerCase().toCharArray();
+		boolean found = false;
+		for ( int i = 0; i < chars.length; i++ ) {
+			if (!found && Character.isLetter(chars[i])) {
+				chars[i] = Character.toUpperCase(chars[i]);
+				found = true;
+		    } else if (Character.isWhitespace(chars[i]) || chars[i]=='.' || chars[i]=='\'') { // You can add other chars here
+		    	found = false;
+		    }
+		}	// end for
+		
+		return String.valueOf(chars);
 	}
 	
     /***
