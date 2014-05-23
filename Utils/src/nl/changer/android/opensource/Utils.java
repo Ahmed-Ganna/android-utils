@@ -849,11 +849,45 @@ public class Utils {
     }
 	
 	/***
+	 * 
+	 * @deprecated Use {@link Utils#getPathForMediaUri(Context, Uri)}
+	 * 
+	 * <br/><br/>
 	 * Get the file path from the Media Content Uri for video, audio or images.
 	 * 
 	 * @param mediaContentUri Media content Uri.
 	 * ***/
 	public static String getImagePathForUri( Context context, Uri mediaContentUri ) {
+
+		Cursor cur = null;
+		String path = null;
+		
+		try {
+			String[] projection = { MediaColumns.DATA };
+	        cur = context.getContentResolver().query( mediaContentUri, projection, null, null, null );
+	        
+	        if( cur != null && cur.getCount() != 0 ) {
+	        	cur.moveToFirst();
+	        	path = cur.getString( cur.getColumnIndexOrThrow(MediaColumns.DATA) );
+	        }
+	        
+	        // Log.v( TAG, "#getRealPathFromURI Path: " + path );
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if( cur != null && !cur.isClosed() )
+				cur.close();
+		}
+        
+        return path;
+    }
+	
+	/***
+	 * Get the file path from the Media Content Uri for video, audio or images.
+	 * 
+	 * @param mediaContentUri Media content Uri.
+	 * ***/
+	public static String getPathForMediaUri( Context context, Uri mediaContentUri ) {
 
 		Cursor cur = null;
 		String path = null;
@@ -895,8 +929,6 @@ public class Utils {
 		        e.printStackTrace();
 		    }
 		}
-		
-		// Log.v( TAG, "#toStringArray stringArr: " + stringArray );
 		
 		return stringArray;
 	}
@@ -964,6 +996,8 @@ public class Utils {
 	 * @return Path of the image file that has been written.
 	 * ***/
 	public static String writeImage( Context ctx, byte[] imageData ) {
+		
+		// TODO: move to MediaUtils
 		final String FILE_NAME = "photograph.jpeg";
 		File dir = null;
 		String filePath = null;
@@ -995,7 +1029,7 @@ public class Utils {
 	}
 	
 	/****
-	 * Insert an image into {@link Media} content provider of the device.
+	 * Inserts an image into {@link Media} content provider of the device.
 	 * @return The media content Uri to the newly created image, or null if the image failed to be stored for any reason.
 	 * ***/
 	public static String writeImageToMedia( Context ctx, Bitmap image, String title, String description ) {
@@ -1035,8 +1069,8 @@ public class Utils {
 	}
 	
 	/***
-	 * Get the name of the application that has been defined in AndroidManifest.xml
-	 * ***/
+	 * Gets the name of the application that has been defined in AndroidManifest.xml
+	 ****/
 	public static String getApplicationName(Context ctx) {
 		final PackageManager packageMgr = ctx.getPackageManager();
 		ApplicationInfo appInfo;
@@ -1070,7 +1104,7 @@ public class Utils {
 		return null;
 	}
 	
-	/** Transform Calendar to ISO 8601 string. */
+	/** Transforms Calendar to ISO 8601 string. */
     public static String fromCalendar(final Calendar calendar) {
     	// TODO: move this method to DateUtils
         Date date = calendar.getTime();
@@ -1081,6 +1115,7 @@ public class Utils {
 
     /** Get current date and time formatted as ISO 8601 string. */
     public static String now() {
+    	// TODO: move this method to DateUtils
         return fromCalendar(GregorianCalendar.getInstance());
     }
 
