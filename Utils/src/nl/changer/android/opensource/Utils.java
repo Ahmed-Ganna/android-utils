@@ -1974,6 +1974,7 @@ public class Utils {
 	 * @throws NullPointerException if parameter is null
 	 ****/
 	public static ArrayList<KeyValueTuple> toKeyValueList(JSONArray keyValueArray) {
+		// TODO: remove KeyValueTyple and use http://developer.android.com/reference/android/util/Pair.html
 		ArrayList<KeyValueTuple> list = null;
 		
 		if( keyValueArray == null ) {
