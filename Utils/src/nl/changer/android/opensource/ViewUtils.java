@@ -23,6 +23,13 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
+
+/***
+ * Provides utility methods and convenience methods for View controls.
+ * 
+ * <br/><br/>
+ * @author Jay
+ ****/
 public class ViewUtils {
 
 	private static final String TAG = ViewUtils.class.getSimpleName();
