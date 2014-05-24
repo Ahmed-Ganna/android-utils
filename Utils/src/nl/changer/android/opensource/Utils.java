@@ -11,14 +11,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,9 +27,6 @@ import java.util.Random;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 import nl.changer.GlobalConstants;
 import nl.changer.KeyValueTuple;
@@ -636,7 +630,7 @@ public class Utils {
     }
     
 	/***
-	 * Get the device unique id called IMEI.
+	 * Gets the device unique id called IMEI.
 	 * Sometimes, this returns 00000000000000000 for the rooted devices.
 	 * ***/
 	public static String getDeviceImei( Context ctx ) {
@@ -702,7 +696,7 @@ public class Utils {
 	}
 	
 	/***
-	 * Capitalizes a each word in the string.
+	 * Capitalizes each word in the string.
 	 * ***/
 	public static String capitalizeString( String string ) {
 		
@@ -725,7 +719,7 @@ public class Utils {
 	}
 	
     /***
-     * Programmatically tile the background of the for a view with viewId as a parameter.
+     * Tiles the background of the for a view with viewId as a parameter.
      * 
      * @deprecated Use {@link ViewUtils#tileBackground(Context, int, View, int)} instead.
      * ***/
@@ -772,7 +766,7 @@ public class Utils {
 	}
     
 	/***
-	 * Programmatically tile the background of the for a view with viewId as a parameter.
+	 * Tiles the background for a view with viewId as a parameter.
 	 * 
 	 * @deprecated Use {@link ViewUtils#setBackground(View, Drawable)} instead.
 	 ***/
@@ -787,8 +781,9 @@ public class Utils {
             bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
             View view = viewToTileBg.findViewById(layoutId);
             
-            if( view != null )
-            	setBackground(view, bitmapDrawable);
+            if( view != null ) {
+            	setBackground(view, bitmapDrawable);	
+            }
             
 		} catch (Exception e) {
 			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
@@ -796,7 +791,7 @@ public class Utils {
 	}
     
     /***
-     * Checks to see if the DB with the given name is present on the device.
+     * Checks if the DB with the given name is present on the device.
      * ***/
 	public static boolean isDatabasePresent( String packageName, String dbName ) {
         SQLiteDatabase checkDB = null;
@@ -914,8 +909,9 @@ public class Utils {
 	
 	public static ArrayList<String> toStringArray( JSONArray jsonArr ) {
 		
-		if( jsonArr == null || jsonArr.length() == 0 )
-			return null;
+		if( jsonArr == null || jsonArr.length() == 0 ) {
+			return null;	
+		}
 		
 		ArrayList<String> stringArray = new ArrayList<String>();
 		
@@ -948,34 +944,37 @@ public class Utils {
 	}
 	
 	/***
-	 * Get the data storage directory for the device.
+	 * Gets the data storage directory(pictures dir) for the device.
 	 * If the external storage is not available, this returns the reserved application
 	 * data storage directory. SD Card storage will be preferred over internal storage.
 	 * 
+	 * 
+	 * @param dirName if the directory name is specified, it is created inside the 
+	 * DIRECTORY_PICTURES directory.
 	 * @return Data storage directory on the device. Maybe be a 
 	 * directory on SD Card or internal storage of the device.
 	 ****/
 	public static File getStorageDirectory( Context ctx, String dirName ) {
 		
-		if( TextUtils.isEmpty( dirName) )
-			dirName = "atemp";
+		if( TextUtils.isEmpty( dirName) ) {
+			dirName = "atemp";	
+		}
 		
 		File f = null;
 		
 		String state = Environment.getExternalStorageState();
 		
-		 if( Environment.MEDIA_MOUNTED.equals(state) ) {
+		if( Environment.MEDIA_MOUNTED.equals(state) ) {
 			f = new File ( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+ "/" + dirName );
-	    } else {
+		} else {
 	    	// media is removed, unmounted etc
 	    	// Store image in /data/data/<package-name>/cache/atemp/photograph.jpeg
-	    	f = new File ( ctx.getCacheDir() + "/" + dirName );
-	    }
+			f = new File ( ctx.getCacheDir() + "/" + dirName );
+		}
 		 
-		if( !f.exists() )
+		if( !f.exists() ) {
 			f.mkdirs();
-		/*else
-			Log.v( TAG, "#getStorageDirectory directory exits already" );*/
+		}
 		 
 		return f;
 	}
@@ -993,8 +992,10 @@ public class Utils {
 	
 	/***
 	 * Writes the given image to the external storage of the device.
+	 * If external storage is not available, the image is written to
+	 * the application private directory
 	 * @return Path of the image file that has been written.
-	 * ***/
+	 ****/
 	public static String writeImage( Context ctx, byte[] imageData ) {
 		
 		// TODO: move to MediaUtils
@@ -1034,6 +1035,10 @@ public class Utils {
 	 * ***/
 	public static String writeImageToMedia( Context ctx, Bitmap image, String title, String description ) {
 		// TODO: move to MediaUtils
+		if(ctx == null) {
+			throw new NullPointerException("Context cannot be null");
+		}
+		
 		return Images.Media.insertImage(ctx.getContentResolver(), image, title, description);
 	}
 	
@@ -1070,15 +1075,21 @@ public class Utils {
 	
 	/***
 	 * Gets the name of the application that has been defined in AndroidManifest.xml
+	 * @throws NameNotFoundException 
 	 ****/
-	public static String getApplicationName(Context ctx) {
+	public static String getApplicationName(Context ctx) throws NameNotFoundException {
+		
+		if(ctx == null) {
+			throw new NullPointerException("Context cannot be null");
+		}
+		
 		final PackageManager packageMgr = ctx.getPackageManager();
-		ApplicationInfo appInfo;
+		ApplicationInfo appInfo = null;
 		
 		try {
 		    appInfo = packageMgr.getApplicationInfo( ctx.getPackageName(), PackageManager.SIGNATURE_MATCH );
 		} catch (final NameNotFoundException e) {
-		    appInfo = null;
+		    throw new NameNotFoundException(e.getMessage());
 		}
 		
 		final String applicationName = (String) (appInfo != null ? packageMgr.getApplicationLabel(appInfo) : "UNKNOWN");
@@ -1104,7 +1115,9 @@ public class Utils {
 		return null;
 	}
 	
-	/** Transforms Calendar to ISO 8601 string. */
+	/***
+	 * Transforms Calendar to ISO 8601 string.
+	 ****/
     public static String fromCalendar(final Calendar calendar) {
     	// TODO: move this method to DateUtils
         Date date = calendar.getTime();
@@ -1113,13 +1126,17 @@ public class Utils {
         return formatted.substring(0, 22) + ":" + formatted.substring(22);
     }
 
-    /** Get current date and time formatted as ISO 8601 string. */
+    /***
+     * Gets current date and time formatted as ISO 8601 string.
+     ****/
     public static String now() {
     	// TODO: move this method to DateUtils
         return fromCalendar(GregorianCalendar.getInstance());
     }
 
-    /** Transform ISO 8601 string to Calendar. */
+    /***
+     * Transforms ISO 8601 string to Calendar.
+     ****/
     public static Calendar toCalendar(final String iso8601string)
             throws ParseException {
     	// TODO: move this method to DateUtils
@@ -1148,14 +1165,13 @@ public class Utils {
     public static String getElapsedTime( String time ) {
     	TimeZone defaultTimeZone = TimeZone.getDefault();
     	
-    	// TODO: its advicable not to use this method. Change it at some time in future.
+    	// TODO: its advisable not to use this method as it changes the timezone. 
+    	// Change it at some time in future.
     	TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     	
     	Date eventTime = parseDate( time );
 		
     	Date currentDate = new Date();
-    	
-    	// Log.v( TAG, "#getElapsedTime time:  " + time + " currentDate: " + currentDate );
     	
     	long diffInSeconds = ( currentDate.getTime() - eventTime.getTime() ) / 1000;
     	String elapsed = "";
@@ -1197,7 +1213,7 @@ public class Utils {
      * DDMS cannot be used to mock location on an actual device.
      * So this method should be used which forces the GPS Provider
      * to mock the location on an actual device.
-     * ***/
+     ****/
     public static void setMockLocation( Context ctx, double longitude, double latitude ) {
 	    LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
 	    
@@ -1261,7 +1277,7 @@ public class Utils {
 	}
 
 	/***
-     * Get the day of the week.
+     * Gets the name of the day of the week.
      * @param date ISO format date
      * @return The name of the day of the week
      * ***/
@@ -1269,8 +1285,9 @@ public class Utils {
     	// TODO: move to DateUtils
     	Date dateDT = Utils.parseDate( date );
 		
-    	if( dateDT == null )
-    		return null;
+    	if( dateDT == null ) {
+    		return null;	
+    	}
     	
 		// Get current date
 		Calendar c = Calendar.getInstance();
@@ -1317,7 +1334,7 @@ public class Utils {
 	}
     
     /***
-     * Get the month from the given date.
+     * Gets the name of the month from the given date.
      * @param date ISO format date
      * @return Returns the name of the month
      * ***/
@@ -1325,8 +1342,9 @@ public class Utils {
     	// TODO: move to DateUtils
     	Date dateDT = Utils.parseDate( date );
 		
-    	if( dateDT == null )
-    		return null;
+    	if( dateDT == null ) {
+    		return null;	
+    	}
     	
 		// Get current date
 		Calendar c = Calendar.getInstance();
@@ -1393,7 +1411,7 @@ public class Utils {
 	}
     
     /***
-     * Get random color integer
+     * Gets random color integer
      ****/
     public static int getRandomColor() {
     	Random random = new Random();
@@ -1405,7 +1423,7 @@ public class Utils {
 	}
     
     /****
-     * Convert a given bitmap to byte array
+     * Converts a given bitmap to byte array
      * ***/
     public static byte[] toBytes( Bitmap bmp ) {
     	ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -1414,7 +1432,7 @@ public class Utils {
     }
     
     /***
-     * Resize an image to the given width and height parameters
+     * Resizes an image to the given width and height parameters
      * Prefer using {@link Utils#decodeSampledBitmapFromResource(Context, Uri, int, int)} over this method.
      * @param sourceBitmap Bitmap to be resized
      * @param newWidth Width of resized bitmap
@@ -1422,8 +1440,9 @@ public class Utils {
      ****/
     public static Bitmap resizeImage( Bitmap sourceBitmap, int newWidth, int newHeight, boolean filter ) {
     	// TODO: move this method to ImageUtils
-    	if( sourceBitmap == null )
-    		throw new NullPointerException( "Bitmap to be resized cannot be null" );
+    	if( sourceBitmap == null ) {
+    		throw new NullPointerException( "Bitmap to be resized cannot be null" );	
+    	}
     	
     	Bitmap resized = null;
     	
@@ -1506,6 +1525,7 @@ public class Utils {
 		StringBuffer sbDate = new StringBuffer();
     	sbDate.append( date );
     	String newDate = null;
+    	Date dateDT = null;
     	
     	try {
     		newDate = sbDate.substring(0, 19).toString();	
@@ -1515,8 +1535,6 @@ public class Utils {
     	
     	String rDate = newDate.replace( "T", " " );
     	String nDate = rDate.replaceAll( "-", "/" );
-    	
-    	Date dateDT = null;
     	
     	try {
     		dateDT = new java.text.SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" ).parse(nDate);
@@ -1529,25 +1547,9 @@ public class Utils {
     	
     	return dateDT;
 	}
-	
-	/****
-	 * Get the size of the Bitmap in MB
-	 * ***/
-	/*public static int sizeOf( Bitmap data ) {
-    	
-    	int sizeMB = 0;
-    	
-        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1 ) {
-            sizeMB = (data.getRowBytes() * data.getHeight()) / 1024;
-        } else {
-            sizeMB = (data.getByteCount() / 1024 ) ;
-        }
-        
-        return sizeMB;
-    }*/
     
     /****
-     * 
+     * @deprecated Too many image decoding methods.
      ****/
     public static Bitmap decodeSampledBitmapFromResource( Context ctx, Uri uri, int reqWidth, int reqHeight ) throws FileNotFoundException {
     	// TODO: move this method to ImageUtils
@@ -1619,12 +1621,14 @@ public class Utils {
 		return Bitmap.createScaledBitmap( sourceImage, widthNew, heightNew, true );
 	}
 	
-
+	/***
+	 * Checks if the url is valid
+	 ****/
     public static boolean isValidURL(String url) {  
   
         URL u = null;
         
-        try {  
+        try {
             u = new URL(url);  
         } catch (MalformedURLException e) {  
             return false;  
@@ -1642,7 +1646,8 @@ public class Utils {
      * Get the type of the media. Audio, Video or Image.
      * @return Lower case string for one of above listed media type
      * ***/
-    public static String getMediaType(String contentType) {  
+    public static String getMediaType(String contentType) {
+    	// TODO: move to MediaUtils
     	if(isMedia(contentType)) {
     		if(isVideo(contentType))
     			return "video";
@@ -1671,29 +1676,37 @@ public class Utils {
         if( mimeType != null ) {
         	if( mimeType.startsWith("image/") || mimeType.startsWith("video/") || mimeType.startsWith("audio/") )
         		isMedia = true;
-        } else
-        	isMedia = false;
+        } else {
+        	isMedia = false;	
+        }
         
         return isMedia;
     }
     
     /***
-     * Get the Uri without the fragment.
+     * Gets the Uri without the fragment.
      * For e.g
      * if the uri is content://com.android.storage/data/images/48829#is_png
      * the part after '#' is called as fragment.
-     * This method strips the fragment and return the url.
+     * This method strips the fragment and returns the url.
      * ***/
-    public static String removeUriFragment( String uri ) {
+    public static String removeUriFragment( String url ) {
   	  
-        if( uri == null || uri.length() == 0 )
-        	return null;
+        if( url == null || url.length() == 0 ) {
+        	return null;	
+        }
         
-        String[] arr = uri.split("#");
+        String[] arr = url.split("#");
         
-        return arr[0];
+        if(arr.length == 1)
+        	return arr[0];
+        else
+        	return url;
     }
     
+    /****
+     * Removes the parameters from the query from the uri
+     ****/
     public static String removeQueryParameters(Uri uri) {
         assert(uri.getAuthority() != null);
         assert(uri.getPath() != null);
@@ -1704,6 +1717,9 @@ public class Utils {
         return builder.build().toString();
     }
 
+    /***
+     * Returns true if the mime type is a standard image mime type
+     ****/
 	public static boolean isImage(String mimeType) {
 		// TODO: move to MediaUtils
 		// TODO: apply regex patter for checking the MIME type
@@ -1716,6 +1732,9 @@ public class Utils {
         	return false;
 	}
 	
+	/***
+     * Returns true if the mime type is a standard audio mime type
+     ****/
 	public static boolean isAudio(String mimeType) {
 		// TODO: move to MediaUtils
 		// TODO: apply regex patter for checking the MIME type
@@ -1728,6 +1747,9 @@ public class Utils {
         	return false;
 	}
 
+	/***
+     * Returns true if the mime type is a standard video mime type
+     ****/
 	public static boolean isVideo(String mimeType) {
 		// TODO: move to MediaUtils
 		// TODO: apply regex patter for checking the MIME type
@@ -1772,18 +1794,20 @@ public class Utils {
 	 ****/
 	public static byte[] getMediaData( Context ctx, Uri uri ) {
 		// TODO: move to MediaUtils
-		if( uri == null )
-			throw new NullPointerException("Uri cannot be null");
+		if( uri == null ) {
+			throw new NullPointerException("Uri cannot be null");	
+		}
 		
-		if( !ImageUtils.isMediaContentUri(uri) )
-			return null;
+		if( !ImageUtils.isMediaContentUri(uri) ) {
+			return null;	
+		}
 		
 		Cursor cur = ctx.getContentResolver().query( uri, new String[]{ Media.DATA }, null, null, null );
 		byte[]  data = null;
 		
 		try {
 			if( cur != null && cur.getCount() > 0 ) {
-				while( cur.moveToNext() ) {
+				if( cur.moveToNext() ) {
 					String path = cur.getString( cur.getColumnIndex(Media.DATA) );
 					
 					try {
@@ -1801,15 +1825,16 @@ public class Utils {
 			} else
 				Log.e( TAG, "#getMediaData cur is null or blank" );
 		} finally {
-			if( cur != null && !cur.isClosed() )
-				cur.close();
+			if( cur != null && !cur.isClosed() ) {
+				cur.close();	
+			}
 		}
 		
 		return data;
 	}
 	
 	/***
-	 * Get the size of the media resource pointed to by the paramter mediaUri.
+	 * Gets the size of the media resource pointed to by the paramter mediaUri.
 	 * 
 	 * Known bug: for unknown reason, the image size for some images was found to be 0
 	 * 
@@ -1836,9 +1861,9 @@ public class Utils {
 					
 				}	// end while
 			} else if( cur.getCount() == 0 ) {
-				Log.e( TAG, "#getSize cur size is 0. File may not exist" );
+				Log.e( TAG, "#getMediaSize cur size is 0. File may not exist" );
 			} else
-				Log.e( TAG, "#getSize cur is null" );
+				Log.e( TAG, "#getMediaSize cur is null" );
 		} finally {
 			if( cur != null && !cur.isClosed() )
 				cur.close();
@@ -1880,7 +1905,7 @@ public class Utils {
     }
 	
 	/****
-	 * Get media file name.
+	 * Gets media file name.
 	 ****/
 	public static String getMediaFileName( Context ctx, Uri mediaUri ) {
 		// TODO: move to MediaUtils
@@ -1913,36 +1938,44 @@ public class Utils {
     }
 	
 	/****
-	 * Get media type from the Uri.
+	 * Gets media type from the Uri.
 	 ****/
-	public static String getMediaType( Context ctx, Uri mediaUri ) {
+	public static String getMediaType(Context ctx, Uri uri) {
 		// TODO: move to MediaUtils
-		if(mediaUri == null)
-			throw new NullPointerException("Uri cannot be null");
+		if(uri == null) {
+			throw new NullPointerException("Uri cannot be null");	
+		}
 		
-		String uriStr = mediaUri.toString();
+		String uriStr = uri.toString();
 		
-		if(uriStr.contains("video"))
-			return "video";
-		else if(uriStr.contains("audio"))
-			return "audio";
-		else if(uriStr.contains("image"))
-			return "image";
-		else
-			return null;
+		if(uriStr.contains("video")) {
+			return "video";	
+		}
+		else if(uriStr.contains("audio")) {
+			return "audio";	
+		}
+		else if(uriStr.contains("image")) {
+			return "image";	
+		}
+		else {
+			return null;	
+		}
     }
 	
 	/****
+	 * Converts to list of {@link KeyValueTuple}
 	 * @throws NullPointerException if parameter is null
 	 ****/
 	public static ArrayList<KeyValueTuple> toKeyValueList(JSONArray keyValueArray) {
 		ArrayList<KeyValueTuple> list = null;
 		
-		if( keyValueArray == null )
+		if( keyValueArray == null ) {
 			throw new NullPointerException( "key-values array cannot be null" );
+		}
 		
-		if( keyValueArray.length() > 0 )
-			list = new ArrayList<KeyValueTuple>();
+		if( keyValueArray.length() > 0 ) {
+			list = new ArrayList<KeyValueTuple>();	
+		}
 		
 		for (int i = 0; i < keyValueArray.length(); i++) {
 			JSONObject obj = null;
@@ -1955,8 +1988,9 @@ public class Utils {
 				e.printStackTrace();
 			}
 			
-			if( obj == null )
-				continue;
+			if( obj == null ) {
+				continue;	
+			}
 			
 			try {
 				key = obj.getString( GlobalConstants.KEY_KEY );
@@ -1974,8 +2008,15 @@ public class Utils {
 	
 	/****
 	 * Returns {@link SpannableString} in Bold typeface
+	 * 
+	 * @param sourceText String to be converted to bold.
 	 * ***/
 	public static SpannableStringBuilder toBold(String sourceText) {
+		
+		if(sourceText == null) {
+			throw new NullPointerException("String to convert cannot be bold");
+		}
+		
 		final SpannableStringBuilder sb = new SpannableStringBuilder(sourceText);
 
 		// Span to set text color to some RGB value
@@ -1987,9 +2028,22 @@ public class Utils {
 	}
 	
 	/****
-	 * Make the dialog fill 90% of screen width and minHeight 20% of screen height
+	 * Makes the dialog fill 90% of screen width and minHeight 20% of screen height
+	 * Ideally this method should not be used. Use appropriate theme for the activity to give
+	 * a dialog like UI. Alternatively you can also use AlertDialog.Builder to create the
+	 * same effect.
 	 * ***/
 	public static View dialogify(Activity ctx, int dialogLayoutId) {
+		return dialogify(ctx, dialogLayoutId, 0.9f, 0.2f);
+	}
+	
+	/****
+	 * Helps given customized look to the dialog UI.
+	 * Ideally this method should not be used. Use appropriate theme for the activity to give
+	 * a dialog like UI. Alternatively you can also use AlertDialog.Builder to create the
+	 * same effect.
+	 * ***/
+	public static View dialogify(Activity ctx, int dialogLayoutId, float minWidth, float minHeight) {
 		// retrieve display dimensions
 		Rect displayRectangle = new Rect();
 		Window window = ctx.getWindow();
@@ -1998,31 +2052,27 @@ public class Utils {
 		// inflate and adjust layout
 		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View layout = inflater.inflate(dialogLayoutId, null);
-		layout.setMinimumWidth((int)(displayRectangle.width() * 0.9f));
-		layout.setMinimumHeight((int)(displayRectangle.height() * 0.2f));
+		
+		if(minWidth != -1 ) {
+			layout.setMinimumWidth((int)(displayRectangle.width() * minWidth));
+		}
+		
+		if(minHeight != -1) {
+			layout.setMinimumHeight((int)(displayRectangle.height() * minHeight));	
+		}
 		
 		return layout;
 	}
 	
 	/****
-	 * Make the dialog fill 90% width.
+	 * Makes the dialog fill 90% width.
 	 * ***/
 	public static View dialogifyWidth(Activity ctx, int dialogLayoutId) {
-		// retrieve display dimensions
-		Rect displayRectangle = new Rect();
-		Window window = ctx.getWindow();
-		window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-
-		// inflate and adjust layout
-		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(dialogLayoutId, null);
-		layout.setMinimumWidth((int)(displayRectangle.width() * 0.9f));
-		
-		return layout;
+		return dialogify(ctx, dialogLayoutId, 0.9f, -1);
 	}
 
 	/***
-	 * Format given size in bytes to KB, MB, GB or whatever.
+	 * Formats given size in bytes to KB, MB, GB or whatever.
 	 * This will work up to 1000 TB
 	 * ***/
 	public static String formatSize(long size) {
@@ -2033,8 +2083,11 @@ public class Utils {
 	}
 	
 	/***
-	 * Format given size in bytes to KB, MB, GB or whatever.
+	 * Formats given size in bytes to KB, MB, GB or whatever.
 	 * Preferably use this method for performance efficiency.
+	 * 
+	 * @param si Controls byte value precision. If true, formatting is done using approx. 1000 
+	 * Uses 1024 if false.
 	 * ***/
 	public static String formatSize(long bytes, boolean si) {
 	    int unit = si ? 1000 : 1024;
@@ -2044,32 +2097,7 @@ public class Utils {
 	    return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 	
-	/****
-	 * Get HMacSha1 hash
-	 ****/
-	/*public static String getHash(String value, String key) {
-		
-		String type = "HmacSHA1";
-	    try {
-	        Mac mac = javax.crypto.Mac.getInstance(type);
-	        SecretKeySpec secret = new SecretKeySpec(key.getBytes(), type);
-	        mac.init(secret);
-	        byte[] digest = mac.doFinal(value.getBytes());
-	        StringBuilder sb = new StringBuilder(digest.length*2);
-	        String s;
-	        for (byte b : digest) {
-		        s = Integer.toHexString((int)(b));
-		        if(s.length() == 1) sb.append('0');
-		        	sb.append(s);
-	        }
-	        return sb.toString();
-	    } catch (Exception e) {
-	        Log.v(TAG,"Exception ["+e.getMessage()+"]", e);
-	    }
-	        return "";
-    }*/
-	
-	public static String getHash(String value, String key)  throws UnsupportedEncodingException, NoSuchAlgorithmException,
+/*	public static String getHash(String value, String key)  throws UnsupportedEncodingException, NoSuchAlgorithmException,
 	        InvalidKeyException {
 	    String type = "HmacSHA1";
 	    SecretKeySpec secret = new SecretKeySpec(key.getBytes(), type);
@@ -2090,8 +2118,12 @@ public class Utils {
 	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
 	    }
 	    return new String(hexChars);
-	}
+	}*/
 	
+	/***
+	 * Creates the uri to a file located on external storage or
+	 * application internal storage.
+	 ****/
 	public static Uri createUri(Context ctx) {
 		File root = getStorageDirectory( ctx, null );
 		root.mkdirs();
@@ -2101,9 +2133,17 @@ public class Utils {
 		return uri;
 	}
 	
+	/***
+	 * Creates an intent to take a video from camera or gallery or any other application
+	 * that can handle the intent.
+	 ****/
 	public static Intent createTakeVideoIntent(Activity ctx, Uri savingUri, int durationInSeconds) {
 		// TODO: move to MediaUtils
-	    // Camera.
+		
+		if(savingUri == null) {
+			throw new NullPointerException("Uri cannot be null");
+		}
+		
 	    final List<Intent> cameraIntents = new ArrayList<Intent>();
 	    final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
 	    final PackageManager packageManager = ctx.getPackageManager();
@@ -2133,16 +2173,20 @@ public class Utils {
 	}
 	
 	/***
-	 * Create a PICK photo & TAKE_PICTURE intent.
+	 * Creates a ACTION_IMAGE_CAPTURE photo & ACTION_GET_CONTENT intent.
 	 * This intent will be aggregation of intents required to take picture from
 	 * Gallery and Camera at the minimum. The intent will also be directed towards
 	 * the apps that are capable of sourcing the image data. For e.g. Dropbox, Astro file manager.
-	 * @param cameraPhotoUri Uri to store a high resolution image at. If the user takes the picture using the camera
+	 * @param savingUri Uri to store a high resolution image at. If the user takes the picture using the camera
 	 *  the image will be stored at this uri.
 	 ****/
-	public static Intent createTakePictureIntent(Activity ctx, Uri cameraPhotoUri) {
+	public static Intent createTakePictureIntent(Activity ctx, Uri savingUri) {
 		// TODO: move to MediaUtils
-	    // Camera.
+		
+		if(savingUri == null) {
+			throw new NullPointerException("Uri cannot be null");
+		}
+		
 	    final List<Intent> cameraIntents = new ArrayList<Intent>();
 	    final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 	    final PackageManager packageManager = ctx.getPackageManager();
@@ -2152,7 +2196,7 @@ public class Utils {
 	        final Intent intent = new Intent(captureIntent);
 	        intent.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name) );
 	        intent.setPackage(packageName);
-	        intent.putExtra( MediaStore.EXTRA_OUTPUT, cameraPhotoUri );
+	        intent.putExtra( MediaStore.EXTRA_OUTPUT, savingUri );
 	        cameraIntents.add(intent);
 	    }
 
@@ -2171,12 +2215,14 @@ public class Utils {
 	}
 	
 	/****
-	 * Create external content:// scheme uri to save the images at.
+	 * Creates external content:// scheme uri to save the images at.
 	 * ***/
 	public static Uri createImageUri(Context ctx) throws IOException {
 		// TODO: move to MediaUtils
-		if(ctx == null)
-			throw new NullPointerException("Context cannot be null");
+		
+		if(ctx == null) {
+			throw new NullPointerException("Context cannot be null");	
+		}
 		
 		Uri imageUri = null;
 		
@@ -2189,12 +2235,14 @@ public class Utils {
 	}
 	
 	/****
-	 * Create external content:// scheme uri to save the videos at.
+	 * Creates external content:// scheme uri to save the videos at.
 	 * ***/
 	public static Uri createVideoUri(Context ctx) throws IOException {
 		// TODO: move to MediaUtils
-		if(ctx == null)
-			throw new NullPointerException("Context cannot be null");
+		
+		if(ctx == null) {
+			throw new NullPointerException("Context cannot be null");	
+		}
 		
 		Uri imageUri = null;
 		
