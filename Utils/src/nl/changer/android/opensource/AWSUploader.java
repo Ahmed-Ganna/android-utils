@@ -7,12 +7,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
@@ -34,19 +31,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.github.kevinsawicki.http.HttpRequest;
 
-
-
 public class AWSUploader {
-	
-	/*private UploadProgressListener mUploadable;
-	
-	public interface UploadProgressListener {
-		public void onProgressUpdate(long progress, long total);
-	}
-	
-	private void setUploadProgressListener() {
-
-	}*/
 	
 	public static final String INTENT_UPLOAD_PROGRESS = "nl.changer.intent.awsuploader.progress";
 	// public static final String INTENT_EXTRA_PROGRESS_CURRENT_PERCENT = "nl.changer.intent.awsuploader.progress.current.precent";
@@ -173,12 +158,10 @@ public class AWSUploader {
 			// android.provider.MediaStore.Audio.
 			data = Utils.getMediaData( ctx, uri );
 		} else if( Utils.isVideo(contentType) ) {
-			// sample video uri = "content://media/external/video/media/45492"
-			Log.i( TAG, "#uploadMediaObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
 			data = Utils.getMediaData( ctx, uri );
-		} else
-			Log.e( TAG, "#uploadMediaObject video size: " + Utils.getMediaSize(ctx, uri) + " bytes" );
+		}
 			
+		Log.i( TAG, "#uploadMediaObject media size: " + Utils.formatSize(Utils.getMediaSize(ctx, uri), true) );
 		
 		// Log.v(TAG, "#uploadObject uploading...");
 		HashMap<String, Object> outputData = new HashMap<String, Object>();
@@ -311,15 +294,32 @@ public class AWSUploader {
 	 * **/
 	public static boolean uploadObject( Context ctx, String urlStr, String contentType, Object inputData, HashMap<String, Object> outputData ) {
 		
+		if(inputData == null)
+			throw new NullPointerException("");
+		
 		boolean isSucccessful = false;
+		
+		byte[] buffer = null;
+		
+		if( inputData instanceof JSONObject || inputData instanceof JSONArray || inputData instanceof String )
+			buffer = inputData.toString().getBytes();
+		else if ( inputData instanceof byte[] ) {
+			buffer = (byte[]) inputData;
+		} else
+			throw new InvalidParameterException("Invalid data to be uploaded");
+		
 		
 		int responseCode = HttpRequest.put(urlStr)
 							.contentType(contentType)
 							.accept("*/*")
+							.send(buffer)
 							.code();
+		
 		Log.i(TAG, "#uploadObject resCode: " + responseCode );
 		
-		if( responseCode == HttpStatus.SC_OK )
+		// we dont know exactly what status is sent by
+		// S3 upon successful upload. So lets keep a range.
+		if( responseCode >= HttpStatus.SC_OK && responseCode <= 299 )
 			isSucccessful = true;
 		else
 			isSucccessful = false;

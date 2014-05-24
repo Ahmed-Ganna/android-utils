@@ -3,14 +3,24 @@ package nl.changer.android.opensource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Media;
+import android.util.Log;
 
+/***
+ * Provides helper classes for image operations
+ ***/
 public class ImageUtils {
 
 	private final static String TAG = ImageUtils.class.getSimpleName();
+	
+	private static final String ERROR_URI_NULL = "Uri cannot be null";
 	
 	/***
 	 * Scales the image depending upon the display density of the
@@ -71,6 +81,13 @@ public class ImageUtils {
 	 * @param uri Uri of the source bitmap
 	 ****/
 	public static Uri scaleDownBitmapForUri( Context ctx, Uri uri, int newHeight ) throws FileNotFoundException, IOException {
+		
+		if( uri == null )
+			throw new NullPointerException(ERROR_URI_NULL);
+		
+		if( !isMediaContentUri(uri) )
+			return null;
+		
 		Bitmap original = Media.getBitmap(ctx.getContentResolver(), uri);
 		Bitmap bmp = scaleBitmap(ctx, original, newHeight);
 		
@@ -82,5 +99,103 @@ public class ImageUtils {
 		}
 		
 		return destUri;
+	}
+	
+	/***
+	 * Get the orientation of the image pointed to by the parameter uri
+	 * 
+	 * @return Image orientation value corresponding to <code>ExifInterface.ORIENTATION_*</code>
+	 * <br/>
+	 * Returns -1 if the row for the {@link Uri} is not found.
+	 ****/
+	public static int getOrientation(Context context, Uri uri) {
+		
+		int invalidOrientation = -1;
+		if( uri == null )
+			throw new NullPointerException(ERROR_URI_NULL);
+		
+		if( !isMediaContentUri(uri) )
+			return invalidOrientation;
+		
+		String filePath = Utils.getImagePathForUri(context, uri);
+		ExifInterface exif = null;
+		
+		try {
+			exif = new ExifInterface(filePath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		int orientation = invalidOrientation;
+		if(exif != null)
+			orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, invalidOrientation);
+        
+        return orientation;
+	}
+	
+	public static boolean isMediaContentUri(Uri uri) {
+		if( !uri.toString().contains("content://media/") ) {
+			Log.w(TAG, "#isContentUri The uri is not a media content uri");
+			return false;
+		} else
+			return true;
+	}
+	
+	/***
+	 * Rotate the image at the specified uri.
+	 * @param uri Uri of the image to be rotated.
+	 ****/
+	public static Uri rotateImage( Context context, Uri uri ) throws FileNotFoundException, IOException {
+		
+		if( uri == null )
+			throw new NullPointerException(ERROR_URI_NULL);
+		
+		if( !isMediaContentUri(uri) )
+			return null;
+		
+		int invalidOrientation = -1;
+		byte[] data = Utils.getMediaData(context, uri);
+		
+		int orientation = getOrientation(context, uri);
+        
+		Uri newUri = null;
+		
+        try {
+            
+            Log.d(TAG, "#rotateImage Exif orientation: " + orientation);
+            
+            if(orientation != invalidOrientation) {
+            	Matrix matrix = new Matrix();
+            	
+                switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                	matrix.postRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                	matrix.postRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                	matrix.postRotate(270);
+                    break;
+                }
+                
+                // set some options so the memory is manager properly
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                // options.inPreferredConfig = Bitmap.Config.RGB_565;		// try to enable this if OutOfMem issue still persists
+                options.inPurgeable = true;             
+                options.inInputShareable = true;
+                
+                Bitmap original = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(original, 0, 0, original.getWidth(), original.getHeight(), matrix, true); // rotating bitmap
+                String newUrl = Media.insertImage(((Activity) context).getContentResolver(), rotatedBitmap, "", "");
+                
+                if(newUrl != null)
+                	newUri = Uri.parse(newUrl);	
+            }
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        
+        return newUri;
 	}
 }
