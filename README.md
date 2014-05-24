@@ -4,9 +4,8 @@ Android Utilities
 Library Project for utility classes that can make me(and others) more productive.
 
 
-----
-
-** Utility classes included **
+Utility classes included
+=============
 
 * Utils - Set of general purpose utility methods.
 * ViewUtils - Set of utility methods for different view classes.
