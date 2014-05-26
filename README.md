@@ -8,7 +8,7 @@ Library Project for utility classes that can make me(and others) more productive
 
 * Utils - Set of general purpose utility methods.
 * ViewUtils - Set of utility methods for different view classes.
-* StorageManager - SharedPreferences abstraction.
+* StorageManager - Android SharedPreferences abstraction.
 * AWSUploader - Utility methods to upload objects to Amazon S3.
 
 ----
