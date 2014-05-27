@@ -4,6 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+/****
+ * Provides convenience methods and abstraction for storing
+ * data in the {@link SharedPreferences}
+ * 
+ * <br/><br/>
+ * @author Jay
+ ****/
 public class StorageManager {
 	
 	private static final String TAG = StorageManager.class.getSimpleName();
@@ -20,20 +27,32 @@ public class StorageManager {
 		mEditor = mSettings.edit();
 	}
 	
+	/***
+	 * Set a value for the key
+	 ****/
 	public void setValue(String key, String value) {
 		mEditor.putString(key, value);
 		mEditor.commit();
 	}
 	
+	/***
+	 * Set a value for the key
+	 ****/
 	public void setValue(String key, int value) {
 		mEditor.putInt(key, value);
 		mEditor.commit();
 	}
 	
+	/***
+	 * Set a value for the key
+	 ****/
 	public void setValue(String key, double value) {
 		setValue( key, Double.toString(value) );
 	}
 	
+	/***
+	 * Set a value for the key
+	 ****/
 	public void setValue( String key, long value ) {
 		mEditor.putLong( key, value );
 		mEditor.commit();
@@ -44,19 +63,11 @@ public class StorageManager {
 	 * @param defaultValue Default value for the key, if one is not found.
 	 * **/
 	public String getValue(String key, String defaultValue) {
-		String value = defaultValue;
-		
-		value = mSettings.getString(key, defaultValue);
-		
-		return value;
+		return mSettings.getString(key, defaultValue);
 	}
 	
 	public int getIntValue( String key, int defaultValue ) {
-		int value = defaultValue;
-		
-		value = mSettings.getInt( key, defaultValue );
-		
-		return value;
+		return mSettings.getInt( key, defaultValue );
 	}
 	
 	public long getLongValue( String key, long defaultValue ) {
@@ -64,20 +75,14 @@ public class StorageManager {
 	}
 	
 	/****
-	 * Gets the value from the settings stored natively on the device.
-	 * 
+	 * Gets the value from the preferences stored natively on the device.
 	 * @param defValue Default value for the key, if one is not found.
 	 * **/
 	public boolean getValue( String key, boolean defValue ) {
-		boolean value = defValue;
-		
-		value = mSettings.getBoolean(key, defValue);
-		
-		return value;
+		return mSettings.getBoolean(key, defValue);
 	}
 	
 	public void setValue( String key, boolean value ) {
-		
 		mEditor.putBoolean(key, value);
 		mEditor.commit();
 	}

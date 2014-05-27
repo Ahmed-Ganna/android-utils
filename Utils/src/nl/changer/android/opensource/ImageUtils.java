@@ -13,6 +13,9 @@ import android.net.Uri;
 import android.provider.MediaStore.Images.Media;
 import android.util.Log;
 
+/***
+ * Provides helper classes for image operations
+ ***/
 public class ImageUtils {
 
 	private final static String TAG = ImageUtils.class.getSimpleName();

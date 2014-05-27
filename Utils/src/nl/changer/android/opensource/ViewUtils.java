@@ -1,18 +1,11 @@
 package nl.changer.android.opensource;
 
-import java.io.ByteArrayOutputStream;
-
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Shader;
-import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -26,6 +19,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
+
+/***
+ * Provides utility methods and convenience methods for View controls.
+ * 
+ * <br/><br/>
+ * @author Jay
+ ****/
 public class ViewUtils {
 
 	private static final String TAG = ViewUtils.class.getSimpleName();
@@ -42,17 +46,21 @@ public class ViewUtils {
 	 ****/
 	public static void setLiveCharCounter(EditText editTextView, final TextView textCounterView, final int maxCharCount, final boolean countdown) {
 		
-		if(editTextView == null)
-			throw new NullPointerException("View to count text characters on cannot be null");
+		if(editTextView == null) {
+			throw new NullPointerException("View to count text characters on cannot be null");	
+		}
 		
-		if(textCounterView == null)
-			throw new NullPointerException("View to display count cannot be null");
+		if(textCounterView == null) {
+			throw new NullPointerException("View to display count cannot be null");	
+		}
 		
 		// initialize the TextView initial state
-		if(countdown)
-			textCounterView.setText(String.valueOf(maxCharCount));
-		else
-			textCounterView.setText(String.valueOf("0 / " + maxCharCount));
+		if(countdown) {
+			textCounterView.setText(String.valueOf(maxCharCount));	
+		}
+		else {
+			textCounterView.setText(String.valueOf("0 / " + maxCharCount));	
+		}
 		
 		// initialize the edittext
 		setMaxLength(editTextView, maxCharCount);
@@ -84,31 +92,38 @@ public class ViewUtils {
 		});
 	}
 
+	/***
+	 * Set max text length for textview
+	 ****/
 	public static void setMaxLength(TextView textView, int maxLength) {
+		
+		if(textView == null) {
+			throw new NullPointerException("TextView cannot be null");
+		}
+		
 		InputFilter[] fArray = new InputFilter[1];
 		fArray[0] = new InputFilter.LengthFilter(maxLength);
 		textView.setFilters(fArray);
 	}
 	
     /***
-     * Programmatically tile the background of the for a view with viewId as a parameter.
+     * Tiles the background of the for a view with viewId as a parameter.
      * ***/
 	public static void tileBackground( Context ctx, int viewId, int resIdOfTile ) {
     	
     	try {
-    		//Tiling the background.
+    		// Tiling the background.
         	Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), resIdOfTile);
-        	// deprecated constructor call
-            // BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
         	BitmapDrawable bitmapDrawable = new BitmapDrawable( ctx.getResources(), bmp);
             bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
             View view = ((Activity) ctx).findViewById( viewId );
             
-            if( view == null )
-            	throw new NullPointerException("View to which the tile has to be applied should not be null");
-            else
-            	setBackground( view, bitmapDrawable);
-            		
+            if( view == null ) {
+            	throw new NullPointerException("View to which the tile has to be applied should not be null");	
+            }
+            else {
+            	setBackground( view, bitmapDrawable);	
+            }
 		} catch (Exception e) {
 			Log.w(TAG, "#tileBackground Exception while tiling the background of the view");
 		}
@@ -145,8 +160,9 @@ public class ViewUtils {
             bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
             View view = viewToTileBg.findViewById(layoutId);
             
-            if( view != null )
-            	setBackground(view, bitmapDrawable);
+            if( view != null ) {
+            	setBackground(view, bitmapDrawable);	
+            }
             
 		} catch (Exception e) {
 			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
