@@ -60,11 +60,7 @@ public class StorageManager {
 	}
 	
 	public long getLongValue( String key, long defaultValue ) {
-		long value = defaultValue;
-		
-		value = mSettings.getLong( key, defaultValue );
-		
-		return value;
+		return mSettings.getLong( key, defaultValue );
 	}
 	
 	/****

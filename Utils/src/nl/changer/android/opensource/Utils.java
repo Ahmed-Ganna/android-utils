@@ -2175,4 +2175,24 @@ public class Utils {
 		
 	    return imageUri;
 	}
+	
+	/***
+	 * Get the correctly appended name from the given name parameters
+	 * @param firstName First name
+	 * @param lastName Last name
+	 * 
+	 * @return Returns correctly formatted full name. Returns null if both the values are null.
+	 * ***/
+	public static String getName(String firstName, String lastName) {
+		if( !TextUtils.isEmpty(firstName) && !TextUtils.isEmpty(lastName) ) {
+			return firstName + " " + lastName;
+		} else
+			if( !TextUtils.isEmpty(firstName) )
+				return firstName;
+			else
+				if( !TextUtils.isEmpty(lastName) )
+					return lastName;
+				else
+					return null;
+	}
 }
