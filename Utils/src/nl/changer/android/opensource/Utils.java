@@ -56,9 +56,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
@@ -1705,7 +1708,7 @@ public class Utils {
         
         String[] arr = url.split("#");
         
-        if(arr.length == 1)
+        if(arr.length == 2)
         	return arr[0];
         else
         	return url;
@@ -1880,6 +1883,8 @@ public class Utils {
     }
 	
 	/****
+	 * @deprecated Use {@link MediaUtils#getMediaDuration(Context, Uri)} instead.
+	 * <br/>
 	 * Get runtime duration of media such as audio or video in milliseconds
 	 ****/
 	public static long getMediaDuration( Context ctx, Uri mediaUri ) {
@@ -2280,5 +2285,32 @@ public class Utils {
 					return lastName;
 				else
 					return null;
+	}
+	
+	public static Bitmap roundBitmap(Bitmap bmp, int radius) {
+	    Bitmap sbmp;
+	    if(bmp.getWidth() != radius || bmp.getHeight() != radius)
+	        sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
+	    else
+	        sbmp = bmp;
+	    Bitmap output = Bitmap.createBitmap(sbmp.getWidth(),
+	            sbmp.getHeight(), Config.ARGB_8888);
+	    Canvas canvas = new Canvas(output);
+
+	    final int color = 0xffa19774;
+	    final Paint paint = new Paint();
+	    final Rect rect = new Rect(0, 0, sbmp.getWidth(), sbmp.getHeight());
+
+	    paint.setAntiAlias(true);
+	    paint.setFilterBitmap(true);
+	    paint.setDither(true);
+	    canvas.drawARGB(0, 0, 0, 0);
+	    paint.setColor(Color.parseColor("#BAB399"));
+	    canvas.drawCircle(sbmp.getWidth() / 2+0.7f, sbmp.getHeight() / 2+0.7f,
+	            sbmp.getWidth() / 2+0.1f, paint);
+	    paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+	    canvas.drawBitmap(sbmp, rect, rect, paint);
+
+	    return output;
 	}
 }

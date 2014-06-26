@@ -19,6 +19,11 @@ public class AwsUtils {
 	 * @throws SignatureException when signature generation fails
 	 */
 	public static String getHMac(String data, String key) throws SignatureException {
+		
+		if(data == null) {
+			throw new NullPointerException("Data to be signed cannot be null");
+		}
+		
 		String result = null;
 		try {
 

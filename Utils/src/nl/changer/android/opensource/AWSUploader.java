@@ -295,7 +295,7 @@ public class AWSUploader {
 	public static boolean uploadObject( Context ctx, String urlStr, String contentType, Object inputData, HashMap<String, Object> outputData ) {
 		
 		if(inputData == null)
-			throw new NullPointerException("");
+			throw new NullPointerException("Data to upload cannot be null");
 		
 		boolean isSucccessful = false;
 		

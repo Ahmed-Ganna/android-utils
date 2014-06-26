@@ -10,7 +10,6 @@ import com.google.analytics.tracking.android.Tracker;
 /***
  * Helper utility class for older and deprecated version of Google Analytics.
  ***/
-@Deprecated
 public class GAnalyticsUtils {
 
 	private static final String TAG = GAnalyticsUtils.class.getSimpleName();
