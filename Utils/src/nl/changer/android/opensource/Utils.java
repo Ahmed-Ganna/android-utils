@@ -1883,7 +1883,7 @@ public class Utils {
     }
 	
 	/****
-	 * @deprecated Use {@link MediaUtils#getMediaDuration(Context, Uri)} instead.
+	 * @deprecated Use {@link MediaUtils#getDuration(Context, Uri)} instead.
 	 * <br/>
 	 * Get runtime duration of media such as audio or video in milliseconds
 	 ****/

@@ -13,7 +13,7 @@ public class MediaUtils {
 	/****
 	 * Get runtime duration of media such as audio or video in milliseconds
 	 ****/
-	public static long getMediaDuration( Context ctx, Uri mediaUri ) {
+	public static long getDuration( Context ctx, Uri mediaUri ) {
 		Cursor cur = ctx.getContentResolver().query( mediaUri, new String[]{ Video.Media.DURATION }, null, null, null );
 		long duration = -1;
 		
