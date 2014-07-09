@@ -17,6 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+import nl.changer.android.http.HttpHeader;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.protocol.HTTP;
@@ -43,6 +45,8 @@ public class AWSUploader {
 	// public static final String INTENT_EXTRA_PROGRESS_CURRENT_PERCENT = "nl.changer.intent.awsuploader.progress.current.precent";
 	public static final String INTENT_EXTRA_PROGRESS_CURRENT = "nl.changer.intent.awsuploader.progress.current";
 	public static final String INTENT_EXTRA_PROGRESS_MAX = "nl.changer.intent.awsuploader.progress.max";
+	
+	private static final int MAX_BUFFER_SIZE = 1024 * 2;
 
 	private static final String TAG = AWSUploader.class.getSimpleName();
 	
@@ -107,7 +111,12 @@ public class AWSUploader {
 		return url;
 	}
 	
-	/***
+	/****
+	 * @deprecated
+	 * <br/>
+	 * Use {@link AWSUploader#uploadObjectByUri(Context, String, String, Uri, HashMap)}
+	 * <br/>
+	 * 
 	 * Uploads the object pointed to by the Uri parameter to AWS S3.
 	 * Compresses the image if it is larger than 1MB in size.
 	 * 
@@ -137,31 +146,6 @@ public class AWSUploader {
 		
 		if(Utils.isImage(contentType)) {
 			// content://media/external/images/media/45490
-			/*
-			try {
-				// TODO: use Utils#getMediaData from uri, rather than doing this manually
-				bmp = BitmapFactory.decodeStream( ctx.getContentResolver().openInputStream( uri ) );
-				
-				long size = Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) );
-				
-				if( bmp != null )
-					Log.v( TAG, "#uploadMediaObject BEFORE bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + size + " KB" );
-				
-				// if size cannot be determined or
-				// great than 1MB, compress the image
-				if( size == 0 || size > 1 ) {
-					bmp = Utils.compressImage( bmp, 4 );
-					Log.v( TAG, "#uploadMediaObject AFTER bmp.w: " + bmp.getWidth() + " bmp.h: " + bmp.getHeight() + " size: " + Utils.toKiloBytes( Utils.getMediaSize(ctx, uri) ) + " KB" );
-				}
-				
-				data = Utils.toBytes(bmp);
-			} catch ( FileNotFoundException e ) {
-				e.printStackTrace();
-				// TODO: return this error.
-			} catch ( Exception e ) {
-				e.printStackTrace();
-				// TODO: return this error.
-			}*/
 			
 			data = Utils.getMediaData( ctx, uri );
 		} else if( Utils.isAudio( contentType ) ) {
@@ -183,7 +167,11 @@ public class AWSUploader {
 
 	
 	/****
-	 * @deprecated Try using other version {@link AWSUploader#uploadObject} of this same method.
+	 * @deprecated Potentially dangerous method as it takes all the data in memory.
+	 * <br/> 
+	 * Use {@link AWSUploader#uploadObjectByUri(Context, String, String, Uri, HashMap)} 
+	 * of this same method.
+	 * <br/>
 	 * @param urlStr Signed HTTP PUT Url to upload the object to
 	 * @param contentType Standard HTTP Content type of the object to be uploaded to the server
 	 * @param inputData {@link JSONObject} or byte[] to be uploaded to the server
@@ -289,8 +277,7 @@ public class AWSUploader {
 			
 			if( responseCode == HttpStatus.SC_OK ) {
 				isSucccessful = true;	
-			}
-			else {
+			} else {
 				isSucccessful = false;	
 			}
 			
@@ -303,8 +290,13 @@ public class AWSUploader {
 	
 	
 	/****
+	 * @deprecated Potentially dangerous method as it takes all the data in memory.
+	 * <br/> 
+	 * Use {@link AWSUploader#uploadObjectByUri(Context, String, String, Uri, HashMap)} 
+	 * of this same method.
+	 * <br/>
 	 * @param inputData Can be a String object or byte[]
-	 * **/
+	 ****/
 	public static boolean uploadObject(Context ctx, String urlStr, String contentType, Object inputData, HashMap<String, Object> outputData) {
 		
 		if(inputData == null) {
@@ -346,7 +338,7 @@ public class AWSUploader {
 	/****
 	 * @param inputData Can be a String object or byte[]
 	 * **/
-	public static String uploadObjectByUri(Context ctx, String urlStr, String contentType, Uri uri, HashMap<String, Object> outputData) {
+	public static boolean uploadObjectByUri(Context ctx, String urlStr, String contentType, Uri uri, HashMap<String, Object> outputData) {
 		
 		if(uri == null) {
 			throw new NullPointerException("uri to upload cannot be null");	
@@ -355,36 +347,11 @@ public class AWSUploader {
 		boolean isSucccessful = false;
 		
 		String path = Utils.getPathForMediaUri(ctx, uri);
-		String fileName = Utils.getMediaFileName(ctx, uri);
-		
-		Log.i(TAG, " path: " + path);
-		
-		// sendFileToServer(path, urlStr);
-		
-		/*int responseCode = HttpRequest.put(urlStr)
-								.contentType(contentType)
-								.accept("*//*")
-								.chunk(1024)
-								.send(new File(path))
-								.code();
-		
-		Log.i(TAG, "#uploadObject resCode: " + responseCode );
-		
-		// we dont know exactly what status is sent by
-		// S3 upon successful upload. So lets keep a range.
-		if( responseCode >= HttpStatus.SC_OK && responseCode <= 299 ) {
-			isSucccessful = true;
-		} else {
-			isSucccessful = false;	
-		}
-		
-		return isSucccessful; */
 		
 		URL url = null;
-		
+		File f = new File(path);
 		try {
 			url = new URL(urlStr);
-			// Log.v(TAG, "#uploadObjectToAWS url: " + url );
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
 		} catch ( Exception e ) {
@@ -401,32 +368,32 @@ public class AWSUploader {
 		connection.setUseCaches(false);
 		connection.setDoOutput(true);
 		connection.setRequestProperty(HTTP.CONTENT_TYPE, contentType);
-		connection.setRequestProperty("Accept", "*/*");
+		connection.setRequestProperty(HttpHeader.ACCEPT, "*/*");
+		connection.setFixedLengthStreamingMode((int) f.length());
+		
+		Log.i(TAG, "#uploadObjectByUri <====Uploading... File length " + Utils.formatSize(f.length()) + " ====>");
+		
 		try {
-			connection.setRequestMethod( HttpPut.METHOD_NAME );
+			connection.setRequestMethod(HttpPut.METHOD_NAME);
 		} catch (ProtocolException e) {
 			e.printStackTrace();
 		}
 		
-		// OutputStreamWriter out = null;
 		BufferedOutputStream out = null;
 		int bytesRead = 0, bytesAvailable = 0, bufferSize;
 	    byte[] buffer;
-	    int maxBufferSize = 1024;
+	    
 		try {
-			// out = new OutputStreamWriter( connection.getOutputStream() );
 			out = new BufferedOutputStream(connection.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		// Log.v(TAG, "#uploadObjectToAWS uploading using " + out.getClass().getSimpleName() );
-		String response = null;
 		if(out != null) {
 			FileInputStream fileInputStream = null;
 			BufferedInputStream buffInputStream = null;
 			try {
-				fileInputStream = new FileInputStream(new File(path));
+				fileInputStream = new FileInputStream(f);
 				buffInputStream = new BufferedInputStream(fileInputStream);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -437,7 +404,7 @@ public class AWSUploader {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			bufferSize = Math.min(bytesAvailable, maxBufferSize);
+			bufferSize = Math.min(bytesAvailable, MAX_BUFFER_SIZE);
 	        buffer = new byte[bufferSize];
 	        
 	        try {
@@ -445,10 +412,7 @@ public class AWSUploader {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			
-	        Log.i(TAG, "File length" + bytesAvailable);
 	    	
-	        Log.i(TAG, " Max Mem: " + Runtime.getRuntime().maxMemory() );
 	        try {
 	            while(bytesRead > 0) {
 	                try {
@@ -458,151 +422,36 @@ public class AWSUploader {
 	                	// Log.i(TAG, "bytes written: " + bytesRead);
 	                } catch (OutOfMemoryError e) {
 	                    e.printStackTrace();
-	                    response = "outofmemoryerror";
-	                    return response;
+	                    isSucccessful = false;
 	                }
 	                bytesAvailable = buffInputStream.available();
-	                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+	                bufferSize = Math.min(bytesAvailable, MAX_BUFFER_SIZE);
 	                bytesRead = buffInputStream.read(buffer, 0, bufferSize);
 	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            response = "error";
-	            return response;
+	            isSucccessful = false;
 	        }
 		} else {
-			Log.w(TAG, "#uploadObject out stream is null");	
+			Log.w(TAG, "#uploadObjectByUri out stream is null");	
 		}
 		
 		try {
 			int responseCode = connection.getResponseCode();
-			Log.v( TAG, "#uploadObject resCode: " + responseCode );
+			Log.v( TAG, "#uploadObjectByUri resCode: " + responseCode );
 			
-			if( responseCode == HttpStatus.SC_OK ) {
+			if(responseCode == HttpStatus.SC_OK) {
 				isSucccessful = true;	
 			} else {
-				isSucccessful = false;	
+				isSucccessful = false;
 			}
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		Log.v( TAG, "#uploadObject finished uploading" );
+		Log.i( TAG, "#uploadObjectByUri <====Uploading finished====>" );
 		
-		return "resp";
-	}
-	
-	public static String sendFileToServer(String filePath, String targetUrl) {
-	    String response = "error";
-	    Log.i(TAG, "Image filename" + filePath);
-	    Log.i(TAG, "url" + targetUrl);
-	    HttpURLConnection connection = null;
-	    DataOutputStream outputStream = null;
-	    
-	    String urlServer = targetUrl;
-	    String lineEnd = "\r\n";
-	    String twoHyphens = "--";
-	    String boundary = "*****";
-	    DateFormat df = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
-
-	    int bytesRead, bytesAvailable, bufferSize;
-	    byte[] buffer;
-	    int maxBufferSize = 1 * 1024;
-	    try {
-	        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
-
-	        URL url = new URL(urlServer);
-	        connection = (HttpURLConnection) url.openConnection();
-
-	        // Allow Inputs & Outputs
-	        connection.setDoInput(true);
-	        connection.setDoOutput(true);
-	        connection.setUseCaches(false);
-	        connection.setChunkedStreamingMode(1024);
-	        // Enable PUT method
-	        connection.setRequestMethod(HttpPut.METHOD_NAME);
-	        
-	        connection.setRequestProperty("Connection", "Keep-Alive");
-	        connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-
-	        outputStream = new DataOutputStream(connection.getOutputStream());
-	        outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-
-	        String connstr = "Content-Disposition: form-data; name=\"uploadedfile\";filename=\""
-	                + filePath + "\"" + lineEnd;
-	        Log.i("Connstr", connstr);
-
-	        outputStream.writeBytes(connstr);
-	        outputStream.writeBytes(lineEnd);
-
-	        bytesAvailable = fileInputStream.available();
-	        bufferSize = Math.min(bytesAvailable, maxBufferSize);
-	        buffer = new byte[bufferSize];
-
-	        // Read file. 
-	        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-	        Log.i(TAG, "File length" + bytesAvailable);
-	        try {
-	            while(bytesRead > 0) {
-	                try {
-	                    outputStream.write(buffer, 0, bufferSize);
-	                } catch (OutOfMemoryError e) {
-	                    e.printStackTrace();
-	                    response = "outofmemoryerror";
-	                    return response;
-	                }
-	                bytesAvailable = fileInputStream.available();
-	                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-	                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-	            }
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            response = "error";
-	            return response;
-	        }
-	        
-	        outputStream.writeBytes(lineEnd);
-	        outputStream.writeBytes(twoHyphens + boundary + twoHyphens
-	                + lineEnd);
-
-	        // Responses from the server (code and message)
-	        int serverResponseCode = connection.getResponseCode();
-	        String serverResponseMessage = connection.getResponseMessage();
-	        Log.i("Server Response Code ", "" + serverResponseCode);
-	        Log.i("Server Response Message", serverResponseMessage);
-
-	        if (serverResponseCode == 200) {
-	            response = "true";
-	        }
-
-	        String CDate = null;
-	        Date serverTime = new Date(connection.getDate());
-	        try {
-	            CDate = df.format(serverTime);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            Log.e("Date Exception", e.getMessage() + " Parse Exception");
-	        }
-	        Log.i("Server Response Time", CDate + "");
-
-	        String filename = CDate
-	                + filePath.substring(filePath.lastIndexOf("."),
-	                		filePath.length());
-	        
-	        Log.i("File Name in Server : ", filename);
-
-	        fileInputStream.close();
-	        outputStream.flush();
-	        outputStream.close();
-	        outputStream = null;
-	    } catch (Exception ex) {
-	        // Exception handling
-	        response = "error";
-	        Log.e("Send file Exception", ex.getMessage() + "");
-	        ex.printStackTrace();
-	    }
-	    return response;
+		return isSucccessful;
 	}
 
 }
