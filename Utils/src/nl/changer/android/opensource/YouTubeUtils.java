@@ -1,5 +1,6 @@
 package nl.changer.android.opensource;
 
+import android.net.Uri;
 import android.text.TextUtils;
 
 public class YouTubeUtils {
@@ -43,5 +44,23 @@ https://i1.ytimg.com/vi/<insert-youtube-video-id-here>/sddefault.jpg
 		}
 		
 		return "http://img.youtube.com/vi/" + videoId + "/" + quality + ".jpg";
+	}
+	
+	/****
+	 * Checks to see if the your contains the authority "youtube.com"
+	 ****/
+	public static boolean isYouTubeUrl(String url) {
+		
+		if(TextUtils.isEmpty(url)) {
+			return false;
+		}
+		
+		Uri uri = Uri.parse(url);
+		String authority = uri.getAuthority();
+		if( !TextUtils.isEmpty(authority) && authority.contains("youtube.com")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
