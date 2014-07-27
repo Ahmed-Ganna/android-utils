@@ -30,3 +30,8 @@ local.properties
 .settings/*
 .settings/
 .loadpath
+
+#lets ignore .properties as well only for this project
+# as it creates chaos when working on this project from 2 different
+# computers
+project.properties
