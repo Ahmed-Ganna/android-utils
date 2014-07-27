@@ -132,9 +132,9 @@ public class Utils {
 	 * 
 	 * Shows the message passed in the parameter in the Toast.
 	 * 
-	 * @param msg Message to be show in the toast.
-	 * 
-	 * ***/
+	 *
+     * @param msg Message to be show in the toast.
+     * ***/
 	public void showToast( String msg ) {
 	    Toast toast = Toast.makeText( mContext, msg, Toast.LENGTH_SHORT );
 	    toast.show();
@@ -2261,4 +2261,6 @@ public class Utils {
 		
 	    return imageUri;
 	}
+
+
 }
