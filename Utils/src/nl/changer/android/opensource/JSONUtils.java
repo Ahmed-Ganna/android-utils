@@ -52,7 +52,7 @@ public class JSONUtils {
     }
 
     public static List toList(JSONArray array) throws JSONException {
-        List list = new ArrayList();
+    	ArrayList<Object> list = new ArrayList<Object>();
         for (int i = 0; i < array.length(); i++) {
             list.add(fromJson(array.get(i), null));
         }

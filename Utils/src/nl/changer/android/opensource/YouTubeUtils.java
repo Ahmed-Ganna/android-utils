@@ -18,7 +18,7 @@ https://i1.ytimg.com/vi/<insert-youtube-video-id-here>/sddefault.jpg
 	public static String createVideoUrl(String videoId) {
 		
 		if(TextUtils.isEmpty(videoId)) {
-			throw new IllegalArgumentException("Video ID cannot be null or blank");	
+			throw new IllegalArgumentException("Video Id cannot be null or blank");	
 		}
 		
 		return "http://youtube.com/watch?v=" + videoId;

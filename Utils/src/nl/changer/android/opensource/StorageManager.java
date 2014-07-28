@@ -17,6 +17,7 @@ public class StorageManager {
 	
 	protected Context mContext;
 	
+	// TODO: make these members private.
 	protected SharedPreferences mSettings;
 	protected Editor mEditor;
 	
@@ -85,6 +86,14 @@ public class StorageManager {
 	public void setValue( String key, boolean value ) {
 		mEditor.putBoolean(key, value);
 		mEditor.commit();
+	}
+	
+	/****
+	 * Clear all the preferences store in this {@link Editor} 
+	 ****/
+	public void clear() {
+		mEditor.clear()
+			   .commit();
 	}
 
 }

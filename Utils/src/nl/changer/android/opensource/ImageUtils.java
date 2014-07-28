@@ -142,16 +142,19 @@ public class ImageUtils {
 	}
 	
 	/***
-	 * Rotate the image at the specified uri.
+	 * Rotate the image at the specified uri. For the rotation of the image
+	 * the {@link ExifInterface} data in the image will be used.
 	 * @param uri Uri of the image to be rotated.
 	 ****/
 	public static Uri rotateImage( Context context, Uri uri ) throws FileNotFoundException, IOException {
 		
-		if( uri == null )
-			throw new NullPointerException(ERROR_URI_NULL);
+		if(uri == null) {
+			throw new NullPointerException(ERROR_URI_NULL);	
+		}
 		
-		if( !isMediaContentUri(uri) )
-			return null;
+		if(!isMediaContentUri(uri)) {
+			return null;	
+		}
 		
 		int invalidOrientation = -1;
 		byte[] data = Utils.getMediaData(context, uri);
@@ -189,8 +192,9 @@ public class ImageUtils {
                 Bitmap rotatedBitmap = Bitmap.createBitmap(original, 0, 0, original.getWidth(), original.getHeight(), matrix, true); // rotating bitmap
                 String newUrl = Media.insertImage(((Activity) context).getContentResolver(), rotatedBitmap, "", "");
                 
-                if(newUrl != null)
+                if(newUrl != null) {
                 	newUri = Uri.parse(newUrl);	
+                }	
             }
         } catch (Exception e) {
         	e.printStackTrace();

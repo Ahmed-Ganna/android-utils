@@ -240,17 +240,6 @@ public class AWSUploader {
 					//int offset = 0;
 					// newly added code, not tested yet.
 					
-					/*while(packetSent != buffer.length) {
-						int sizeToSent = (packetSent+bucketSize) > buffer.length ? buffer.length - packetSent : packetSent + bucketSize;
-						out.write(buffer, packetSent, sizeToSent);
-						packetSent = packetSent + sizeToSent;
-						
-						Intent intent = new Intent(INTENT_UPLOAD_PROGRESS);
-						intent.putExtra(INTENT_EXTRA_PROGRESS_CURRENT, packetSent);
-						intent.putExtra(INTENT_EXTRA_PROGRESS_MAX, buffer.length);
-						ctx.sendBroadcast(intent);
-					}*/
-					
 					for (int i = 0; i < buffer.length; i++) {
 						out.write( buffer[i] );
 						Intent intent = new Intent(INTENT_UPLOAD_PROGRESS);
@@ -336,8 +325,15 @@ public class AWSUploader {
 	}
 	
 	/****
-	 * @param inputData Can be a String object or byte[]
-	 * **/
+	 * This is the most efficient method to upload the data to server.
+	 * Prefer using this method over using the other ones in future.
+	 * 
+	 * @param ctx
+	 * @param urlStr Url to upload the data to
+	 * @param contentType
+	 * @param uri {@link Uri} from where to get the data
+	 * @param outputData
+	 ****/
 	public static boolean uploadObjectByUri(Context ctx, String urlStr, String contentType, Uri uri, HashMap<String, Object> outputData) {
 		
 		if(uri == null) {

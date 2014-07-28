@@ -474,7 +474,6 @@ public class Utils {
 	 * @param message Message to be shown in the dialog.
 	 * @param yesListener Yes click handler
 	 * @param noListener
-	 * @param message Message to be shown in the dialog.
 	 * ***/
 	public static void showConfirmDialog( Context ctx, String message, DialogInterface.OnClickListener yesListener, 
 			DialogInterface.OnClickListener noListener ) {
@@ -1932,8 +1931,9 @@ public class Utils {
 					// for unknown reason, the image size for image was found to be 0
 					// Log.v( TAG, "#getMediaFileName byte.size: " + size );
 					
-					if( TextUtils.isEmpty(colName) )
-						Log.w( TAG, "#getMediaFileName The file name is blank or null. Reason: UNKNOWN" );
+					if( TextUtils.isEmpty(colName) ) {
+						Log.w( TAG, "#getMediaFileName The file name is blank or null. Reason: UNKNOWN" );	
+					}
 					
 				}	// end while
 			} else if( cur.getCount() == 0 ) {
@@ -1941,8 +1941,9 @@ public class Utils {
 			} else
 				Log.e( TAG, "#getMediaFileName cur is null" );
 		} finally {
-			if( cur != null && !cur.isClosed() )
-				cur.close();
+			if(cur != null && !cur.isClosed()) {
+				cur.close();	
+			}
 		}
 		
 		return dispName;
@@ -2311,5 +2312,16 @@ public class Utils {
 	    canvas.drawBitmap(sbmp, rect, rect, paint);
 
 	    return output;
+	}
+	
+	public static final boolean isRelativeUrl(String url) {
+		
+		if(TextUtils.isEmpty(url)) {
+			throw new NullPointerException("Url cannot be null");
+		}
+		
+		Uri uri = Uri.parse(url);
+		
+		return uri.getScheme() == null;
 	}
 }
