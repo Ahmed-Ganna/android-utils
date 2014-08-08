@@ -133,12 +133,19 @@ public class ImageUtils {
         return orientation;
 	}
 	
+	/***
+	 * @deprecated
+	 * Use {@link MediaUtils#isMediaContentUri(Uri)} instead.
+	 * <br/>
+	 * Checks if the parameter {@link Uri} is a {@link android.provider.MediaStore.Audio.Media} content uri.
+	 ****/
 	public static boolean isMediaContentUri(Uri uri) {
-		if( !uri.toString().contains("content://media/") ) {
+		if(!uri.toString().contains("content://media/")) {
 			Log.w(TAG, "#isContentUri The uri is not a media content uri");
 			return false;
-		} else
-			return true;
+		} else {
+			return true;	
+		}
 	}
 	
 	/***

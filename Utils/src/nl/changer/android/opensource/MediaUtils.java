@@ -37,4 +37,17 @@ public class MediaUtils {
 		
 		return duration;
     }
+	
+	/***
+	 * Checks if the parameter {@link Uri} is a Media content uri.
+	 ****/
+	public static boolean isMediaContentUri(Uri uri) {
+		
+		// TODO: move to MediaUtils.
+		if( !uri.toString().contains("content://media/") ) {
+			Log.w(TAG, "#isContentUri The uri is not a media content uri");
+			return false;
+		} else
+			return true;
+	}
 }

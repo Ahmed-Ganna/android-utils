@@ -56,11 +56,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Shader;
@@ -329,13 +329,20 @@ public class Utils {
 	 ***/
 	public static void showProgressDialog( Context ctx, String title, String body, Drawable icon, boolean isCancellable ) {
 		
-		if( ctx instanceof Activity ) {
+		if(ctx instanceof Activity) {
 			if( !((Activity) ctx).isFinishing() ) {
 				mProgressDialog = ProgressDialog.show( ctx, title, body, true );
 				mProgressDialog.setIcon(icon);
 				mProgressDialog.setCancelable( isCancellable );	
 			}	
 		}
+	}
+	
+	/***
+	 * Check if the {@link ProgressDialog} is visible in the UI.
+	 ****/
+	public static boolean isProgressDialogVisible() {
+		return (mProgressDialog != null);
 	}
 
 	/***
@@ -897,7 +904,7 @@ public class Utils {
 		
 		try {
 			String[] projection = { MediaColumns.DATA };
-	        cur = context.getContentResolver().query( mediaContentUri, projection, null, null, null );
+	        cur = context.getContentResolver().query(mediaContentUri, projection, null, null, null);
 	        
 	        if( cur != null && cur.getCount() != 0 ) {
 	        	cur.moveToFirst();
@@ -908,7 +915,7 @@ public class Utils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if( cur != null && !cur.isClosed() )
+			if(cur != null && !cur.isClosed())
 				cur.close();
 		}
         
@@ -1806,10 +1813,6 @@ public class Utils {
 			throw new NullPointerException("Uri cannot be null");	
 		}
 		
-		if( !ImageUtils.isMediaContentUri(uri) ) {
-			return null;	
-		}
-		
 		Cursor cur = ctx.getContentResolver().query( uri, new String[]{ Media.DATA }, null, null, null );
 		byte[]  data = null;
 		
@@ -2229,6 +2232,8 @@ public class Utils {
 	
 	/****
 	 * Creates external content:// scheme uri to save the images at.
+	 * The image saved at this {@link Uri} will be visible via the gallery application
+	 * on the device.
 	 * ***/
 	public static Uri createImageUri(Context ctx) throws IOException {
 		// TODO: move to MediaUtils
@@ -2323,5 +2328,17 @@ public class Utils {
 		Uri uri = Uri.parse(url);
 		
 		return uri.getScheme() == null;
+	}
+	
+	/***
+	 * Checks if the parameter {@link Uri} is a content uri.
+	 ****/
+	public static boolean isContentUri(Uri uri) {
+		if( !uri.toString().contains("content://") ) {
+			Log.w(TAG, "#isContentUri The uri is not a media content uri");
+			return false;
+		} else {
+			return true;	
+		}
 	}
 }
