@@ -1,5 +1,8 @@
 package nl.changer.android.opensource;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -62,5 +65,41 @@ https://i1.ytimg.com/vi/<insert-youtube-video-id-here>/sddefault.jpg
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Fetches video ID from given you tube video URL.
+	 * 
+	 * @param videoUrl
+	 * @return video ID
+	 */
+	public static String getVideoId(String videoUrl) {
+		String videoId = null;
+
+		// Sample YouTube URLs.
+		// "http://www.youtube.com/watch?v=8mKTiD02v3M";
+		// "http://www.youtube.com/v/8mKTiD02v3M?version=3&autohide=1";
+		// "http://youtu.be/8mKTiD02v3M";
+
+		URL url;
+		try {
+
+			url = new URL(videoUrl);
+
+			if (!TextUtils.isEmpty(videoUrl)) {
+				if (videoUrl.contains("?v=")) {
+					videoId = videoUrl.split("\\?v=")[1];
+				} else if (videoUrl.contains("?version")) {
+					videoId = url.getPath().split("\\/")[2];
+				} else {
+					videoId = url.getPath().split("\\/")[1];
+				}
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return videoId;
 	}
 }
