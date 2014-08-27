@@ -100,6 +100,7 @@ https://i1.ytimg.com/vi/<insert-youtube-video-id-here>/sddefault.jpg
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		return videoId;
 	}
 }

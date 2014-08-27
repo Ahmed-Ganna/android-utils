@@ -53,7 +53,8 @@ public class DatePickerFragment extends DialogFragment implements OnDateSetListe
     	Log.v( TAG, "#onDateSet year: " + year + " month: " + month + " day: " + day );
     	
     	// The month is zero indexed.
-    	mInputEditText.setText( "" + day + "-" + (month + 1) + "-" + year );
+    	month = month + 1;
+		mInputEditText.setText("" + (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year );
     	mPickableInstance.onPickerDismissed();
     }
     
