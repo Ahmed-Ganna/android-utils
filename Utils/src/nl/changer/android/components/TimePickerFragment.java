@@ -47,8 +47,8 @@ public class TimePickerFragment extends DialogFragment implements OnTimeSetListe
 
 	public void onTimeSet( TimePicker view, int hour, int minute ) {
 		
-		Log.v( TAG, "#onTimeSet " + hour + ":" + minute );
-		mInputEditText.setText( "" + hour + ":" + minute );
+		Log.v(TAG, "#onTimeSet " + (hour < 10 ? "0" + hour : hour) + ":" + (minute < 10 ? "0" + minute : minute) );
+		mInputEditText.setText( "" + (hour < 10 ? "0" + hour : hour) + ":" + (minute < 10 ? "0" + minute : minute) );
 		
 		mPickableInstance.onPickerDismissed();
 	}
