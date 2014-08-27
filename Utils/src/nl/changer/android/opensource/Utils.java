@@ -1939,10 +1939,11 @@ public class Utils {
 					}
 					
 				}	// end while
-			} else if( cur.getCount() == 0 ) {
+			} else if( cur != null && cur.getCount() == 0 ) {
 				Log.e( TAG, "#getMediaFileName File may not exist" );
-			} else
-				Log.e( TAG, "#getMediaFileName cur is null" );
+			} else {
+				Log.e( TAG, "#getMediaFileName cur is null" );	
+			}
 		} finally {
 			if(cur != null && !cur.isClosed()) {
 				cur.close();	
