@@ -472,6 +472,21 @@ public class Utils {
 		return ctx.getResources().getDisplayMetrics().density;
 	}
 	
+	/**
+	 * This method converts device specific pixels to density independent
+	 * pixels.
+	 * 
+	 * @param px
+	 *            A value in px (pixels) unit. Which we need to convert into db
+	 * @param context
+	 *            Context to get resources and device specific display metrics
+	 * @return A int value to represent dp equivalent to px value
+	 */
+	public static int getDip(int px, Context context) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (px * scale + 0.5f);
+	}
+	
 	/***
 	 * Creates a confirmation dialog 
 	 * with Yes-No Button. By default the buttons just dismiss
