@@ -1,3 +1,4 @@
+
 package nl.changer.android.opensource;
 
 import java.io.BufferedReader;
@@ -127,8 +128,7 @@ public class Utils {
 	}
 
 	/***
-	 * @deprecated This method has been deprecated. Use its static counterpart
-	 *             instead.
+	 * @deprecated This method has been deprecated. Use its static counterpart instead.
 	 * 
 	 * <br/>
 	 *             Use {@link Utils#showToast(Context, CharSequence)} <br/>
@@ -174,12 +174,10 @@ public class Utils {
 	/***
 	 * Checks if the Internet connection is available.
 	 * 
-	 * @return Returns true if the Internet connection is available. False
-	 *         otherwise.
+	 * @return Returns true if the Internet connection is available. False otherwise.
 	 * **/
 	public static boolean isInternetAvailable(Context ctx) {
-		ConnectivityManager cm = (ConnectivityManager) ctx
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
@@ -217,8 +215,8 @@ public class Utils {
 	}
 
 	/***
-	 * Shows an alert dialog with the OK button. When the user presses OK
-	 * button, the dialog dismisses.
+	 * Shows an alert dialog with the OK button. When the user presses OK button, the dialog
+	 * dismisses.
 	 * ***/
 	public static void showAlertDialog(Context ctx, String title, String body) {
 		showAlertDialog(ctx, title, body, null);
@@ -227,19 +225,18 @@ public class Utils {
 	/***
 	 * Shows an alert dialog with OK button
 	 ***/
-	public static void showAlertDialog(Context ctx, String title, String body,
-			DialogInterface.OnClickListener okListener) {
+	public static void showAlertDialog(Context ctx, String title, String body, DialogInterface.OnClickListener okListener) {
 
 		if (okListener == null) {
 			okListener = new DialogInterface.OnClickListener() {
+
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.cancel();
 				}
 			};
 		}
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(ctx).setMessage(
-				body).setPositiveButton("OK", okListener);
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx).setMessage(body).setPositiveButton("OK", okListener);
 
 		if (!TextUtils.isEmpty(title)) {
 			builder.setTitle(title);
@@ -251,8 +248,7 @@ public class Utils {
 	/***
 	 * Serializes the Bitmap to Base64
 	 * 
-	 * @return Base64 string value of a {@linkplain Bitmap} passed in as a
-	 *         parameter
+	 * @return Base64 string value of a {@linkplain Bitmap} passed in as a parameter
 	 * @throws NullPointerException
 	 *             If the parameter bitmap is null.
 	 * ***/
@@ -280,21 +276,18 @@ public class Utils {
 	public static Bitmap drawableToBitmap(Drawable drawable) {
 
 		if (drawable == null) {
-			throw new NullPointerException(
-					"Drawable to convert should NOT be null");
+			throw new NullPointerException("Drawable to convert should NOT be null");
 		}
 
 		if (drawable instanceof BitmapDrawable) {
 			return ((BitmapDrawable) drawable).getBitmap();
 		}
 
-		if (drawable.getIntrinsicWidth() <= 0
-				&& drawable.getIntrinsicHeight() <= 0) {
+		if (drawable.getIntrinsicWidth() <= 0 && drawable.getIntrinsicHeight() <= 0) {
 			return null;
 		}
 
-		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-				drawable.getIntrinsicHeight(), Config.ARGB_8888);
+		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
 		drawable.draw(canvas);
@@ -308,8 +301,7 @@ public class Utils {
 	 * @throws NullPointerException
 	 *             If the parameter bitmap is null.
 	 * ***/
-	public static InputStream bitmapToInputStream(Bitmap bitmap)
-			throws NullPointerException {
+	public static InputStream bitmapToInputStream(Bitmap bitmap) throws NullPointerException {
 
 		if (bitmap == null) {
 			throw new NullPointerException("Bitmap cannot be null");
@@ -323,8 +315,8 @@ public class Utils {
 	}
 
 	/***
-	 * Shows a progress dialog with a spinning animation in it. This method must
-	 * preferably called from a UI thread.
+	 * Shows a progress dialog with a spinning animation in it. This method must preferably called
+	 * from a UI thread.
 	 * 
 	 * @param ctx
 	 *            Activity context
@@ -333,17 +325,15 @@ public class Utils {
 	 * @param body
 	 *            Body/Message to be shown in the progress dialog
 	 * @param isCancellable
-	 *            True if the dialog can be cancelled on back button press,
-	 *            false otherwise
+	 *            True if the dialog can be cancelled on back button press, false otherwise
 	 ***/
-	public static void showProgressDialog(Context ctx, String title,
-			String body, boolean isCancellable) {
+	public static void showProgressDialog(Context ctx, String title, String body, boolean isCancellable) {
 		showProgressDialog(ctx, title, body, null, isCancellable);
 	}
 
 	/***
-	 * Shows a progress dialog with a spinning animation in it. This method must
-	 * preferably called from a UI thread.
+	 * Shows a progress dialog with a spinning animation in it. This method must preferably called
+	 * from a UI thread.
 	 * 
 	 * @param ctx
 	 *            Activity context
@@ -354,11 +344,9 @@ public class Utils {
 	 * @param icon
 	 *            Icon to show in the progress dialog. It can be null.
 	 * @param isCancellable
-	 *            True if the dialog can be cancelled on back button press,
-	 *            false otherwise
+	 *            True if the dialog can be cancelled on back button press, false otherwise
 	 ***/
-	public static void showProgressDialog(Context ctx, String title,
-			String body, Drawable icon, boolean isCancellable) {
+	public static void showProgressDialog(Context ctx, String title, String body, Drawable icon, boolean isCancellable) {
 
 		if (ctx instanceof Activity) {
 			if (!((Activity) ctx).isFinishing()) {
@@ -389,12 +377,10 @@ public class Utils {
 	}
 
 	/***
-	 * Read the {@link InputStream} and convert the data received into the
-	 * {@link String}
+	 * Read the {@link InputStream} and convert the data received into the {@link String}
 	 * 
-	 * @deprecated This method is deprecated. Use {@linkplain NetworkManager}
-	 *             instead. TODO: This method should goto
-	 *             {@linkplain NetworkManager}
+	 * @deprecated This method is deprecated. Use {@linkplain NetworkManager} instead. TODO: This
+	 *             method should goto {@linkplain NetworkManager}
 	 * ***/
 	public static String readStream(InputStream in) {
 		StringBuffer data = null;
@@ -434,23 +420,19 @@ public class Utils {
 	}
 
 	/***
-	 * @deprecated Use {@link ImageUtils#scaleDownBitmap(Context, Bitmap, int)}
-	 *             instead.
+	 * @deprecated Use {@link ImageUtils#scaleDownBitmap(Context, Bitmap, int)} instead.
 	 * 
 	 * <br/>
 	 * <br/>
-	 *             Scales the image depending upon the display density of the
-	 *             device.
+	 *             Scales the image depending upon the display density of the device.
 	 * 
-	 *             When dealing with the bitmaps of bigger size, this method
-	 *             must be called from a non-UI thread.
+	 *             When dealing with the bitmaps of bigger size, this method must be called from a
+	 *             non-UI thread.
 	 * ***/
-	public static Bitmap scaleDownBitmap(Context ctx, Bitmap source,
-			int newHeight) {
+	public static Bitmap scaleDownBitmap(Context ctx, Bitmap source, int newHeight) {
 		final float densityMultiplier = getDensityMultiplier(ctx);
 
-		Log.v(TAG, "#scaleDownBitmap Original w: " + source.getWidth() + " h: "
-				+ source.getHeight());
+		Log.v(TAG, "#scaleDownBitmap Original w: " + source.getWidth() + " h: " + source.getHeight());
 
 		int h = (int) (newHeight * densityMultiplier);
 		int w = (int) (h * source.getWidth() / ((double) source.getHeight()));
@@ -465,24 +447,20 @@ public class Utils {
 	}
 
 	/***
-	 * @deprecated Use {@link ImageUtils#scaleBitmap(Context, Bitmap, int)}
-	 *             instead.
+	 * @deprecated Use {@link ImageUtils#scaleBitmap(Context, Bitmap, int)} instead.
 	 * 
 	 * <br/>
 	 * <br/>
-	 *             Scales the image independently of the screen density of the
-	 *             device.
+	 *             Scales the image independently of the screen density of the device.
 	 * 
-	 *             When dealing with the bitmaps of bigger size, this method
-	 *             must be called from a non-UI thread.
+	 *             When dealing with the bitmaps of bigger size, this method must be called from a
+	 *             non-UI thread.
 	 * ***/
 	public static Bitmap scaleBitmap(Context ctx, Bitmap source, int newHeight) {
 
-		Log.v(TAG, "#scaleDownBitmap Original w: " + source.getWidth() + " h: "
-				+ source.getHeight());
+		Log.v(TAG, "#scaleDownBitmap Original w: " + source.getWidth() + " h: " + source.getHeight());
 
-		int w = (int) (newHeight * source.getWidth() / ((double) source
-				.getHeight()));
+		int w = (int) (newHeight * source.getWidth() / ((double) source.getHeight()));
 
 		Log.v(TAG, "#scaleDownBitmap Computed w: " + w + " h: " + newHeight);
 
@@ -494,34 +472,29 @@ public class Utils {
 	}
 
 	/***
-	 * @deprecated Use {@link ImageUtils#scaleDownBitmap(Context, Uri, int)}
-	 *             instead.
+	 * @deprecated Use {@link ImageUtils#scaleDownBitmap(Context, Uri, int)} instead.
 	 * 
 	 * <br/>
 	 * <br/>
-	 *             Scales the image independently of the screen density of the
-	 *             device.
+	 *             Scales the image independently of the screen density of the device.
 	 * @param uri
 	 *            Uri of the source bitmap
 	 ****/
-	public static Bitmap scaleDownBitmap(Context ctx, Uri uri, int newHeight)
-			throws FileNotFoundException, IOException {
+	public static Bitmap scaleDownBitmap(Context ctx, Uri uri, int newHeight) throws FileNotFoundException, IOException {
 		Bitmap original = Media.getBitmap(ctx.getContentResolver(), uri);
 		return scaleBitmap(ctx, original, newHeight);
 	}
 
 	/***
-	 * Gives the device independent constant which can be used for scaling
-	 * images, manipulating view sizes and changing dimension and display pixels
-	 * etc.
+	 * Gives the device independent constant which can be used for scaling images, manipulating view
+	 * sizes and changing dimension and display pixels etc.
 	 * ***/
 	public static float getDensityMultiplier(Context ctx) {
 		return ctx.getResources().getDisplayMetrics().density;
 	}
 
 	/**
-	 * This method converts device specific pixels to density independent
-	 * pixels.
+	 * This method converts device specific pixels to density independent pixels.
 	 * 
 	 * @param px
 	 *            A value in px (pixels) unit. Which we need to convert into db
@@ -535,8 +508,8 @@ public class Utils {
 	}
 
 	/***
-	 * Creates a confirmation dialog with Yes-No Button. By default the buttons
-	 * just dismiss the dialog.
+	 * Creates a confirmation dialog with Yes-No Button. By default the buttons just dismiss the
+	 * dialog.
 	 * 
 	 * @param ctx
 	 * @param message
@@ -545,15 +518,13 @@ public class Utils {
 	 *            Yes click handler
 	 * @param noListener
 	 * ***/
-	public static void showConfirmDialog(Context ctx, String message,
-			DialogInterface.OnClickListener yesListener,
-			DialogInterface.OnClickListener noListener) {
+	public static void showConfirmDialog(Context ctx, String message, DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener) {
 		showConfirmDialog(ctx, message, yesListener, noListener, "Yes", "No");
 	}
 
 	/***
-	 * Creates a confirmation dialog with Yes-No Button. By default the buttons
-	 * just dismiss the dialog.
+	 * Creates a confirmation dialog with Yes-No Button. By default the buttons just dismiss the
+	 * dialog.
 	 * 
 	 * @param ctx
 	 * @param message
@@ -566,10 +537,7 @@ public class Utils {
 	 * @param noLabel
 	 *            Label for no button
 	 * ***/
-	public static void showConfirmDialog(Context ctx, String message,
-			DialogInterface.OnClickListener yesListener,
-			DialogInterface.OnClickListener noListener, String yesLabel,
-			String noLabel) {
+	public static void showConfirmDialog(Context ctx, String message, DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener, String yesLabel, String noLabel) {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 
@@ -592,13 +560,11 @@ public class Utils {
 			};
 		}
 
-		builder.setMessage(message).setPositiveButton(yesLabel, yesListener)
-				.setNegativeButton(noLabel, noListener).show();
+		builder.setMessage(message).setPositiveButton(yesLabel, yesListener).setNegativeButton(noLabel, noListener).show();
 	}
 
 	/***
-	 * Creates a confirmation dialog that show a pop-up with button labeled as
-	 * parameters labels.
+	 * Creates a confirmation dialog that show a pop-up with button labeled as parameters labels.
 	 * 
 	 * @param ctx
 	 *            {@link Activity} {@link Context}
@@ -608,6 +574,9 @@ public class Utils {
 	 *            For e.g.
 	 * 
 	 *            <pre>
+	 * 
+	 * 
+	 * 
 	 * DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 	 * 
 	 * 	public void onClick(DialogInterface dialog, int which) {
@@ -629,9 +598,7 @@ public class Utils {
 	 * @param negativeBtnLabel
 	 *            For e.g. "No"
 	 * ***/
-	public static void showDialog(Context ctx, String message,
-			String positiveBtnLabel, String negativeBtnLabel,
-			DialogInterface.OnClickListener dialogClickListener) {
+	public static void showDialog(Context ctx, String message, String positiveBtnLabel, String negativeBtnLabel, DialogInterface.OnClickListener dialogClickListener) {
 
 		if (dialogClickListener == null) {
 			throw new NullPointerException("Action listener cannot be null");
@@ -639,10 +606,7 @@ public class Utils {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 
-		builder.setMessage(message)
-				.setPositiveButton(positiveBtnLabel, dialogClickListener)
-				.setNegativeButton(negativeBtnLabel, dialogClickListener)
-				.show();
+		builder.setMessage(message).setPositiveButton(positiveBtnLabel, dialogClickListener).setNegativeButton(negativeBtnLabel, dialogClickListener).show();
 	}
 
 	/***
@@ -653,8 +617,7 @@ public class Utils {
 		String versionName = null;
 
 		try {
-			versionName = ctx.getPackageManager().getPackageInfo(
-					ctx.getPackageName(), 0).versionName;
+			versionName = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionName;
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -663,16 +626,14 @@ public class Utils {
 	}
 
 	/***
-	 * Gets the version code of the application. For e.g. Maverick Meerkat or
-	 * 2013050301
+	 * Gets the version code of the application. For e.g. Maverick Meerkat or 2013050301
 	 * ***/
 	public static int getApplicationVersionCode(Context ctx) {
 
 		int versionCode = 0;
 
 		try {
-			versionCode = ctx.getPackageManager().getPackageInfo(
-					ctx.getPackageName(), 0).versionCode;
+			versionCode = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionCode;
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -683,8 +644,7 @@ public class Utils {
 	/***
 	 * @deprecated Use {@link #getOsVersion()} instead
 	 * 
-	 *             Gets the version number of the Android OS For e.g. 2.3.4 or
-	 *             4.1.2
+	 *             Gets the version number of the Android OS For e.g. 2.3.4 or 4.1.2
 	 ***/
 	public static String getOSVersion() {
 		return Build.VERSION.RELEASE;
@@ -698,8 +658,7 @@ public class Utils {
 	}
 
 	/***
-	 * Checks if the service with the given name is currently running on the
-	 * device.
+	 * Checks if the service with the given name is currently running on the device.
 	 * 
 	 * @param serviceName
 	 *            Fully qualified name of the server. <br/>
@@ -710,10 +669,8 @@ public class Utils {
 		if (serviceName == null)
 			throw new NullPointerException("Service name cannot be null");
 
-		ActivityManager manager = (ActivityManager) ctx
-				.getSystemService(Context.ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager
-				.getRunningServices(Integer.MAX_VALUE)) {
+		ActivityManager manager = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
 			if (service.service.getClassName().equals(serviceName)) {
 				return true;
 			}
@@ -723,12 +680,11 @@ public class Utils {
 	}
 
 	/***
-	 * Gets the device unique id called IMEI. Sometimes, this returns
-	 * 00000000000000000 for the rooted devices.
+	 * Gets the device unique id called IMEI. Sometimes, this returns 00000000000000000 for the
+	 * rooted devices.
 	 * ***/
 	public static String getDeviceImei(Context ctx) {
-		TelephonyManager tm = (TelephonyManager) ctx
-				.getSystemService(Context.TELEPHONY_SERVICE);
+		TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
 		return tm.getDeviceId();
 	}
 
@@ -736,17 +692,13 @@ public class Utils {
 	 * Shares an application over the social network like Facebook, Twitter etc.
 	 * 
 	 * @param sharingMsg
-	 *            Message to be pre-populated when the 3rd party app dialog
-	 *            opens up.
+	 *            Message to be pre-populated when the 3rd party app dialog opens up.
 	 * @param emailSubject
-	 *            Message that shows up as a subject while sharing through
-	 *            email.
+	 *            Message that shows up as a subject while sharing through email.
 	 * @param title
-	 *            Title of the sharing options prompt. For e.g. "Share via" or
-	 *            "Share using"
+	 *            Title of the sharing options prompt. For e.g. "Share via" or "Share using"
 	 * ***/
-	public static void share(Context ctx, String sharingMsg,
-			String emailSubject, String title) {
+	public static void share(Context ctx, String sharingMsg, String emailSubject, String title) {
 		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
 
 		sharingIntent.setType("text/plain");
@@ -757,25 +709,20 @@ public class Utils {
 	}
 
 	/***
-	 * Checks the type of data connection that is currently available on the
-	 * device.
+	 * Checks the type of data connection that is currently available on the device.
 	 * 
-	 * @return <code>ConnectivityManager.TYPE_*</code> as a type of internet
-	 *         connection on the device. Returns -1 in case of error or none of
+	 * @return <code>ConnectivityManager.TYPE_*</code> as a type of internet connection on the
+	 *         device. Returns -1 in case of error or none of
 	 *         <code>ConnectivityManager.TYPE_*</code> is found.
 	 * ***/
 	public static int getDataConnectionType(Context ctx) {
 
-		ConnectivityManager connMgr = (ConnectivityManager) ctx
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager connMgr = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-		if (connMgr != null
-				&& connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null) {
-			if (connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
-					.isConnected()) {
+		if (connMgr != null && connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null) {
+			if (connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected()) {
 				return ConnectivityManager.TYPE_MOBILE;
-			} else if (connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-					.isConnected()) {
+			} else if (connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()) {
 				return ConnectivityManager.TYPE_WIFI;
 			} else
 				return -1;
@@ -805,8 +752,7 @@ public class Utils {
 	public static String capitalizeString(String string) {
 
 		if (string == null) {
-			throw new NullPointerException(
-					"String to capitalize cannot be null");
+			throw new NullPointerException("String to capitalize cannot be null");
 		}
 
 		char[] chars = string.toLowerCase().toCharArray();
@@ -815,8 +761,12 @@ public class Utils {
 			if (!found && Character.isLetter(chars[i])) {
 				chars[i] = Character.toUpperCase(chars[i]);
 				found = true;
-			} else if (Character.isWhitespace(chars[i]) || chars[i] == '.'
-					|| chars[i] == '\'') { // You can add other chars here
+			} else if (Character.isWhitespace(chars[i]) || chars[i] == '.' || chars[i] == '\'') { // You
+																									// can
+																									// add
+																									// other
+																									// chars
+																									// here
 				found = false;
 			}
 		} // end for
@@ -827,40 +777,33 @@ public class Utils {
 	/***
 	 * Tiles the background of the for a view with viewId as a parameter.
 	 * 
-	 * @deprecated Use {@link ViewUtils#tileBackground(Context, int, View, int)}
-	 *             instead.
+	 * @deprecated Use {@link ViewUtils#tileBackground(Context, int, View, int)} instead.
 	 * ***/
 	public static void tileBackground(Context ctx, int viewId, int resIdOfTile) {
 
 		try {
 			// Tiling the background.
-			Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(),
-					resIdOfTile);
+			Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), resIdOfTile);
 			// deprecated constructor call
 			// BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
-			BitmapDrawable bitmapDrawable = new BitmapDrawable(
-					ctx.getResources(), bmp);
-			bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT,
-					Shader.TileMode.REPEAT);
+			BitmapDrawable bitmapDrawable = new BitmapDrawable(ctx.getResources(), bmp);
+			bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 			View view = ((Activity) ctx).findViewById(viewId);
 
 			if (view == null)
-				throw new NullPointerException(
-						"View to which the tile has to be applied should not be null");
+				throw new NullPointerException("View to which the tile has to be applied should not be null");
 			else
 				setBackground(view, bitmapDrawable);
 
 		} catch (Exception e) {
-			Log.w(TAG,
-					"#tileBackground Exception while tiling the background of the view");
+			Log.w(TAG, "#tileBackground Exception while tiling the background of the view");
 		}
 	}
 
 	/***
-	 * Sets the passed-in drawable parameter as a background to the passed in
-	 * target parameter in an SDK independent way. This is the recommended way
-	 * of setting background rather than using native background setters
-	 * provided by {@link View} class. This method should NOT be used for
+	 * Sets the passed-in drawable parameter as a background to the passed in target parameter in an
+	 * SDK independent way. This is the recommended way of setting background rather than using
+	 * native background setters provided by {@link View} class. This method should NOT be used for
 	 * setting background of an {@link ImageView}
 	 * 
 	 * @param target
@@ -884,19 +827,15 @@ public class Utils {
 	 * 
 	 * @deprecated Use {@link ViewUtils#setBackground(View, Drawable)} instead.
 	 ***/
-	public static void tileBackground(Context ctx, int layoutId,
-			View viewToTileBg, int resIdOfTile) {
+	public static void tileBackground(Context ctx, int layoutId, View viewToTileBg, int resIdOfTile) {
 
 		try {
 			// Tiling the background.
-			Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(),
-					resIdOfTile);
+			Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), resIdOfTile);
 			// deprecated constructor
 			// BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
-			BitmapDrawable bitmapDrawable = new BitmapDrawable(
-					ctx.getResources(), bmp);
-			bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT,
-					Shader.TileMode.REPEAT);
+			BitmapDrawable bitmapDrawable = new BitmapDrawable(ctx.getResources(), bmp);
+			bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 			View view = viewToTileBg.findViewById(layoutId);
 
 			if (view != null) {
@@ -904,8 +843,7 @@ public class Utils {
 			}
 
 		} catch (Exception e) {
-			Log.e(TAG,
-					"#tileBackground Exception while tiling the background of the view");
+			Log.e(TAG, "#tileBackground Exception while tiling the background of the view");
 		}
 	}
 
@@ -915,9 +853,7 @@ public class Utils {
 	public static boolean isDatabasePresent(String packageName, String dbName) {
 		SQLiteDatabase checkDB = null;
 		try {
-			checkDB = SQLiteDatabase.openDatabase("/data/data/" + packageName
-					+ "/databases/" + dbName, null,
-					SQLiteDatabase.OPEN_READONLY);
+			checkDB = SQLiteDatabase.openDatabase("/data/data/" + packageName + "/databases/" + dbName, null, SQLiteDatabase.OPEN_READONLY);
 			checkDB.close();
 		} catch (SQLiteException e) {
 			// database doesn't exist yet.
@@ -940,12 +876,10 @@ public class Utils {
 	 * <br/>
 	 * <br/>
 	 * <br/>
-	 *             Get the file path from the MediaStore.Images.Media Content
-	 *             URI
+	 *             Get the file path from the MediaStore.Images.Media Content URI
 	 * 
 	 * @param mediaContentUri
-	 *            Content URI pointing to a row of
-	 *            {@link MediaStore.Images.Media}
+	 *            Content URI pointing to a row of {@link MediaStore.Images.Media}
 	 * ***/
 	public static String getRealPathFromURI(Context ctx, Uri mediaContentUri) {
 
@@ -954,13 +888,11 @@ public class Utils {
 
 		try {
 			String[] proj = { MediaStore.Images.Media.DATA };
-			cur = ctx.getContentResolver().query(mediaContentUri, proj, null,
-					null, null);
+			cur = ctx.getContentResolver().query(mediaContentUri, proj, null, null, null);
 
 			if (cur != null && cur.getCount() != 0) {
 				cur.moveToFirst();
-				path = cur.getString(cur
-						.getColumnIndexOrThrow(MediaColumns.DATA));
+				path = cur.getString(cur.getColumnIndexOrThrow(MediaColumns.DATA));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -978,8 +910,7 @@ public class Utils {
 	 * 
 	 * <br/>
 	 * <br/>
-	 *             Get the file path from the Media Content Uri for video, audio
-	 *             or images.
+	 *             Get the file path from the Media Content Uri for video, audio or images.
 	 * 
 	 * @param mediaContentUri
 	 *            Media content Uri.
@@ -991,13 +922,11 @@ public class Utils {
 
 		try {
 			String[] projection = { MediaColumns.DATA };
-			cur = context.getContentResolver().query(mediaContentUri,
-					projection, null, null, null);
+			cur = context.getContentResolver().query(mediaContentUri, projection, null, null, null);
 
 			if (cur != null && cur.getCount() != 0) {
 				cur.moveToFirst();
-				path = cur.getString(cur
-						.getColumnIndexOrThrow(MediaColumns.DATA));
+				path = cur.getString(cur.getColumnIndexOrThrow(MediaColumns.DATA));
 			}
 
 			// Log.v( TAG, "#getRealPathFromURI Path: " + path );
@@ -1024,13 +953,11 @@ public class Utils {
 
 		try {
 			String[] projection = { MediaColumns.DATA };
-			cur = context.getContentResolver().query(mediaContentUri,
-					projection, null, null, null);
+			cur = context.getContentResolver().query(mediaContentUri, projection, null, null, null);
 
 			if (cur != null && cur.getCount() != 0) {
 				cur.moveToFirst();
-				path = cur.getString(cur
-						.getColumnIndexOrThrow(MediaColumns.DATA));
+				path = cur.getString(cur.getColumnIndexOrThrow(MediaColumns.DATA));
 			}
 
 			// Log.v( TAG, "#getRealPathFromURI Path: " + path );
@@ -1081,17 +1008,16 @@ public class Utils {
 	}
 
 	/***
-	 * Gets the data storage directory(pictures dir) for the device. If the
-	 * external storage is not available, this returns the reserved application
-	 * data storage directory. SD Card storage will be preferred over internal
-	 * storage.
+	 * Gets the data storage directory(pictures dir) for the device. If the external storage is not
+	 * available, this returns the reserved application data storage directory. SD Card storage will
+	 * be preferred over internal storage.
 	 * 
 	 * 
 	 * @param dirName
-	 *            if the directory name is specified, it is created inside the
-	 *            DIRECTORY_PICTURES directory.
-	 * @return Data storage directory on the device. Maybe be a directory on SD
-	 *         Card or internal storage of the device.
+	 *            if the directory name is specified, it is created inside the DIRECTORY_PICTURES
+	 *            directory.
+	 * @return Data storage directory on the device. Maybe be a directory on SD Card or internal
+	 *         storage of the device.
 	 ****/
 	public static File getStorageDirectory(Context ctx, String dirName) {
 
@@ -1104,10 +1030,7 @@ public class Utils {
 		String state = Environment.getExternalStorageState();
 
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			f = new File(
-					Environment
-							.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-							+ "/" + dirName);
+			f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + dirName);
 		} else {
 			// media is removed, unmounted etc
 			// Store image in
@@ -1123,9 +1046,8 @@ public class Utils {
 	}
 
 	/***
-	 * Given a file name, this method creates a {@link File} on best chosen
-	 * device storage and returns the file object. You can get the file path
-	 * using {@link File#getAbsolutePath()}
+	 * Given a file name, this method creates a {@link File} on best chosen device storage and
+	 * returns the file object. You can get the file path using {@link File#getAbsolutePath()}
 	 * ***/
 	public static File getFile(Context ctx, String fileName) {
 		File dir = getStorageDirectory(ctx, null);
@@ -1134,9 +1056,8 @@ public class Utils {
 	}
 
 	/***
-	 * Writes the given image to the external storage of the device. If external
-	 * storage is not available, the image is written to the application private
-	 * directory
+	 * Writes the given image to the external storage of the device. If external storage is not
+	 * available, the image is written to the application private directory
 	 * 
 	 * @return Path of the image file that has been written.
 	 ****/
@@ -1176,29 +1097,24 @@ public class Utils {
 	/****
 	 * Inserts an image into {@link Media} content provider of the device.
 	 * 
-	 * @return The media content Uri to the newly created image, or null if the
-	 *         image failed to be stored for any reason.
+	 * @return The media content Uri to the newly created image, or null if the image failed to be
+	 *         stored for any reason.
 	 * ***/
-	public static String writeImageToMedia(Context ctx, Bitmap image,
-			String title, String description) {
+	public static String writeImageToMedia(Context ctx, Bitmap image, String title, String description) {
 		// TODO: move to MediaUtils
 		if (ctx == null) {
 			throw new NullPointerException("Context cannot be null");
 		}
 
-		return Images.Media.insertImage(ctx.getContentResolver(), image, title,
-				description);
+		return Images.Media.insertImage(ctx.getContentResolver(), image, title, description);
 	}
 
 	/****
-	 * @deprecated Use {@link AudioUtils#writeAudioToMedia(Context, File)}
-	 *             instead.
+	 * @deprecated Use {@link AudioUtils#writeAudioToMedia(Context, File)} instead.
 	 * 
 	 * <br/>
-	 *             Inserts an audio into {@link Media} content provider of the
-	 *             device.
-	 * @return The media content Uri to the newly created audio, or null if
-	 *         failed for any reason.
+	 *             Inserts an audio into {@link Media} content provider of the device.
+	 * @return The media content Uri to the newly created audio, or null if failed for any reason.
 	 * 
 	 * @see {@link AudioUtils#writeAudioToMedia(Context, File)}
 	 * ***/
@@ -1215,11 +1131,8 @@ public class Utils {
 		values.put(MediaStore.Audio.Media.IS_ALARM, false);
 		values.put(MediaStore.Audio.Media.IS_MUSIC, false);
 
-		Uri uri = MediaStore.Audio.Media.getContentUriForPath(audioFile
-				.getAbsolutePath());
-		Log.v(TAG,
-				"#writeAudioToMedia uri: " + uri + " absPath: "
-						+ audioFile.getAbsolutePath());
+		Uri uri = MediaStore.Audio.Media.getContentUriForPath(audioFile.getAbsolutePath());
+		Log.v(TAG, "#writeAudioToMedia uri: " + uri + " absPath: " + audioFile.getAbsolutePath());
 		Uri uri2 = ctx.getContentResolver().insert(uri, values);
 		Log.v(TAG, "#writeAudioToMedia uri2: " + uri2);
 
@@ -1227,13 +1140,11 @@ public class Utils {
 	}
 
 	/***
-	 * Gets the name of the application that has been defined in
-	 * AndroidManifest.xml
+	 * Gets the name of the application that has been defined in AndroidManifest.xml
 	 * 
 	 * @throws NameNotFoundException
 	 ****/
-	public static String getApplicationName(Context ctx)
-			throws NameNotFoundException {
+	public static String getApplicationName(Context ctx) throws NameNotFoundException {
 
 		if (ctx == null) {
 			throw new NullPointerException("Context cannot be null");
@@ -1243,14 +1154,12 @@ public class Utils {
 		ApplicationInfo appInfo = null;
 
 		try {
-			appInfo = packageMgr.getApplicationInfo(ctx.getPackageName(),
-					PackageManager.SIGNATURE_MATCH);
+			appInfo = packageMgr.getApplicationInfo(ctx.getPackageName(), PackageManager.SIGNATURE_MATCH);
 		} catch (final NameNotFoundException e) {
 			throw new NameNotFoundException(e.getMessage());
 		}
 
-		final String applicationName = (String) (appInfo != null ? packageMgr
-				.getApplicationLabel(appInfo) : "UNKNOWN");
+		final String applicationName = (String) (appInfo != null ? packageMgr.getApplicationLabel(appInfo) : "UNKNOWN");
 
 		return applicationName;
 	}
@@ -1279,8 +1188,7 @@ public class Utils {
 	public static String fromCalendar(final Calendar calendar) {
 		// TODO: move this method to DateUtils
 		Date date = calendar.getTime();
-		String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-				.format(date);
+		String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
 		return formatted.substring(0, 22) + ":" + formatted.substring(22);
 	}
 
@@ -1295,8 +1203,7 @@ public class Utils {
 	/***
 	 * Transforms ISO 8601 string to Calendar.
 	 ****/
-	public static Calendar toCalendar(final String iso8601string)
-			throws ParseException {
+	public static Calendar toCalendar(final String iso8601string) throws ParseException {
 		// TODO: move this method to DateUtils
 		Calendar calendar = GregorianCalendar.getInstance();
 		String s = iso8601string.replace("Z", "+00:00");
@@ -1359,8 +1266,7 @@ public class Utils {
 		} else if (weeks < 5) {
 			elapsed = weeks + " " + (weeks > 1 ? "weeks" : "week") + " ago";
 		} else if (months < 12) {
-			elapsed = months + " " + (months > 1 ? "months" : "months")
-					+ " ago";
+			elapsed = months + " " + (months > 1 ? "months" : "months") + " ago";
 		} else {
 			elapsed = "more than a year ago";
 		}
@@ -1371,23 +1277,16 @@ public class Utils {
 	}
 
 	/***
-	 * Set Mock Location for test device. DDMS cannot be used to mock location
-	 * on an actual device. So this method should be used which forces the GPS
-	 * Provider to mock the location on an actual device.
+	 * Set Mock Location for test device. DDMS cannot be used to mock location on an actual device.
+	 * So this method should be used which forces the GPS Provider to mock the location on an actual
+	 * device.
 	 ****/
-	public static void setMockLocation(Context ctx, double longitude,
-			double latitude) {
-		LocationManager locationManager = (LocationManager) ctx
-				.getSystemService(Context.LOCATION_SERVICE);
+	public static void setMockLocation(Context ctx, double longitude, double latitude) {
+		LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
 
-		locationManager.addTestProvider(LocationManager.GPS_PROVIDER,
-				"requiresNetwork" == "", "requiresSatellite" == "",
-				"requiresCell" == "", "hasMonetaryCost" == "",
-				"supportsAltitude" == "", "supportsSpeed" == "",
-				"supportsBearing" == "",
+		locationManager.addTestProvider(LocationManager.GPS_PROVIDER, "requiresNetwork" == "", "requiresSatellite" == "", "requiresCell" == "", "hasMonetaryCost" == "", "supportsAltitude" == "", "supportsSpeed" == "", "supportsBearing" == "",
 
-				android.location.Criteria.POWER_LOW,
-				android.location.Criteria.ACCURACY_FINE);
+		android.location.Criteria.POWER_LOW, android.location.Criteria.ACCURACY_FINE);
 
 		Location newLocation = new Location(LocationManager.GPS_PROVIDER);
 
@@ -1397,24 +1296,20 @@ public class Utils {
 
 		newLocation.setAccuracy(500);
 
-		locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER,
-				true);
+		locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
 
-		locationManager.setTestProviderStatus(LocationManager.GPS_PROVIDER,
-				LocationProvider.AVAILABLE, null, System.currentTimeMillis());
+		locationManager.setTestProviderStatus(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null, System.currentTimeMillis());
 
 		// http://jgrasstechtips.blogspot.it/2012/12/android-incomplete-location-object.html
 		makeLocationObjectComplete(newLocation);
 
-		locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER,
-				newLocation);
+		locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, newLocation);
 	}
 
 	private static void makeLocationObjectComplete(Location newLocation) {
 		Method locationJellyBeanFixMethod = null;
 		try {
-			locationJellyBeanFixMethod = Location.class
-					.getMethod("makeComplete");
+			locationJellyBeanFixMethod = Location.class.getMethod("makeComplete");
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
@@ -1731,8 +1626,7 @@ public class Utils {
 
 	/***
 	 * Resizes an image to the given width and height parameters Prefer using
-	 * {@link Utils#decodeSampledBitmapFromResource(Context, Uri, int, int)}
-	 * over this method.
+	 * {@link Utils#decodeSampledBitmapFromResource(Context, Uri, int, int)} over this method.
 	 * 
 	 * @param sourceBitmap
 	 *            Bitmap to be resized
@@ -1741,27 +1635,22 @@ public class Utils {
 	 * @param newHeight
 	 *            Height of the resized bitmap
 	 ****/
-	public static Bitmap resizeImage(Bitmap sourceBitmap, int newWidth,
-			int newHeight, boolean filter) {
+	public static Bitmap resizeImage(Bitmap sourceBitmap, int newWidth, int newHeight, boolean filter) {
 		// TODO: move this method to ImageUtils
 		if (sourceBitmap == null) {
-			throw new NullPointerException(
-					"Bitmap to be resized cannot be null");
+			throw new NullPointerException("Bitmap to be resized cannot be null");
 		}
 
 		Bitmap resized = null;
 
 		if (sourceBitmap.getWidth() < sourceBitmap.getHeight()) {
 			// image is portrait
-			resized = Bitmap.createScaledBitmap(sourceBitmap, newHeight,
-					newWidth, true);
+			resized = Bitmap.createScaledBitmap(sourceBitmap, newHeight, newWidth, true);
 		} else
 			// image is landscape
-			resized = Bitmap.createScaledBitmap(sourceBitmap, newWidth,
-					newHeight, true);
+			resized = Bitmap.createScaledBitmap(sourceBitmap, newWidth, newHeight, true);
 
-		resized = Bitmap.createScaledBitmap(sourceBitmap, newWidth, newHeight,
-				true);
+		resized = Bitmap.createScaledBitmap(sourceBitmap, newWidth, newHeight, true);
 
 		return resized;
 	}
@@ -1774,8 +1663,7 @@ public class Utils {
 	 * @param compressionFactor
 	 *            Powers of 2 are often faster/easier for the decoder to honor
 	 * **/
-	public static Bitmap compressImage(Bitmap sourceBitmap,
-			int compressionFactor) {
+	public static Bitmap compressImage(Bitmap sourceBitmap, int compressionFactor) {
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inPreferredConfig = Config.ARGB_8888;
 		opts.inSampleSize = compressionFactor;
@@ -1788,38 +1676,32 @@ public class Utils {
 		sourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 		byte[] byteArray = stream.toByteArray();
 
-		Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0,
-				byteArray.length, opts);
+		Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, opts);
 
 		return image;
 	}
 
 	/****
-	 * @deprecated Use
-	 *             {@link ViewUtils#showPhotoWithRoundedCorners(ImageView, String, int)}
+	 * @deprecated Use {@link ViewUtils#showPhotoWithRoundedCorners(ImageView, String, int)}
 	 * 
 	 * <br/>
 	 * <br/>
 	 *             Show a photo with a rounded corners.
 	 * @param cornerRadius
-	 *            Should NOT be too large, ideally the value should be 8 or 10.
-	 *            Pass -1 if you dont want the rounded corners
+	 *            Should NOT be too large, ideally the value should be 8 or 10. Pass -1 if you dont
+	 *            want the rounded corners
 	 ****/
-	public static void showPhotoWithRoundedCorners(ImageView photo, String url,
-			int cornerRadius) {
+	public static void showPhotoWithRoundedCorners(ImageView photo, String url, int cornerRadius) {
 		DisplayImageOptions options = null;
 
 		if (cornerRadius != -1) {
-			options = new DisplayImageOptions.Builder().cacheInMemory(true)
-					.cacheOnDisc(true)
-					.displayer(new RoundedBitmapDisplayer(cornerRadius)) // rounded
-																			// corner
-																			// bitmap
+			options = new DisplayImageOptions.Builder().cacheInMemory(true).cacheOnDisc(true).displayer(new RoundedBitmapDisplayer(cornerRadius)) // rounded
+																																					// corner
+																																					// bitmap
 					.build();
 		} else {
 			// no rounded corners
-			options = new DisplayImageOptions.Builder().cacheInMemory(true)
-					.cacheOnDisc(true).build();
+			options = new DisplayImageOptions.Builder().cacheInMemory(true).cacheOnDisc(true).build();
 		}
 
 		if (!TextUtils.isEmpty(url) && !url.equalsIgnoreCase("null")) {
@@ -1834,7 +1716,13 @@ public class Utils {
 	}
 
 	/****
-	 * Parse the ISO formatted date object and return a {@link Date} object
+	 * @deprecated Use {@link DateUtils#parseDate(String)} instead.
+	 * 
+	 * <br/>
+	 * <br/>
+	 *             Parses date string and returns a {@link Date} object
+	 * 
+	 * @return The ISO formatted date object
 	 *****/
 	public static Date parseDate(String date) {
 		StringBuffer sbDate = new StringBuffer();
@@ -1852,8 +1740,7 @@ public class Utils {
 		String nDate = rDate.replaceAll("-", "/");
 
 		try {
-			dateDT = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
-					.parse(nDate);
+			dateDT = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse(nDate);
 			// Log.v( TAG, "#parseDate dateDT: " + dateDT );
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -1867,37 +1754,32 @@ public class Utils {
 	/****
 	 * @deprecated Too many image decoding methods.
 	 ****/
-	public static Bitmap decodeSampledBitmapFromResource(Context ctx, Uri uri,
-			int reqWidth, int reqHeight) throws FileNotFoundException {
+	public static Bitmap decodeSampledBitmapFromResource(Context ctx, Uri uri, int reqWidth, int reqHeight) throws FileNotFoundException {
 		// TODO: move this method to ImageUtils
 		// First decode with inJustDecodeBounds=true to check dimensions
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
 
 		try {
-			BitmapFactory.decodeStream(ctx.getContentResolver()
-					.openInputStream(uri), new Rect(), options);
+			BitmapFactory.decodeStream(ctx.getContentResolver().openInputStream(uri), new Rect(), options);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
 		// Calculate inSampleSize
-		options.inSampleSize = calculateInSampleSize(options, reqWidth,
-				reqHeight);
+		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
 		// Decode bitmap with inSampleSize set
 		options.inJustDecodeBounds = false;
 
 		try {
-			return BitmapFactory.decodeStream(ctx.getContentResolver()
-					.openInputStream(uri), new Rect(), options);
+			return BitmapFactory.decodeStream(ctx.getContentResolver().openInputStream(uri), new Rect(), options);
 		} catch (FileNotFoundException e) {
 			throw new FileNotFoundException(e.getMessage());
 		}
 	}
 
-	private static int calculateInSampleSize(BitmapFactory.Options options,
-			int reqWidth, int reqHeight) {
+	private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
 		// Raw height and width of image
 		final int height = options.outHeight;
 		final int width = options.outWidth;
@@ -1907,8 +1789,7 @@ public class Utils {
 
 			// Calculate ratios of height and width to requested height and
 			// width
-			final int heightRatio = Math.round((float) height
-					/ (float) reqHeight);
+			final int heightRatio = Math.round((float) height / (float) reqHeight);
 			final int widthRatio = Math.round((float) width / (float) reqWidth);
 
 			// Choose the smallest ratio as inSampleSize value, this will
@@ -1922,9 +1803,8 @@ public class Utils {
 	}
 
 	/***
-	 * Provide the height to which the sourceImage is to be resized. This method
-	 * will calculate the resultant height. Use scaleDownBitmap from
-	 * {@link Utils} wherever possible
+	 * Provide the height to which the sourceImage is to be resized. This method will calculate the
+	 * resultant height. Use scaleDownBitmap from {@link Utils} wherever possible
 	 ***/
 	public Bitmap resizeImageByHeight(int height, Bitmap sourceImage) {
 		// TODO: move this method to ImageUtils
@@ -1941,8 +1821,7 @@ public class Utils {
 		// of the original banner image.
 		widthNew = (heightNew * widthO) / heightO;
 
-		return Bitmap
-				.createScaledBitmap(sourceImage, widthNew, heightNew, true);
+		return Bitmap.createScaledBitmap(sourceImage, widthNew, heightNew, true);
 	}
 
 	/***
@@ -1988,11 +1867,10 @@ public class Utils {
 	}
 
 	/****
-	 * Identifies if the content represented by the parameter mimeType is media.
-	 * Image, Audio and Video is treated as media by this method. You can refer
-	 * to standard MIME type here. <a
-	 * href="http://www.iana.org/assignments/media-types/media-types.xhtml"
-	 * >Standard MIME types.</a>
+	 * Identifies if the content represented by the parameter mimeType is media. Image, Audio and
+	 * Video is treated as media by this method. You can refer to standard MIME type here. <a
+	 * href="http://www.iana.org/assignments/media-types/media-types.xhtml" >Standard MIME
+	 * types.</a>
 	 * 
 	 * @param mimeType
 	 *            standard MIME type of the data.
@@ -2002,8 +1880,7 @@ public class Utils {
 		boolean isMedia = false;
 
 		if (mimeType != null) {
-			if (mimeType.startsWith("image/") || mimeType.startsWith("video/")
-					|| mimeType.startsWith("audio/"))
+			if (mimeType.startsWith("image/") || mimeType.startsWith("video/") || mimeType.startsWith("audio/"))
 				isMedia = true;
 		} else {
 			isMedia = false;
@@ -2014,9 +1891,8 @@ public class Utils {
 
 	/***
 	 * Gets the Uri without the fragment. For e.g if the uri is
-	 * content://com.android.storage/data/images/48829#is_png the part after '#'
-	 * is called as fragment. This method strips the fragment and returns the
-	 * url.
+	 * content://com.android.storage/data/images/48829#is_png the part after '#' is called as
+	 * fragment. This method strips the fragment and returns the url.
 	 * ***/
 	public static String removeUriFragment(String url) {
 
@@ -2107,9 +1983,8 @@ public class Utils {
 	}
 
 	/****
-	 * Get the media data from the one of the following media
-	 * {@link ContentProvider} This method should not be called from the main
-	 * thread of the application.
+	 * Get the media data from the one of the following media {@link ContentProvider} This method
+	 * should not be called from the main thread of the application.
 	 * <ul>
 	 * <li>{@link android.provider.MediaStore.Images.Media}</li>
 	 * <li>{@link android.provider.MediaStore.Audio.Media}</li>
@@ -2127,8 +2002,7 @@ public class Utils {
 			throw new NullPointerException("Uri cannot be null");
 		}
 
-		Cursor cur = ctx.getContentResolver().query(uri,
-				new String[] { Media.DATA }, null, null, null);
+		Cursor cur = ctx.getContentResolver().query(uri, new String[] { Media.DATA }, null, null, null);
 		byte[] data = null;
 
 		try {
@@ -2162,20 +2036,17 @@ public class Utils {
 	/***
 	 * Gets the size of the media resource pointed to by the paramter mediaUri.
 	 * 
-	 * Known bug: for unknown reason, the image size for some images was found
-	 * to be 0
+	 * Known bug: for unknown reason, the image size for some images was found to be 0
 	 * 
 	 * @param mediaUri
-	 *            uri to the media resource. For e.g.
-	 *            content://media/external/images/media/45490 or
+	 *            uri to the media resource. For e.g. content://media/external/images/media/45490 or
 	 *            content://media/external/video/media/45490
 	 * 
 	 * @return Size in bytes
 	 ****/
 	public static long getMediaSize(Context ctx, Uri mediaUri) {
 		// TODO: move to MediaUtils
-		Cursor cur = ctx.getContentResolver().query(mediaUri,
-				new String[] { Media.SIZE }, null, null, null);
+		Cursor cur = ctx.getContentResolver().query(mediaUri, new String[] { Media.SIZE }, null, null, null);
 		long size = -1;
 
 		try {
@@ -2188,8 +2059,7 @@ public class Utils {
 					// Log.v( TAG, "#getSize byte.size: " + size );
 
 					if (size == 0)
-						Log.w(TAG,
-								"#getSize The media size was found to be 0. Reason: UNKNOWN");
+						Log.w(TAG, "#getSize The media size was found to be 0. Reason: UNKNOWN");
 
 				} // end while
 			} else if (cur.getCount() == 0) {
@@ -2206,33 +2076,28 @@ public class Utils {
 
 	/****
 	 * @deprecated Use {@link MediaUtils#getDuration(Context, Uri)} instead. <br/>
-	 *             Get runtime duration of media such as audio or video in
-	 *             milliseconds
+	 *             Get runtime duration of media such as audio or video in milliseconds
 	 ****/
 	public static long getMediaDuration(Context ctx, Uri mediaUri) {
 		// TODO: move to MediaUtils
-		Cursor cur = ctx.getContentResolver().query(mediaUri,
-				new String[] { Video.Media.DURATION }, null, null, null);
+		Cursor cur = ctx.getContentResolver().query(mediaUri, new String[] { Video.Media.DURATION }, null, null, null);
 		long duration = -1;
 
 		try {
 			if (cur != null && cur.getCount() > 0) {
 				while (cur.moveToNext()) {
-					duration = cur.getLong(cur
-							.getColumnIndex(Video.Media.DURATION));
+					duration = cur.getLong(cur.getColumnIndex(Video.Media.DURATION));
 
 					// for unknown reason, the image size for image was found to
 					// be 0
 					// Log.v( TAG, "#getSize byte.size: " + size );
 
 					if (duration == 0)
-						Log.w(TAG,
-								"#getMediaDuration The image size was found to be 0. Reason: UNKNOWN");
+						Log.w(TAG, "#getMediaDuration The image size was found to be 0. Reason: UNKNOWN");
 
 				} // end while
 			} else if (cur.getCount() == 0) {
-				Log.e(TAG,
-						"#getMediaDuration cur size is 0. File may not exist");
+				Log.e(TAG, "#getMediaDuration cur size is 0. File may not exist");
 			} else
 				Log.e(TAG, "#getMediaDuration cur is null");
 		} finally {
@@ -2249,8 +2114,7 @@ public class Utils {
 	public static String getMediaFileName(Context ctx, Uri mediaUri) {
 		// TODO: move to MediaUtils
 		String colName = MediaColumns.DISPLAY_NAME;
-		Cursor cur = ctx.getContentResolver().query(mediaUri,
-				new String[] { colName }, null, null, null);
+		Cursor cur = ctx.getContentResolver().query(mediaUri, new String[] { colName }, null, null, null);
 		String dispName = null;
 
 		try {
@@ -2263,8 +2127,7 @@ public class Utils {
 					// Log.v( TAG, "#getMediaFileName byte.size: " + size );
 
 					if (TextUtils.isEmpty(colName)) {
-						Log.w(TAG,
-								"#getMediaFileName The file name is blank or null. Reason: UNKNOWN");
+						Log.w(TAG, "#getMediaFileName The file name is blank or null. Reason: UNKNOWN");
 					}
 
 				} // end while
@@ -2310,8 +2173,7 @@ public class Utils {
 	 * @throws NullPointerException
 	 *             if parameter is null
 	 ****/
-	public static ArrayList<KeyValueTuple> toKeyValueList(
-			JSONArray keyValueArray) {
+	public static ArrayList<KeyValueTuple> toKeyValueList(JSONArray keyValueArray) {
 		// TODO: remove KeyValueTyple and use
 		// http://developer.android.com/reference/android/util/Pair.html
 		ArrayList<KeyValueTuple> list = null;
@@ -2376,31 +2238,27 @@ public class Utils {
 	}
 
 	/****
-	 * Makes the dialog fill 90% of screen width and minHeight 20% of screen
-	 * height Ideally this method should not be used. Use appropriate theme for
-	 * the activity to give a dialog like UI. Alternatively you can also use
-	 * AlertDialog.Builder to create the same effect.
+	 * Makes the dialog fill 90% of screen width and minHeight 20% of screen height Ideally this
+	 * method should not be used. Use appropriate theme for the activity to give a dialog like UI.
+	 * Alternatively you can also use AlertDialog.Builder to create the same effect.
 	 * ***/
 	public static View dialogify(Activity ctx, int dialogLayoutId) {
 		return dialogify(ctx, dialogLayoutId, 0.9f, 0.2f);
 	}
 
 	/****
-	 * Helps given customized look to the dialog UI. Ideally this method should
-	 * not be used. Use appropriate theme for the activity to give a dialog like
-	 * UI. Alternatively you can also use AlertDialog.Builder to create the same
-	 * effect.
+	 * Helps given customized look to the dialog UI. Ideally this method should not be used. Use
+	 * appropriate theme for the activity to give a dialog like UI. Alternatively you can also use
+	 * AlertDialog.Builder to create the same effect.
 	 * ***/
-	public static View dialogify(Activity ctx, int dialogLayoutId,
-			float minWidth, float minHeight) {
+	public static View dialogify(Activity ctx, int dialogLayoutId, float minWidth, float minHeight) {
 		// retrieve display dimensions
 		Rect displayRectangle = new Rect();
 		Window window = ctx.getWindow();
 		window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
 
 		// inflate and adjust layout
-		LayoutInflater inflater = (LayoutInflater) ctx
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View layout = inflater.inflate(dialogLayoutId, null);
 
 		if (minWidth != -1) {
@@ -2422,34 +2280,30 @@ public class Utils {
 	}
 
 	/***
-	 * Formats given size in bytes to KB, MB, GB or whatever. This will work up
-	 * to 1000 TB
+	 * Formats given size in bytes to KB, MB, GB or whatever. This will work up to 1000 TB
 	 * ***/
 	public static String formatSize(long size) {
 		if (size <= 0)
 			return "0";
 		final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
 		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
-		return new DecimalFormat("#,##0.#").format(size
-				/ Math.pow(1024, digitGroups))
-				+ " " + units[digitGroups];
+		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 	}
 
 	/***
-	 * Formats given size in bytes to KB, MB, GB or whatever. Preferably use
-	 * this method for performance efficiency.
+	 * Formats given size in bytes to KB, MB, GB or whatever. Preferably use this method for
+	 * performance efficiency.
 	 * 
 	 * @param si
-	 *            Controls byte value precision. If true, formatting is done
-	 *            using approx. 1000 Uses 1024 if false.
+	 *            Controls byte value precision. If true, formatting is done using approx. 1000 Uses
+	 *            1024 if false.
 	 * ***/
 	public static String formatSize(long bytes, boolean si) {
 		int unit = si ? 1000 : 1024;
 		if (bytes < unit)
 			return bytes + " B";
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
-		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1)
-				+ (si ? "" : "i");
+		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 
@@ -2470,8 +2324,7 @@ public class Utils {
 	 */
 
 	/***
-	 * Creates the uri to a file located on external storage or application
-	 * internal storage.
+	 * Creates the uri to a file located on external storage or application internal storage.
 	 ****/
 	public static Uri createUri(Context ctx) {
 		File root = getStorageDirectory(ctx, null);
@@ -2483,11 +2336,10 @@ public class Utils {
 	}
 
 	/***
-	 * Creates an intent to take a video from camera or gallery or any other
-	 * application that can handle the intent.
+	 * Creates an intent to take a video from camera or gallery or any other application that can
+	 * handle the intent.
 	 ****/
-	public static Intent createTakeVideoIntent(Activity ctx, Uri savingUri,
-			int durationInSeconds) {
+	public static Intent createTakeVideoIntent(Activity ctx, Uri savingUri, int durationInSeconds) {
 		// TODO: move to MediaUtils
 
 		if (savingUri == null) {
@@ -2495,16 +2347,13 @@ public class Utils {
 		}
 
 		final List<Intent> cameraIntents = new ArrayList<Intent>();
-		final Intent captureIntent = new Intent(
-				android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
+		final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
 		final PackageManager packageManager = ctx.getPackageManager();
-		final List<ResolveInfo> listCam = packageManager.queryIntentActivities(
-				captureIntent, 0);
+		final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
 		for (ResolveInfo res : listCam) {
 			final String packageName = res.activityInfo.packageName;
 			final Intent intent = new Intent(captureIntent);
-			intent.setComponent(new ComponentName(res.activityInfo.packageName,
-					res.activityInfo.name));
+			intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
 			intent.setPackage(packageName);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, savingUri);
 			intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, durationInSeconds);
@@ -2517,26 +2366,23 @@ public class Utils {
 		galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
 
 		// Chooser of filesystem options.
-		final Intent chooserIntent = Intent.createChooser(galleryIntent,
-				"Select Source");
+		final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
 
 		// Add the camera options.
-		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-				cameraIntents.toArray(new Parcelable[] {}));
+		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[] {}));
 
 		return chooserIntent;
 	}
 
 	/***
-	 * Creates a ACTION_IMAGE_CAPTURE photo & ACTION_GET_CONTENT intent. This
-	 * intent will be aggregation of intents required to take picture from
-	 * Gallery and Camera at the minimum. The intent will also be directed
-	 * towards the apps that are capable of sourcing the image data. For e.g.
-	 * Dropbox, Astro file manager.
+	 * Creates a ACTION_IMAGE_CAPTURE photo & ACTION_GET_CONTENT intent. This intent will be
+	 * aggregation of intents required to take picture from Gallery and Camera at the minimum. The
+	 * intent will also be directed towards the apps that are capable of sourcing the image data.
+	 * For e.g. Dropbox, Astro file manager.
 	 * 
 	 * @param savingUri
-	 *            Uri to store a high resolution image at. If the user takes the
-	 *            picture using the camera the image will be stored at this uri.
+	 *            Uri to store a high resolution image at. If the user takes the picture using the
+	 *            camera the image will be stored at this uri.
 	 ****/
 	public static Intent createTakePictureIntent(Activity ctx, Uri savingUri) {
 		// TODO: move to MediaUtils
@@ -2546,16 +2392,13 @@ public class Utils {
 		}
 
 		final List<Intent> cameraIntents = new ArrayList<Intent>();
-		final Intent captureIntent = new Intent(
-				android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 		final PackageManager packageManager = ctx.getPackageManager();
-		final List<ResolveInfo> listCam = packageManager.queryIntentActivities(
-				captureIntent, 0);
+		final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
 		for (ResolveInfo res : listCam) {
 			final String packageName = res.activityInfo.packageName;
 			final Intent intent = new Intent(captureIntent);
-			intent.setComponent(new ComponentName(res.activityInfo.packageName,
-					res.activityInfo.name));
+			intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
 			intent.setPackage(packageName);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, savingUri);
 			cameraIntents.add(intent);
@@ -2567,20 +2410,17 @@ public class Utils {
 		galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
 
 		// Chooser of filesystem options.
-		final Intent chooserIntent = Intent.createChooser(galleryIntent,
-				"Select Source");
+		final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
 
 		// Add the camera options.
-		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-				cameraIntents.toArray(new Parcelable[] {}));
+		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[] {}));
 
 		return chooserIntent;
 	}
 
 	/****
-	 * Creates external content:// scheme uri to save the images at. The image
-	 * saved at this {@link Uri} will be visible via the gallery application on
-	 * the device.
+	 * Creates external content:// scheme uri to save the images at. The image saved at this
+	 * {@link Uri} will be visible via the gallery application on the device.
 	 * ***/
 	public static Uri createImageUri(Context ctx) throws IOException {
 		// TODO: move to MediaUtils
@@ -2594,8 +2434,7 @@ public class Utils {
 		ContentValues values = new ContentValues();
 		values.put(MediaColumns.TITLE, "");
 		values.put(ImageColumns.DESCRIPTION, "");
-		imageUri = ctx.getContentResolver().insert(
-				MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+		imageUri = ctx.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
 		return imageUri;
 	}
@@ -2615,8 +2454,7 @@ public class Utils {
 		ContentValues values = new ContentValues();
 		values.put(MediaColumns.TITLE, "");
 		values.put(ImageColumns.DESCRIPTION, "");
-		imageUri = ctx.getContentResolver().insert(
-				MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+		imageUri = ctx.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
 
 		return imageUri;
 	}
@@ -2629,8 +2467,7 @@ public class Utils {
 	 * @param lastName
 	 *            Last name
 	 * 
-	 * @return Returns correctly formatted full name. Returns null if both the
-	 *         values are null.
+	 * @return Returns correctly formatted full name. Returns null if both the values are null.
 	 * ***/
 	public static String getName(String firstName, String lastName) {
 		if (!TextUtils.isEmpty(firstName) && !TextUtils.isEmpty(lastName)) {
@@ -2649,8 +2486,7 @@ public class Utils {
 			sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
 		else
 			sbmp = bmp;
-		Bitmap output = Bitmap.createBitmap(sbmp.getWidth(), sbmp.getHeight(),
-				Config.ARGB_8888);
+		Bitmap output = Bitmap.createBitmap(sbmp.getWidth(), sbmp.getHeight(), Config.ARGB_8888);
 		Canvas canvas = new Canvas(output);
 
 		final int color = 0xffa19774;
@@ -2662,8 +2498,7 @@ public class Utils {
 		paint.setDither(true);
 		canvas.drawARGB(0, 0, 0, 0);
 		paint.setColor(Color.parseColor("#BAB399"));
-		canvas.drawCircle(sbmp.getWidth() / 2 + 0.7f,
-				sbmp.getHeight() / 2 + 0.7f, sbmp.getWidth() / 2 + 0.1f, paint);
+		canvas.drawCircle(sbmp.getWidth() / 2 + 0.7f, sbmp.getHeight() / 2 + 0.7f, sbmp.getWidth() / 2 + 0.1f, paint);
 		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
 		canvas.drawBitmap(sbmp, rect, rect, paint);
 
