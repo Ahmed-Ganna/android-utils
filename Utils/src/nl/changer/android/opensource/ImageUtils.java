@@ -15,7 +15,7 @@ import android.provider.MediaStore.Images.Media;
 import android.util.Log;
 
 /***
- * Provides helper classes for image operations
+ * Provides helper methods for image operations
  ***/
 public class ImageUtils {
 
