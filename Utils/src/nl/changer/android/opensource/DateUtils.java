@@ -63,4 +63,44 @@ public class DateUtils {
 		return dateDT;
 	}
 
+	/***
+	 * Converts UTC time formatted as ISO to device local time.
+	 * 
+	 * <br/>
+	 * <br/>
+	 * Sample usage
+	 * 
+	 * <pre>
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * {
+	 * 	SimpleDateFormat sdf = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss.SSS'Z'&quot;);
+	 * 	d = toLocalTime(&quot;2014-10-08T09:46:04.455Z&quot;, sdf);
+	 * }
+	 * </pre>
+	 * 
+	 * @param utcDate
+	 * @param format
+	 * @return Date
+	 * @throws Exception
+	 * 
+	 * 
+	 * 
+	 */
+	public static Date toLocalTime(String utcDate, SimpleDateFormat sdf) throws Exception {
+
+		// create a new Date object using
+		// the timezone of the specified city
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date localDate = sdf.parse(utcDate);
+
+		sdf.setTimeZone(TimeZone.getDefault());
+		String dateFormateInUTC = sdf.format(localDate);
+
+		return sdf.parse(dateFormateInUTC);
+	}
+
 }
