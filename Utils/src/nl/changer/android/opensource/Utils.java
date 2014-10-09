@@ -577,6 +577,11 @@ public class Utils {
 	 * 
 	 * 
 	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 * DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 	 * 
 	 * 	public void onClick(DialogInterface dialog, int which) {
@@ -1387,15 +1392,20 @@ public class Utils {
 	}
 
 	/**
-	 * Returns abbreviated (3 letters) day of the week.
+	 * 
+	 * @deprecated Use {@link DateUtils#getDayOfWeekAbbreviated(String)} instead.
+	 * 
+	 * <br/>
+	 * <br/>
+	 * <br/>
+	 *             Returns abbreviated (3 letters) day of the week.
 	 * 
 	 * @param date
 	 *            ISO format date
 	 * @return The name of the day of the week
 	 */
 	public static String getDayOfWeekAbbreviated(String date) {
-		// TODO: move to DateUtils
-		Date dateDT = Utils.parseDate(date);
+		Date dateDT = DateUtils.parseDate(date);
 
 		if (dateDT == null) {
 			return null;
@@ -1422,7 +1432,7 @@ public class Utils {
 			break;
 
 		case Calendar.TUESDAY:
-			dayStr = "Tues";
+			dayStr = "Tue";
 			break;
 
 		case Calendar.WEDNESDAY:
@@ -1430,7 +1440,7 @@ public class Utils {
 			break;
 
 		case Calendar.THURSDAY:
-			dayStr = "Thurs";
+			dayStr = "Thu";
 			break;
 
 		case Calendar.FRIDAY:
@@ -1446,7 +1456,13 @@ public class Utils {
 	}
 
 	/***
-	 * Gets the name of the month from the given date.
+	 * 
+	 * @deprecated Use {@link DateUtils#getMonth(String)} instead.
+	 * 
+	 * <br/>
+	 * <br/>
+	 * <br/>
+	 *             Gets the name of the month from the given date.
 	 * 
 	 * @param date
 	 *            ISO format date
@@ -1454,7 +1470,7 @@ public class Utils {
 	 * ***/
 	public static String getMonth(String date) {
 		// TODO: move to DateUtils
-		Date dateDT = Utils.parseDate(date);
+		Date dateDT = DateUtils.parseDate(date);
 
 		if (dateDT == null) {
 			return null;
@@ -1525,15 +1541,22 @@ public class Utils {
 	}
 
 	/**
-	 * Gets abbreviated name of the month from the given date.
+	 * 
+	 * 
+	 * @deprecated Use {@link DateUtils#getMonthAbbreviated(String)} instead.
+	 * 
+	 * <br/>
+	 * <br/>
+	 * <br/>
+	 * 
+	 *             Gets 3-character abbreviated name of the month from the given date.
 	 * 
 	 * @param date
 	 *            ISO format date
 	 * @return Returns the name of the month
 	 */
 	public static String getMonthAbbreviated(String date) {
-		// TODO: move to DateUtils
-		Date dateDT = Utils.parseDate(date);
+		Date dateDT = DateUtils.parseDate(date);
 
 		if (dateDT == null) {
 			return null;
@@ -1572,11 +1595,11 @@ public class Utils {
 			break;
 
 		case Calendar.JUNE:
-			dayStr = "June";
+			dayStr = "Jun";
 			break;
 
 		case Calendar.JULY:
-			dayStr = "July";
+			dayStr = "Jul";
 			break;
 
 		case Calendar.AUGUST:
@@ -1584,7 +1607,7 @@ public class Utils {
 			break;
 
 		case Calendar.SEPTEMBER:
-			dayStr = "Sept";
+			dayStr = "Sep";
 			break;
 
 		case Calendar.OCTOBER:
