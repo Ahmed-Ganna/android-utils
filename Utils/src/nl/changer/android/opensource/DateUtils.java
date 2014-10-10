@@ -41,7 +41,6 @@ public class DateUtils {
 	 * @return The ISO formatted date object
 	 *****/
 	public static Date parseDate(String date) {
-		Log.i(TAG, " date: " + date);
 
 		if (date == null) {
 			return null;
@@ -81,6 +80,7 @@ public class DateUtils {
 	 * Sample usage
 	 * 
 	 * <pre>
+	 * 
 	 * 
 	 * 
 	 * 
@@ -256,7 +256,7 @@ public class DateUtils {
 
 		return dayStr;
 	}
-	
+
 	/**
 	 * Gets abbreviated name of the month from the given date.
 	 * 
