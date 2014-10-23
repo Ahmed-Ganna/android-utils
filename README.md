@@ -6,10 +6,15 @@ Library Project for utility classes that can make me(and others) more productive
 
 **Utility classes included**
 
+* MediaUtils - Set of utilities to handle media resize, scaling, rotation and other relevant stuff.
+* ImageUtils - Set of utilities to handle image manipulation.
+* DateUtils - Set of utilities to handle date manipulation.
+* AudioUtils - Set of utilities to handle audio recodring, playing and saving to disk.
 * Utils - Set of general purpose utility methods.
-* ViewUtils - Set of utility methods for different view classes.
 * StorageManager - Android SharedPreferences abstraction.
 * AWSUploader - Utility methods to upload objects to Amazon S3.
+* YouTubeUtils - Set of utilities to handle YouTube related stuff.
+* ViewUtils - Set of utilities to handle Android Views' related stuff.
 
 Caution!
 ==========

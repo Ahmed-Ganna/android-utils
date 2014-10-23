@@ -1,11 +1,11 @@
 package nl.changer.android.opensource;
 
+import android.util.Base64;
+
 import java.security.SignatureException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
-import android.util.Base64;
 
 public class AwsUtils {
 
