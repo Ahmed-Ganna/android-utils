@@ -1,4 +1,5 @@
-# built application files
+
+#built application files
 *.apk
 *.ap_
 
@@ -14,24 +15,30 @@ gen/
 
 # Local configuration file (sdk path, etc)
 local.properties
-.directory
 
-#Eclipse specific ignores
-.metadata
-bin/**
-tmp/**
-tmp/**/*
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
+# Windows thumbnail db
+Thumbs.db
+
+# OSX files
+.DS_Store
+
+# Eclipse project files
 .classpath
-.settings/*
-.settings/
-.loadpath
+.project
 
-#lets ignore .properties as well only for this project
-# as it creates chaos when working on this project from 2 different
-# computers
-project.properties
+# Android Studio
+.idea
+.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
+.gradle
+build/
+secring.gpg
+Optional - for older project format, add this section to your gitignore file:
+
+
+/*/out
+/*/*/build
+/*/*/production
+*.iws
+*.ipr
+*~
+*.swp

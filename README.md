@@ -11,38 +11,26 @@ Library Project for utility classes that can make me(and others) more productive
 * StorageManager - Android SharedPreferences abstraction.
 * AWSUploader - Utility methods to upload objects to Amazon S3.
 
-----
-
-Getting started
-=============
-
-**Step 1**: Download the zip file of this project and unzip it.
-
-**Step 2**: Import the project into your eclipse Android development enviornment. 
-
-If you dont know how to import a project, follow the instructions at the link given below.
-http://help.eclipse.org/helios/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-importproject.htm
-
-**Step 3**: Link this library project with your project from Properties -> Android -> Library -> Add
-
-If you are not familiar with this, here you have to link the project imported in Step 1 with your own application.
-You can follow the link below to understand how you link a particular project with this library project.
-http://www.vogella.com/articles/AndroidLibraryProjects/article.html#tutorial_library_usage
-
-And there you are good to go with the project.
+Caution!
+==========
+Eclipse library project structure has been dropped. If you wish to use this library in your eclipse IDE, please checkout [eclipse-develop][1].
+No further development will be done or merged into [eclipse-develop][1] branch.
 
 ----
 
-Dependencies
-=============
-
-https://github.com/nostra13/Android-Universal-Image-Loader
+Download
+--------
+Gradle:
+```groovy
+compile 'net.the4thdimension:polypicker:1.0.5'
+```
+PolyPicker requires Android 4.0+.
 
 
 The MIT License
 =============
 
-**Copyright (c) 2013 Jaydeep from [Changer Technologies Pvt. Ltd.](https://github.com/changer "Title")**
+**Copyright (c) 2014 Jaydeep from [Changer Technologies Pvt. Ltd.](https://github.com/changer "Title")**
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -61,3 +49,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+
+[1]: https://github.com/changer/android-utils/tree/eclipse-develop
