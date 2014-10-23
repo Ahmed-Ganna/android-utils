@@ -24,7 +24,7 @@ Gradle:
 ```groovy
 compile 'net.the4thdimension:android-utils:2.0.2'
 ```
-PolyPicker requires Android 4.0+.
+AndroidUtils requires Android 4.0+.
 
 
 The MIT License
