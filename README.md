@@ -27,7 +27,7 @@ Download
 --------
 Gradle:
 ```groovy
-compile 'net.the4thdimension:android-utils:2.0.2'
+compile 'net.the4thdimension:android-utils:2.0.3'
 ```
 AndroidUtils requires Android 4.0+.
 
