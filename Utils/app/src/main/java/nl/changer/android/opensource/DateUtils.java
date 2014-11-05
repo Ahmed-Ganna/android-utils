@@ -81,19 +81,6 @@ public class DateUtils {
 	 * 
 	 * <pre>
 	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
 	 * {
 	 * 	SimpleDateFormat sdf = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss.SSS'Z'&quot;);
 	 * 	d = toLocalTime(&quot;2014-10-08T09:46:04.455Z&quot;, sdf);
