@@ -97,10 +97,6 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
-
 /***
  * Provides convenience methods and abstractions to some tasks in Android
  * 
@@ -1714,7 +1710,7 @@ public class Utils {
 	 *            Should NOT be too large, ideally the value should be 8 or 10. Pass -1 if you dont
 	 *            want the rounded corners
 	 ****/
-	public static void showPhotoWithRoundedCorners(ImageView photo, String url, int cornerRadius) {
+	/*public static void showPhotoWithRoundedCorners(ImageView photo, String url, int cornerRadius) {
 		DisplayImageOptions options = null;
 
 		if (cornerRadius != -1) {
@@ -1736,7 +1732,7 @@ public class Utils {
 			// and user does not get a perception of wrong photos
 			// photo.setVisibility( View.INVISIBLE );
 		}
-	}
+	}*/
 
 	/****
 	 * @deprecated Use {@link DateUtils#parseDate(String)} instead.

@@ -11,17 +11,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 
 /***
@@ -175,7 +170,7 @@ public class ViewUtils {
 	 * Pass -1 if you dont want the rounded corners.
 	 ****/
 	public static void showPhotoWithRoundedCorners( ImageView photo, String url, int cornerRadius ) {
-		DisplayImageOptions options = null;
+		/*DisplayImageOptions options = null;
 		
 		if( cornerRadius != -1 ) {
 			options = new DisplayImageOptions.Builder()
@@ -199,6 +194,6 @@ public class ViewUtils {
 			// older photos are not visible 
 	    	// and user does not get a perception of wrong photos
 			// photo.setVisibility( View.INVISIBLE );
-		}
+		}*/
 	}
 }
