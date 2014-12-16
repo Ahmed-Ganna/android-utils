@@ -24,10 +24,15 @@ No further development will be done or merged into [eclipse-develop][1] branch.
 ----
 
 Download
---------
+============
 Gradle:
 ```groovy
-compile 'net.the4thdimension:android-utils:2.0.3'
+
+dependencies {
+	compile 'net.the4thdimension:android-utils:2.0.4'
+    // and your other dependencies
+}
+
 ```
 AndroidUtils requires Android 4.0+.
 
