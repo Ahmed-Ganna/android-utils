@@ -31,6 +31,14 @@ compile 'net.the4thdimension:android-utils:2.0.3'
 ```
 AndroidUtils requires Android 4.0+.
 
+Release Notes
+============
+
+## v2.0.4
+
+* Fix media size returning 0 for some type of media.
+* Deprecate some media methods in Utils and move them to MediaUtils
+
 
 The MIT License
 =============
