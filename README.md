@@ -48,7 +48,7 @@ Release Notes
 The MIT License
 =============
 
-**Copyright (c) 2014 Jaydeep from [Changer Technologies Pvt. Ltd.](https://github.com/changer "Title")**
+**Copyright (c) 2014 [Changer Technologies Pvt. Ltd.](https://github.com/changer "Title")**
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
